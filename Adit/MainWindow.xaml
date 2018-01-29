@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Adit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="Adit" Height="400" Width="400"  SizeToContent="WidthAndHeight" Icon="Assets/icons8-connect-50.png" Loaded="Window_Loaded">
+    <Frame x:Name="mainFrame" NavigationUIVisibility="Hidden">
+
+    </Frame>
 </Window>

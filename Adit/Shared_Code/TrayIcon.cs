@@ -20,7 +20,7 @@ namespace Adit.Shared_Code
                 Icon.Dispose();
             }
             Icon = new TaskbarIcon();
-            Icon.IconSource = new BitmapImage(new Uri("pack://application:,,,/Assets/icons8-connect-50.ico"));
+            Icon.IconSource = new BitmapImage(new Uri("pack://application:,,,/Assets/icons8-connect-64.ico"));
             CreateContextMenu();
             Icon.TrayMouseDoubleClick += (send, arg) => {
                 new MainWindow().Show();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adit.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,6 +46,16 @@ namespace Adit.Shared_Code
                     TrayIcon.Icon.Dispose();
                 }
             };
+        }
+
+        internal static void ProcessConfiguration()
+        {
+            if (string.IsNullOrWhiteSpace(Settings.Configuration))
+            {
+                return;
+            }
+            var config = Utilities.JSON.Deserialize<Configuration>(Settings.Configuration);
+            // TODO: Do stuff.
         }
     }
 }

@@ -8,13 +8,14 @@ using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace Adit.Shared_Code
 {
     class Utilities
     {
         public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer();
-        private async void ShowToolTip(FrameworkElement placementTarget, string message, System.Windows.Media.Color fontColor)
+        public async static void ShowToolTip(FrameworkElement placementTarget, string message, System.Windows.Media.Color fontColor)
         {
             var tt = new System.Windows.Controls.ToolTip();
             tt.PlacementTarget = placementTarget;
@@ -22,7 +23,7 @@ namespace Adit.Shared_Code
             tt.HorizontalOffset = Math.Round(placementTarget.ActualWidth * .25, 0) * -1;
             tt.VerticalOffset = Math.Round(placementTarget.ActualHeight * .5, 0);
             tt.Content = message;
-            tt.Foreground = new SolidColorBrush(Colors.Green);
+            tt.Foreground = new SolidColorBrush(Colors.SteelBlue);
             tt.IsOpen = true;
             await Task.Delay(message.Length * 50);
             tt.BeginAnimation(FrameworkElement.OpacityProperty, new DoubleAnimation(0, TimeSpan.FromSeconds(1)));

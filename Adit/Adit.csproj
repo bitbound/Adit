@@ -76,8 +76,18 @@
     <Compile Include="Controls\ClosedToTrayBalloon.xaml.cs">
       <DependentUpon>ClosedToTrayBalloon.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\Configuration.cs" />
+    <Compile Include="Pages\AboutMain.xaml.cs">
+      <DependentUpon>AboutMain.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ClientMain.xaml.cs">
       <DependentUpon>ClientMain.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\DemoMain.xaml.cs">
+      <DependentUpon>DemoMain.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Notifier.xaml.cs">
+      <DependentUpon>Notifier.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ServerMain.xaml.cs">
       <DependentUpon>ServerMain.xaml</DependentUpon>
@@ -107,11 +117,23 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Pages\AboutMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\ClientMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\ModeSelect.xaml">
+    <Page Include="Pages\DemoMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Notifier.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Welcome.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -125,8 +147,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pages\ModeSelect.xaml.cs">
-      <DependentUpon>ModeSelect.xaml</DependentUpon>
+    <Compile Include="Pages\Welcome.xaml.cs">
+      <DependentUpon>Welcome.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -175,6 +197,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\icons8-connect-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\icons8-connect-64.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets')" />

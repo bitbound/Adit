@@ -31,14 +31,14 @@ namespace Adit.Pages
         }
         private void textSessionID_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //System.Windows.Clipboard.SetText(textSessionID.Text);
-            //textSessionID.SelectAll();
-            //ShowToolTip(textSessionID, "Copied to clipboard!", Colors.Green);
+            System.Windows.Clipboard.SetText(textSessionID.Text);
+            textSessionID.SelectAll();
+            Utilities.ShowToolTip(textSessionID, "Copied to clipboard!", Colors.Green);
 
         }
         private void buttonMenu_Click(object sender, RoutedEventArgs e)
         {
-            //buttonMenu.ContextMenu.IsOpen = !buttonMenu.ContextMenu.IsOpen;
+            buttonMenu.ContextMenu.IsOpen = !buttonMenu.ContextMenu.IsOpen;
         }
 
         private void textAgentStatus_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

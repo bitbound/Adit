@@ -18,16 +18,12 @@ namespace Adit.Pages
     /// <summary>
     /// Interaction logic for Install.xaml
     /// </summary>
-    public partial class ModeSelect : Page
+    public partial class Welcome : Page
     {
-        public ModeSelect()
+        public Welcome()
         {
             InitializeComponent();
         }
 
-        private void ClientButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.Current.mainFrame.Navigate(new ClientMain());
-        }
     }
 }

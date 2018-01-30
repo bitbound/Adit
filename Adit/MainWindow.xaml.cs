@@ -15,9 +15,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Linq;
 
 namespace Adit
 {
@@ -37,22 +39,30 @@ namespace Adit
             Initializer.ParseCommandLineArgs(Environment.GetCommandLineArgs());
 
         }
-        
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            TrayIcon.Icon?.ShowCustomBalloon(new ClosedToTrayBalloon(), PopupAnimation.Fade, 5000);
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Initializer.ProcessConfiguration();
             TrayIcon.Create();
             switch (Settings.StartupMode)
             {
-                case Settings.StartupModes.ModeSelect:
-                    mainFrame.Navigate(new ModeSelect());
+                case Settings.StartupModes.FirstRun:
+                    welcomeToggle.IsChecked = true;
+                    mainFrame.Navigate(new Welcome());
                     break;
                 case Settings.StartupModes.Client:
+                    clientToggle.IsChecked = true;
                     mainFrame.Navigate(new ClientMain());
                     break;
                 case Settings.StartupModes.Server:
+                    serverToggle.IsChecked = true;
                     mainFrame.Navigate(new ServerMain());
                     break;
                 case Settings.StartupModes.Viewer:
+                    viewerToggle.IsChecked = true;
                     mainFrame.Navigate(new ViewerMain());
                     break;
                 case Settings.StartupModes.Notifier:
@@ -71,11 +81,47 @@ namespace Adit
             //new RenderTargetBitmap(300, 300,)
             //mainImage.Source = new BitmapImage(visual);
         }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+
+        private void Welcome_Click(object sender, RoutedEventArgs e)
         {
-            //e.Cancel = true;
-            TrayIcon.Icon?.ShowCustomBalloon(new ClosedToTrayBalloon(), PopupAnimation.Fade, 5000);
-            //this?.Hide();
+            toggleButtonClicked(sender as ToggleButton);
+            mainFrame.Navigate(new Welcome());
         }
+
+        private void Server_Click(object sender, RoutedEventArgs e)
+        {
+            toggleButtonClicked(sender as ToggleButton);
+            mainFrame.Navigate(new ServerMain());
+        }
+        private void Client_Click(object sender, RoutedEventArgs e)
+        {
+            toggleButtonClicked(sender as ToggleButton);
+            mainFrame.Navigate(new ClientMain());
+        }
+        private void Viewer_Click(object sender, RoutedEventArgs e)
+        {
+            toggleButtonClicked(sender as ToggleButton);
+            mainFrame.Navigate(new ViewerMain());
+        }
+        private void Demo_Click(object sender, RoutedEventArgs e)
+        {
+            toggleButtonClicked(sender as ToggleButton);
+            mainFrame.Navigate(new DemoMain());
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            toggleButtonClicked(sender as ToggleButton);
+            mainFrame.Navigate(new AboutMain());
+        }
+        private void toggleButtonClicked(ToggleButton sender)
+        {
+            foreach (ToggleButton button in sideMenuStack.Children)
+            {
+                button.IsChecked = false;
+            }
+            sender.IsChecked = true;
+        }
+
     }
 }

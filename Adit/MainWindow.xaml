@@ -5,8 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Adit"
         mc:Ignorable="d"
-        Title="Adit" Height="400" Width="400"  SizeToContent="WidthAndHeight" Icon="Assets/icons8-connect-50.png" Loaded="Window_Loaded">
-    <Frame x:Name="mainFrame" NavigationUIVisibility="Hidden">
+        Title="Adit" Height="400" Width="600" Icon="Assets/icons8-connect-64.png" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-    </Frame>
+        <StackPanel x:Name="sideMenuStack" Grid.Column="0" Width="100" Margin="0,0,30,0">
+            <ToggleButton x:Name="welcomeToggle" Height="50" Click="Welcome_Click" Style="{DynamicResource PrimaryToggleButton}">Welcome</ToggleButton>
+            <ToggleButton x:Name="serverToggle" Height="50" Click="Server_Click" Style="{DynamicResource PrimaryToggleButton}">Server</ToggleButton>
+            <ToggleButton x:Name="clientToggle" Height="50" Click="Client_Click" Style="{DynamicResource PrimaryToggleButton}">Client</ToggleButton>
+            <ToggleButton x:Name="viewerToggle" Height="50"  Click="Viewer_Click" Style="{DynamicResource PrimaryToggleButton}">Viewer</ToggleButton>
+            <ToggleButton x:Name="demoToggle" Height="50"  Click="Demo_Click" Style="{DynamicResource PrimaryToggleButton}">Demo</ToggleButton>
+            <ToggleButton x:Name="aboutToggle" Height="50"  Click="About_Click" Style="{DynamicResource PrimaryToggleButton}">About</ToggleButton>
+        </StackPanel>
+
+        <Frame Grid.Column="1" x:Name="mainFrame" NavigationUIVisibility="Hidden">
+        </Frame>
+    </Grid>
 </Window>

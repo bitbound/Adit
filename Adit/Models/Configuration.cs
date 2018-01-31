@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Adit.Models
 {
-    public class Configuration
+    public class ClientConfiguration
     {
+        public string TargetServerHost { get; set; }
+        public int TargetServerPort { get; set; }
+        public bool IsViewerAvailable { get; set; }
     }
 }

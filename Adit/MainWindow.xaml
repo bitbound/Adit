@@ -13,12 +13,11 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel x:Name="sideMenuStack" Grid.Column="0" Width="100" Margin="0,0,30,0">
-            <ToggleButton x:Name="welcomeToggle" Height="50" Click="Welcome_Click" Style="{DynamicResource PrimaryToggleButton}">Welcome</ToggleButton>
-            <ToggleButton x:Name="serverToggle" Height="50" Click="Server_Click" Style="{DynamicResource PrimaryToggleButton}">Server</ToggleButton>
-            <ToggleButton x:Name="clientToggle" Height="50" Click="Client_Click" Style="{DynamicResource PrimaryToggleButton}">Client</ToggleButton>
-            <ToggleButton x:Name="viewerToggle" Height="50"  Click="Viewer_Click" Style="{DynamicResource PrimaryToggleButton}">Viewer</ToggleButton>
-            <ToggleButton x:Name="demoToggle" Height="50"  Click="Demo_Click" Style="{DynamicResource PrimaryToggleButton}">Demo</ToggleButton>
-            <ToggleButton x:Name="aboutToggle" Height="50"  Click="About_Click" Style="{DynamicResource PrimaryToggleButton}">About</ToggleButton>
+            <ToggleButton x:Name="welcomeToggle" Height="50" Click="Welcome_Click" Style="{DynamicResource SideMenuToggle}">Welcome</ToggleButton>
+            <ToggleButton x:Name="serverToggle" Height="50" Click="Server_Click" Style="{DynamicResource SideMenuToggle}">Server</ToggleButton>
+            <ToggleButton x:Name="clientToggle" Height="50" Click="Client_Click" Style="{DynamicResource SideMenuToggle}">Client</ToggleButton>
+            <ToggleButton x:Name="viewerToggle" Height="50"  Click="Viewer_Click" Style="{DynamicResource SideMenuToggle}">Viewer</ToggleButton>
+            <ToggleButton x:Name="aboutToggle" Height="50"  Click="About_Click" Style="{DynamicResource SideMenuToggle}">About</ToggleButton>
         </StackPanel>
 
         <Frame Grid.Column="1" x:Name="mainFrame" NavigationUIVisibility="Hidden">

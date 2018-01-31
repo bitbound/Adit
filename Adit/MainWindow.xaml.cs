@@ -47,7 +47,7 @@ namespace Adit
         {
             Initializer.ProcessConfiguration();
             TrayIcon.Create();
-            switch (Settings.StartupMode)
+            switch (Settings.Current.StartupMode)
             {
                 case Settings.StartupModes.FirstRun:
                     welcomeToggle.IsChecked = true;
@@ -67,54 +67,51 @@ namespace Adit
                     break;
                 case Settings.StartupModes.Notifier:
                     break;
+                case Settings.StartupModes.Hidden:
+                    break;
                 default:
                     break;
             }
-            //mainGrid.Children.Add(new ViewingCanvas());
-            //var visual = new DrawingVisual();
+        }
+        internal void HideViewer()
+        {
+            viewerToggle.Visibility = Visibility.Collapsed;
+        }
 
-            //using (var dc = visual.RenderOpen())
-            //{
-            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 0), new Point(400, 400));
-            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 400), new Point(400, 0));
-            //}
-            //new RenderTargetBitmap(300, 300,)
-            //mainImage.Source = new BitmapImage(visual);
+        internal void ConfigureForClient()
+        {
+            welcomeToggle.Visibility = Visibility.Collapsed;
+            serverToggle.Visibility = Visibility.Collapsed;
         }
 
         private void Welcome_Click(object sender, RoutedEventArgs e)
         {
-            toggleButtonClicked(sender as ToggleButton);
+            ToggleButtonClicked(sender as ToggleButton);
             mainFrame.Navigate(new Welcome());
         }
 
         private void Server_Click(object sender, RoutedEventArgs e)
         {
-            toggleButtonClicked(sender as ToggleButton);
+            ToggleButtonClicked(sender as ToggleButton);
             mainFrame.Navigate(new ServerMain());
         }
         private void Client_Click(object sender, RoutedEventArgs e)
         {
-            toggleButtonClicked(sender as ToggleButton);
+            ToggleButtonClicked(sender as ToggleButton);
             mainFrame.Navigate(new ClientMain());
         }
         private void Viewer_Click(object sender, RoutedEventArgs e)
         {
-            toggleButtonClicked(sender as ToggleButton);
+            ToggleButtonClicked(sender as ToggleButton);
             mainFrame.Navigate(new ViewerMain());
-        }
-        private void Demo_Click(object sender, RoutedEventArgs e)
-        {
-            toggleButtonClicked(sender as ToggleButton);
-            mainFrame.Navigate(new DemoMain());
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            toggleButtonClicked(sender as ToggleButton);
+            ToggleButtonClicked(sender as ToggleButton);
             mainFrame.Navigate(new AboutMain());
         }
-        private void toggleButtonClicked(ToggleButton sender)
+        private void ToggleButtonClicked(ToggleButton sender)
         {
             foreach (ToggleButton button in sideMenuStack.Children)
             {

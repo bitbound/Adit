@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace Adit.Shared_Code
 {
-    public static class Settings
+    public class Settings
     {
-        public static StartupModes StartupMode { get; set; } = StartupModes.FirstRun;
+        public static Settings Current { get; set; } = new Settings();
+        public StartupModes StartupMode { get; set; } = StartupModes.FirstRun;
 
-        public static void Load() { }
-        public static void Save() { }
+        public bool IsConfiguredAsClient { get; set; }
+        public bool IsViewerAvailable { get; set; }
 
-        public static string Configuration
+        public string Configuration
         {
             get
             {
@@ -38,7 +39,10 @@ namespace Adit.Shared_Code
             Client,
             Server,
             Viewer,
-            Notifier
+            Notifier,
+            Hidden
         }
+        public static void Load() { }
+        public static void Save() { }
     }
 }

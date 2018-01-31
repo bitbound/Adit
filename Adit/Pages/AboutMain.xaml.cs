@@ -24,5 +24,21 @@ namespace Adit.Pages
         {
             InitializeComponent();
         }
+        public string Version
+        {
+            get
+            {
+                return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+        }
+        private void hyperAditWebsite_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://invis.me");
+        }
+
+        private void hyperIcons8_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://icons8.com");
+        }
     }
 }

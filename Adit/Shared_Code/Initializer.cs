@@ -1,4 +1,6 @@
-﻿using Adit.Models;
+﻿using Adit.Client_Code;
+using Adit.Models;
+using Adit.Pages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +34,7 @@ namespace Adit.Shared_Code
         private static void DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            Utilities.WriteToLog(e.Exception, Settings.StartupMode.ToString());
+            Utilities.WriteToLog(e.Exception, Settings.Current.StartupMode.ToString());
             System.Windows.MessageBox.Show("There was an error from which Adit couldn't recover.  If the issue persists, please contact the developer.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         internal static void SetShutdownMode()
@@ -50,12 +52,18 @@ namespace Adit.Shared_Code
 
         internal static void ProcessConfiguration()
         {
-            if (string.IsNullOrWhiteSpace(Settings.Configuration))
+            if (string.IsNullOrWhiteSpace(Settings.Current.Configuration))
             {
                 return;
             }
-            var config = Utilities.JSON.Deserialize<Configuration>(Settings.Configuration);
-            // TODO: Do stuff.
+            var config = Utilities.JSON.Deserialize<ClientConfiguration>(Settings.Current.Configuration);
+            ClientSettings.Current.Host = config.TargetServerHost;
+            ClientSettings.Current.Port = config.TargetServerPort;
+            MainWindow.Current.ConfigureForClient();
+            if (!config.IsViewerAvailable)
+            {
+                MainWindow.Current.HideViewer();
+            }
         }
     }
 }

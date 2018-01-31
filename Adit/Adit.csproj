@@ -73,10 +73,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client_Code\ClientSettings.cs" />
+    <Compile Include="Client_Code\ClientSocketOut.cs" />
     <Compile Include="Controls\ClosedToTrayBalloon.xaml.cs">
       <DependentUpon>ClosedToTrayBalloon.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\Configuration.cs" />
+    <Compile Include="Models\AditClient.cs" />
     <Compile Include="Pages\AboutMain.xaml.cs">
       <DependentUpon>AboutMain.xaml</DependentUpon>
     </Compile>
@@ -95,6 +98,8 @@
     <Compile Include="Pages\ViewerMain.xaml.cs">
       <DependentUpon>ViewerMain.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Server_Code\ServerSettings.cs" />
+    <Compile Include="Server_Code\AditServer.cs" />
     <Compile Include="Shared_Code\Initializer.cs" />
     <Compile Include="Shared_Code\Settings.cs" />
     <Compile Include="Shared_Code\TrayIcon.cs" />
@@ -177,7 +182,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Server_Code\" />
     <Folder Include="Win32_Code\" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\icons8-connect-64.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\icons8-info-50.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets')" />

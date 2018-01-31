@@ -31,6 +31,26 @@ namespace Adit.Shared_Code
             tt.IsOpen = false;
             tt = null;
         }
+        
+        public byte[] TrimBytes(byte[] bytes)
+        {
+            // Loop backwards through array until the first non-zero byte is found.
+            var firstZero = 0;
+            for (int i = bytes.Length - 1; i >= 0; i--)
+            {
+                if (bytes[i] != 0)
+                {
+                    firstZero = i + 1;
+                    break;
+                }
+            }
+            if (firstZero == 0)
+            {
+                throw new Exception("Byte array is empty.");
+            }
+            // Return non-empty bytes.
+            return bytes.Take(firstZero).ToArray();
+        }
         public static void WriteToLog(Exception ex, string appMode)
         {
             var exception = ex;

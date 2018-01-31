@@ -23,7 +23,6 @@ namespace InstaTech_Client
         // be converted to a 0-based max left/top to render images on the canvas properly.
         int offsetX = SystemInformation.VirtualScreen.Left;
         int offsetY = SystemInformation.VirtualScreen.Top;
-        bool capturing;
 
 
         public int TotalHeight { get; private set; } = 0;
@@ -79,7 +78,7 @@ namespace InstaTech_Client
             }
             catch (Exception ex)
             {
-                Utilities.WriteToLog(ex, Settings.StartupMode.ToString());
+                Utilities.WriteToLog(ex, Settings.Current.StartupMode.ToString());
                 if (graphDC != IntPtr.Zero)
                 {
                     graphic.ReleaseHdc(graphDC);
@@ -88,12 +87,6 @@ namespace InstaTech_Client
                 {
                     User32.ReleaseDC(hWnd, hDC);
                 }
-                capturing = false;
-                ClientMain.Current.stackMain.Visibility = Visibility.Collapsed;
-                ClientMain.Current.stackReconnect.Visibility = Visibility.Visible;
-                ClientMain.Current.textParnterStatus.FontWeight = FontWeights.Normal;
-                ClientMain.Current.textParnterStatus.Foreground = new SolidColorBrush(Colors.Black);
-                ClientMain.Current.textParnterStatus.Text = "Not Connected";
             }
         }
         public MemoryStream GetFullscreenStream()

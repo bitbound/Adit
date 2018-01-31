@@ -1,4 +1,5 @@
-﻿using Adit.Shared_Code;
+﻿using Adit.Client_Code;
+using Adit.Shared_Code;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,19 +30,24 @@ namespace Adit.Pages
             Current = this;
             Initializer.CleanupTempFiles();
         }
-        private void textSessionID_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshUI();
+        }
+        private void TextSessionID_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             System.Windows.Clipboard.SetText(textSessionID.Text);
             textSessionID.SelectAll();
             Utilities.ShowToolTip(textSessionID, "Copied to clipboard!", Colors.Green);
 
         }
-        private void buttonMenu_Click(object sender, RoutedEventArgs e)
+        private void ButtonMenu_Click(object sender, RoutedEventArgs e)
         {
             buttonMenu.ContextMenu.IsOpen = !buttonMenu.ContextMenu.IsOpen;
         }
 
-        private void textAgentStatus_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void TextAgentStatus_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             //if (capturing)
             //{
@@ -52,7 +58,7 @@ namespace Adit.Pages
             //}
         }
 
-        private void textFilesTransferred_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void TextFilesTransferred_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             //var di = new DirectoryInfo(Path.GetTempPath() + @"\InstaTech");
             //if (di.Exists)
@@ -64,7 +70,7 @@ namespace Adit.Pages
             //    ShowToolTip(textFilesTransferred, "No files available.", Colors.Black);
             //}
         }
-        private async void menuUpgrade_Click(object sender, RoutedEventArgs e)
+        private async void MenuUpgrade_Click(object sender, RoutedEventArgs e)
         {
             //var services = System.ServiceProcess.ServiceController.GetServices();
             //var itService = services.ToList().Find(sc => sc.ServiceName == "InstaTech_Service");
@@ -96,11 +102,8 @@ namespace Adit.Pages
             //    ComputerName = Environment.MachineName
             //});
         }
-        private void menuViewer_Click(object sender, RoutedEventArgs e)
-        {
-            //Process.Start(rcPath);
-        }
-        private void menuUnattended_Click(object sender, RoutedEventArgs e)
+
+        private void MenuUnattended_Click(object sender, RoutedEventArgs e)
         {
 
             //if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
@@ -110,21 +113,46 @@ namespace Adit.Pages
             //}
             //new UnattendedWindow().ShowDialog();
         }
-        private void menuUAC_Click(object sender, RoutedEventArgs e)
+        private void MenuUAC_Click(object sender, RoutedEventArgs e)
         {
             //handleUAC = menuUAC.IsChecked;
         }
-        private void menuAbout_Click(object sender, RoutedEventArgs e)
+      
+        private void ConnectButtonClicked(object sender, RoutedEventArgs e)
         {
-            //var win = new AboutWindow();
-            //win.Owner = this;
-            //win.ShowDialog();
-        }
-        private void buttonNewSession_Click(object sender, RoutedEventArgs e)
-        {
-            //stackReconnect.Visibility = Visibility.Collapsed;
-            //stackMain.Visibility = Visibility.Visible;
+            stackConnect.Visibility = Visibility.Collapsed;
+            stackMain.Visibility = Visibility.Visible;
             //InitWebSocket();
+        }
+
+        public void SessionStopped()
+        {
+            stackMain.Visibility = Visibility.Collapsed;
+            textPartnerStatus.FontWeight = FontWeights.Normal;
+            textPartnerStatus.Foreground = new SolidColorBrush(Colors.Black);
+            textPartnerStatus.Text = "Not Connected";
+        }
+
+        private void RefreshUI()
+        {
+            textHost.Text = ClientSettings.Current.Host;
+            textPort.Text = ClientSettings.Current.Port.ToString();
+            if (ClientSocketOut.TcpClient?.Connected == true)
+            {
+                stackConnect.Visibility = Visibility.Collapsed;
+                stackMain.Visibility = Visibility.Visible;
+                textPartnerStatus.FontWeight = FontWeights.Bold;
+                textPartnerStatus.Foreground = new SolidColorBrush(Colors.Black);
+                textPartnerStatus.Text = "Connected";
+            }
+            else
+            {
+                stackMain.Visibility = Visibility.Collapsed;
+                stackConnect.Visibility = Visibility.Visible;
+                textPartnerStatus.FontWeight = FontWeights.Normal;
+                textPartnerStatus.Foreground = new SolidColorBrush(Colors.Black);
+                textPartnerStatus.Text = "Not Connected";
+            }
         }
     }
 }

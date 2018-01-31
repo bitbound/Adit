@@ -5,10 +5,30 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Adit.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
-      Title="AboutMain">
-
+      d:DesignHeight="300" d:DesignWidth="300" Background="White"
+      Title="About Adit">
     <Grid>
-        
+
+        <Grid Margin="0,10,0,0">
+            <StackPanel Margin="10">
+                <TextBlock Text=" Adit" Margin="0, 0, 0, 10" FontWeight="Bold" FontSize="15"/>
+                <TextBlock Margin="0, 0, 0, 10">
+                <TextBlock Text="Version "></TextBlock>
+                <TextBlock Text="{Binding Version, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AboutMain}}}"></TextBlock>
+            </TextBlock>
+                <TextBlock Margin="0, 0, 0, 10" >
+                <TextBlock>Website: </TextBlock>
+                <Hyperlink x:Name="hyperAditWebsite" Click="hyperAditWebsite_Click">http://invis.me</Hyperlink>
+            </TextBlock>
+                <TextBox Height="120" Margin="0, 0, 0, 5" TextWrapping="Wrap" Text="Adit is a free remote access solution.  Customization is available from the developer.  Please visit the website for more information.&#x0a;&#x0a;Adit uses the following third party packages:&#x0a;&#x0a;Fody (https://github.com/Fody/Fody)&#x0a;&#x0a;Costura.Fody (https://github.com/Fody/Costura)" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+                <Grid>
+                    <TextBlock>
+                        <Run>Icons by </Run>        
+                        <Hyperlink Click="hyperIcons8_Click">https://icons8.com/</Hyperlink>
+                    </TextBlock>
+                    <Button Content="OK" HorizontalAlignment="Right" Width="60" Height="30" IsCancel="True" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

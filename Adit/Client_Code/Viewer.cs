@@ -24,6 +24,16 @@ namespace Adit.Client_Code
                 dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 0), new Point(400, 400));
                 dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 400), new Point(400, 0));
             }
+            //mainGrid.Children.Add(new ViewingCanvas());
+            //var visual = new DrawingVisual();
+
+            //using (var dc = visual.RenderOpen())
+            //{
+            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 0), new Point(400, 400));
+            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 400), new Point(400, 0));
+            //}
+            //new RenderTargetBitmap(300, 300,)
+            //mainImage.Source = new BitmapImage(visual);
         }
 
         protected override int VisualChildrenCount

@@ -4,25 +4,25 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Adit.Pages"
-      xmlns:Server_Code="clr-namespace:Adit.Server_Code" x:Class="Adit.Pages.ServerMain"
+      xmlns:Server_Code="clr-namespace:Adit.Server_Code" xmlns:Shared_Code="clr-namespace:Adit.Shared_Code" x:Class="Adit.Pages.ServerMain"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="400"
       Title="Adit Server" Background="White" Loaded="Page_Loaded">
 
     <Page.DataContext>
-        <Server_Code:AditServer/>
+        <Shared_Code:Config/>
     </Page.DataContext>
 
     <Grid>
         <StackPanel>
             <Grid Margin="10,0,10,10">
- 
+
                 <StackPanel x:Name="stackMain"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
                     <TextBlock Text="Adit Server" FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,10,0,0"/>
                     <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                         <TextBlock Text="Server Status:" FontSize="15"/>
-                        <ToggleButton x:Name="buttonServerStatus" HorizontalAlignment="Right" FontSize="15" Content="Stopped" Width="100" Margin="10,0,0,0" ToolTip="Starts or stops the Adit server." Click="buttonServerStatus_Click" Style="{DynamicResource PrimaryToggleButton}" Height="25"  />
+                        <ToggleButton x:Name="buttonServerStatus" HorizontalAlignment="Right" FontSize="15" Content="Stopped" Width="100" Margin="10,0,0,0" ToolTip="Starts or stops the Adit server." Click="ButtonServerStatus_Click" Style="{DynamicResource PrimaryToggleButton}" Height="25"  />
                     </Grid>
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                         <TextBlock Text="Connected Clients:" FontSize="15"/>
@@ -30,15 +30,11 @@
                     </Grid>
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                         <TextBlock Text="Server Host:" FontSize="15"/>
-                        <TextBox x:Name="textHost" HorizontalAlignment="Right" Height="25"  Padding="0,1,0,0" TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The host clients will use to connect to this server."/>
+                        <TextBox x:Name="textHost" HorizontalAlignment="Right" Height="25"  Padding="0,1,0,0" TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The host clients will use to connect to this server." Text="{Binding Current.ServerHost, Mode=TwoWay}"/>
                     </Grid>
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                         <TextBlock Text="Server Port:" FontSize="15"/>
-                        <TextBox x:Name="textPort" HorizontalAlignment="Right" Height="25"  Padding="0,1,0,0" TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The port to use for incoming connections."/>
-                    </Grid>
-                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,20,0,0">
-                        <Image x:Name="imageCreateClientInfo" Source="/Adit;component/Assets/icons8-info-50.png" Cursor="Hand" Height="18" Width="18" Margin="0,0,110,0" HorizontalAlignment="Right" PreviewMouseDown="imageCreateClientInfo_PreviewMouseDown"></Image>
-                        <Button x:Name="buttonCreateClient" HorizontalAlignment="Right" FontSize="12" Content="Create Client" Height="25" Width="100" Margin="10,0,0,0" ToolTip="Click to copy the session ID into the clipboard." Style="{DynamicResource PrimaryButton}" Click="buttonCreateClient_Click"/>
+                        <TextBox x:Name="textPort" HorizontalAlignment="Right" Height="25"  Padding="0,1,0,0" TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The port to use for incoming connections." Text="{Binding Current.ServerPort}"/>
                     </Grid>
                 </StackPanel>
             </Grid>

@@ -13,12 +13,15 @@ namespace Adit.Shared_Code
 {
     public static class Initializer
     {
-        internal static void ParseCommandLineArgs(string[] args)
+        public static void ProcessCommandLineArgs(string[] args)
         {
-            
+            if (args.Contains("-notifier"))
+            {
+                Config.Current.StartupMode = Config.StartupModes.Notifier;
+            }
         }
 
-        internal static void CleanupTempFiles()
+        public static void CleanupTempFiles()
         {
             // Clean up temp files from previous file transfers.
             var di = new DirectoryInfo(Path.GetTempPath() + @"\Adit");
@@ -27,22 +30,22 @@ namespace Adit.Shared_Code
                 di.Delete(true);
             }
         }
-        internal static void SetGlobalErrorHandler()
+        public static void SetGlobalErrorHandler()
         {
             App.Current.DispatcherUnhandledException += DispatcherUnhandledException;
         }
         private static void DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            Utilities.WriteToLog(e.Exception, Settings.Current.StartupMode.ToString());
+            Utilities.WriteToLog(e.Exception, Config.Current.StartupMode.ToString());
             System.Windows.MessageBox.Show("There was an error from which Adit couldn't recover.  If the issue persists, please contact the developer.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        internal static void SetShutdownMode()
+        public static void SetShutdownMode()
         {
             App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             App.Current.Exit += (send, arg) =>
             {
-                Settings.Save();
+                Config.Save();
                 if (TrayIcon.Icon?.IsDisposed == false)
                 {
                     TrayIcon.Icon.Dispose();
@@ -50,19 +53,20 @@ namespace Adit.Shared_Code
             };
         }
 
-        internal static void ProcessConfiguration()
+        public static void ProcessConfiguration()
         {
-            if (string.IsNullOrWhiteSpace(Settings.Current.Configuration))
+            if (Config.Current.IsClientOnly)
             {
-                return;
+                MainWindow.Current.ConfigureUIForClient();
+                Config.Current.StartupMode = Config.StartupModes.Client;
             }
-            var config = Utilities.JSON.Deserialize<ClientConfiguration>(Settings.Current.Configuration);
-            ClientSettings.Current.Host = config.TargetServerHost;
-            ClientSettings.Current.Port = config.TargetServerPort;
-            MainWindow.Current.ConfigureForClient();
-            if (!config.IsViewerAvailable)
+            if (Config.Current.IsViewerHidden)
             {
                 MainWindow.Current.HideViewer();
+            }
+            if (Config.Current.IsAutoConnect)
+            {
+                // TODO
             }
         }
     }

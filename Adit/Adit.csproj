@@ -49,6 +49,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
@@ -73,21 +74,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Client_Code\ClientSettings.cs" />
-    <Compile Include="Client_Code\ClientSocketOut.cs" />
+    <Compile Include="Client_Code\AditClient.cs" />
+    <Compile Include="Client_Code\SocketMessageHandler.cs" />
     <Compile Include="Controls\ClosedToTrayBalloon.xaml.cs">
       <DependentUpon>ClosedToTrayBalloon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Configuration.cs" />
-    <Compile Include="Models\AditClient.cs" />
+    <Compile Include="Models\ClientConnection.cs" />
+    <Compile Include="Models\ClientSession.cs" />
     <Compile Include="Pages\AboutMain.xaml.cs">
       <DependentUpon>AboutMain.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ClientMain.xaml.cs">
       <DependentUpon>ClientMain.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DemoMain.xaml.cs">
-      <DependentUpon>DemoMain.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Notifier.xaml.cs">
       <DependentUpon>Notifier.xaml</DependentUpon>
@@ -98,10 +96,10 @@
     <Compile Include="Pages\ViewerMain.xaml.cs">
       <DependentUpon>ViewerMain.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Server_Code\ServerSettings.cs" />
     <Compile Include="Server_Code\AditServer.cs" />
+    <Compile Include="Server_Code\SocketMessageHandler.cs" />
     <Compile Include="Shared_Code\Initializer.cs" />
-    <Compile Include="Shared_Code\Settings.cs" />
+    <Compile Include="Shared_Code\Config.cs" />
     <Compile Include="Shared_Code\TrayIcon.cs" />
     <Compile Include="Shared_Code\Utilities.cs" />
     <Page Include="Controls\ClosedToTrayBalloon.xaml">
@@ -127,10 +125,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\ClientMain.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\DemoMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -210,6 +204,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\icons8-info-50.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Adit_Service.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets')" />

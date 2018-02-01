@@ -51,21 +51,21 @@ namespace Adit.Shared_Code
             item = new MenuItem() { Header = "Open Client" };
             item.Click += (send, arg) =>
             {
-                Settings.Current.StartupMode = Settings.StartupModes.Client;
+                Config.Current.StartupMode = Config.StartupModes.Client;
                 new MainWindow().Show();
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Viewer" };
             item.Click += (send, arg) =>
             {
-                Settings.Current.StartupMode = Settings.StartupModes.Viewer;
+                Config.Current.StartupMode = Config.StartupModes.Viewer;
                 new MainWindow().Show();
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Server" };
             item.Click += (send, arg) =>
             {
-                Settings.Current.StartupMode = Settings.StartupModes.Server;
+                Config.Current.StartupMode = Config.StartupModes.Server;
                 new MainWindow().Show();
             };
             Icon.ContextMenu.Items.Add(item);

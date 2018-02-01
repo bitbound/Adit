@@ -32,7 +32,7 @@ namespace Adit.Shared_Code
             tt = null;
         }
         
-        public byte[] TrimBytes(byte[] bytes)
+        public static byte[] TrimBytes(byte[] bytes)
         {
             // Loop backwards through array until the first non-zero byte is found.
             var firstZero = 0;

@@ -78,7 +78,7 @@ namespace InstaTech_Client
             }
             catch (Exception ex)
             {
-                Utilities.WriteToLog(ex, Settings.Current.StartupMode.ToString());
+                Utilities.WriteToLog(ex, Config.Current.StartupMode.ToString());
                 if (graphDC != IntPtr.Zero)
                 {
                     graphic.ReleaseHdc(graphDC);
@@ -189,12 +189,20 @@ namespace InstaTech_Client
 
                 // Byte array that indicates top left coordinates of the image.
                 newImgData = new byte[6];
-                newImgData[0] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(0, 2));
-                newImgData[1] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(2, 2));
-                newImgData[2] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(4, 2));
-                newImgData[3] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(0, 2));
-                newImgData[4] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(2, 2));
-                newImgData[5] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(4, 2));
+                //newImgData[0] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(0, 2));
+                //newImgData[1] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(2, 2));
+                //newImgData[2] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(4, 2));
+                //newImgData[3] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(0, 2));
+                //newImgData[4] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(2, 2));
+                //newImgData[5] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(4, 2));
+
+                newImgData[0] = (byte)(left % 1000000 / 10000);
+                newImgData[1] = (byte)(left % 10000 / 100);
+                newImgData[2] = (byte)(left % 100);
+                newImgData[3] = (byte)(top % 1000000 / 10000);
+                newImgData[4] = (byte)(top % 10000 / 100);
+                newImgData[5] = (byte)(top % 100);
+
 
                 boundingBox = new System.Drawing.Rectangle(left, top, right - left, bottom - top);
                 currentFrame.UnlockBits(bd1);

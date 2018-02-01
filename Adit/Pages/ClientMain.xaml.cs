@@ -2,7 +2,10 @@
 using Adit.Shared_Code;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -70,13 +73,13 @@ namespace Adit.Pages
             //    ShowToolTip(textFilesTransferred, "No files available.", Colors.Black);
             //}
         }
-        private async void MenuUpgrade_Click(object sender, RoutedEventArgs e)
+        private void MenuUpgrade_Click(object sender, RoutedEventArgs e)
         {
             //var services = System.ServiceProcess.ServiceController.GetServices();
-            //var itService = services.ToList().Find(sc => sc.ServiceName == "InstaTech_Service");
-            //if (itService != null)
+            //var aditService = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
+            //if (aditService != null)
             //{
-            //    System.Windows.MessageBox.Show("The InstaTech Service is already installed.  Please connect via Unattended Mode from the remote control.", "Service Already Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    System.Windows.MessageBox.Show("The Adit Service is already installed.  Please connect via Unattended Mode from the remote control.", "Service Already Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
             //    return;
             //}
             //if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
@@ -86,31 +89,31 @@ namespace Adit.Pages
             //}
             //try
             //{
-            //    File.WriteAllBytes(Path.Combine(Path.GetTempPath(), "InstaTech_Service.exe"), Properties.Resources.InstaTech_Service);
+            //    File.WriteAllBytes(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Adit_Service.exe"), Properties.Resources.Adit_Service);
             //}
             //catch
             //{
             //    System.Windows.MessageBox.Show("Failed to unpack the service into the temp directory.  Try clearing the temp directory.", "Write Failure", MessageBoxButton.OK, MessageBoxImage.Error);
             //    return;
             //}
-            //var psi = new ProcessStartInfo(Path.Combine(Path.GetTempPath(), "InstaTech_Service.exe"), "-install -once");
+            //var psi = new ProcessStartInfo(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Adit_Service.exe"), "-install -once");
             //psi.WindowStyle = ProcessWindowStyle.Hidden;
             //Process.Start(psi);
-            //await SocketSend(new
-            //{
-            //    Type = "ConnectUpgrade",
-            //    ComputerName = Environment.MachineName
-            //});
+            AditClient.Send(new
+            {
+                Type = "ConnectUpgrade",
+                ComputerName = Environment.MachineName
+            });
         }
 
         private void MenuUnattended_Click(object sender, RoutedEventArgs e)
         {
 
-            //if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
-            //{
-            //    System.Windows.MessageBox.Show("The client must be running as an administrator (i.e. elevated) in order to access unattended features.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //    return;
-            //}
+            if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+            {
+                System.Windows.MessageBox.Show("The client must be running as an administrator (i.e. elevated) in order to access unattended features.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             //new UnattendedWindow().ShowDialog();
         }
         private void MenuUAC_Click(object sender, RoutedEventArgs e)
@@ -122,7 +125,7 @@ namespace Adit.Pages
         {
             stackConnect.Visibility = Visibility.Collapsed;
             stackMain.Visibility = Visibility.Visible;
-            //InitWebSocket();
+            AditClient.Connect();
         }
 
         public void SessionStopped()
@@ -133,11 +136,11 @@ namespace Adit.Pages
             textPartnerStatus.Text = "Not Connected";
         }
 
-        private void RefreshUI()
+        public void RefreshUI()
         {
-            textHost.Text = ClientSettings.Current.Host;
-            textPort.Text = ClientSettings.Current.Port.ToString();
-            if (ClientSocketOut.TcpClient?.Connected == true)
+            textHost.Text = Config.Current.ClientHost;
+            textPort.Text = Config.Current.ClientPort.ToString();
+            if (AditClient.TcpClient?.Connected == true)
             {
                 stackConnect.Visibility = Visibility.Collapsed;
                 stackMain.Visibility = Visibility.Visible;

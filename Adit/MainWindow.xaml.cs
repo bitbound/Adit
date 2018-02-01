@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Linq;
+using Adit.Server_Code;
 
 namespace Adit
 {
@@ -31,54 +32,56 @@ namespace Adit
         public static MainWindow Current { get; private set; }
         public MainWindow()
         {
-            Initializer.SetGlobalErrorHandler();
-            Initializer.SetShutdownMode();
             InitializeComponent();
             Current = this;
-            Settings.Load();
-            Initializer.ParseCommandLineArgs(Environment.GetCommandLineArgs());
 
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             TrayIcon.Icon?.ShowCustomBalloon(new ClosedToTrayBalloon(), PopupAnimation.Fade, 5000);
+            Config.Save();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Initializer.SetGlobalErrorHandler();
+            Initializer.SetShutdownMode();
+            Config.Load();
             Initializer.ProcessConfiguration();
+            Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
             TrayIcon.Create();
-            switch (Settings.Current.StartupMode)
+            switch (Config.Current.StartupMode)
             {
-                case Settings.StartupModes.FirstRun:
+                case Config.StartupModes.Welcome:
                     welcomeToggle.IsChecked = true;
                     mainFrame.Navigate(new Welcome());
                     break;
-                case Settings.StartupModes.Client:
+                case Config.StartupModes.Client:
                     clientToggle.IsChecked = true;
                     mainFrame.Navigate(new ClientMain());
                     break;
-                case Settings.StartupModes.Server:
+                case Config.StartupModes.Server:
                     serverToggle.IsChecked = true;
                     mainFrame.Navigate(new ServerMain());
                     break;
-                case Settings.StartupModes.Viewer:
+                case Config.StartupModes.Viewer:
                     viewerToggle.IsChecked = true;
                     mainFrame.Navigate(new ViewerMain());
                     break;
-                case Settings.StartupModes.Notifier:
+                case Config.StartupModes.Notifier:
+                    mainFrame.Navigate(new Notifier());
                     break;
-                case Settings.StartupModes.Hidden:
+                case Config.StartupModes.Hidden:
                     break;
                 default:
                     break;
             }
         }
-        internal void HideViewer()
+        public void HideViewer()
         {
             viewerToggle.Visibility = Visibility.Collapsed;
         }
 
-        internal void ConfigureForClient()
+        public void ConfigureUIForClient()
         {
             welcomeToggle.Visibility = Visibility.Collapsed;
             serverToggle.Visibility = Visibility.Collapsed;
@@ -118,6 +121,7 @@ namespace Adit
                 button.IsChecked = false;
             }
             sender.IsChecked = true;
+            Config.Save();
         }
 
     }

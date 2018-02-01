@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adit.Shared_Code;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Adit"
         mc:Ignorable="d"
-        Title="Adit" Height="400" Width="600" Icon="Assets/icons8-connect-64.png" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Adit" Height="400" Width="550" Icon="Assets/icons8-connect-64.png" Loaded="Window_Loaded" Closing="Window_Closing" Background="White">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />

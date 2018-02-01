@@ -1,4 +1,5 @@
 ﻿using Adit.Server_Code;
+using Adit.Shared_Code;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,20 +30,20 @@ namespace Adit.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            refreshUI();
+            RefreshUI();
         }
-        private void buttonMenu_Click(object sender, RoutedEventArgs e)
+        private void ButtonMenu_Click(object sender, RoutedEventArgs e)
         {
             (sender as Button).ContextMenu.IsOpen = !(sender as Button).ContextMenu.IsOpen;
         }
 
 
-        private void imageCreateClientInfo_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void ImageCreateClientInfo_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             MessageBox.Show("Clients must be created from this screen in order to use this server.\r\n\r\nThe connection information is embedded in the client EXE so there is no configuration required for the end user.\r\n\r\nIf you update the host or port, you must create new clients.", "Create Client", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void buttonServerStatus_Click(object sender, RoutedEventArgs e)
+        private void ButtonServerStatus_Click(object sender, RoutedEventArgs e)
         {
             if (Server_Code.AditServer.IsEnabled)
             {
@@ -53,16 +54,15 @@ namespace Adit.Pages
                 }
                 AditServer.Stop();
             }
-            AditServer.Start();
-            refreshUI();
+            else
+            {
+                AditServer.Start();
+            }
+            RefreshUI();
         }
 
-        private void buttonCreateClient_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
-
-        private void refreshUI()
+        private void RefreshUI()
         {
             if (AditServer.IsEnabled)
             {
@@ -74,8 +74,8 @@ namespace Adit.Pages
                 buttonServerStatus.Content = "Stopped";
                 buttonServerStatus.IsChecked = false;
             }
-            textHost.Text = ServerSettings.Current.Host;
-            textPort.Text = ServerSettings.Current.Port.ToString();
+            textHost.Text = Config.Current.ServerHost;
+            textPort.Text = Config.Current.ServerPort.ToString();
             buttonConnectedClients.Content = AditServer.ClientCount.ToString();
         }
     }

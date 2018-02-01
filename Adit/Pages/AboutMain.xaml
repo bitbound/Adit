@@ -26,7 +26,6 @@
                         <Run>Icons by </Run>        
                         <Hyperlink Click="hyperIcons8_Click">https://icons8.com/</Hyperlink>
                     </TextBlock>
-                    <Button Content="OK" HorizontalAlignment="Right" Width="60" Height="30" IsCancel="True" IsDefault="True"/>
                 </Grid>
             </StackPanel>
         </Grid>

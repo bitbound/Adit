@@ -1,4 +1,5 @@
 ﻿using Adit.Models;
+using Adit.Pages;
 using Adit.Shared_Code;
 using System;
 using System.Collections.Generic;
@@ -22,10 +23,8 @@ namespace Adit.Server_Code
             }
             tcpListener = TcpListener.Create(Config.Current.ServerPort);
             bufferSize = tcpListener.Server.ReceiveBufferSize;
-            var acceptArgs = new SocketAsyncEventArgs();
-            acceptArgs.Completed += acceptClientCompleted;
             tcpListener.Start();
-            tcpListener.Server.AcceptAsync(acceptArgs);
+            handleServer();
         }
 
         public static bool IsEnabled
@@ -48,12 +47,22 @@ namespace Adit.Server_Code
         }
         private static void acceptClientCompleted(object sender, SocketAsyncEventArgs e)
         {
-            var aditClient = new ClientConnection();
-            aditClient.Socket = e.AcceptSocket;
-            clientList.Add(aditClient);
-            handleClient(aditClient);
+            if (e.SocketError == SocketError.Success)
+            {
+                var aditClient = new ClientConnection();
+                aditClient.Socket = e.AcceptSocket;
+                clientList.Add(aditClient);
+                ServerMain.Current.RefreshUICall();
+                handleClient(aditClient);
+                handleServer();
+            }
         }
-
+        private static void handleServer()
+        {
+            var acceptArgs = new SocketAsyncEventArgs();
+            acceptArgs.Completed += acceptClientCompleted;
+            tcpListener.Server.AcceptAsync(acceptArgs);
+        }
         private static void handleClient(ClientConnection aditClient)
         {
             var receiveBuffer = new byte[bufferSize];
@@ -65,20 +74,22 @@ namespace Adit.Server_Code
            
         }
 
-        public static void Stop()
-        {
-            throw new NotImplementedException();
-        }
-
         private static void receiveFromClientCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError != SocketError.Success)
             {
                 clientList.Remove(e.UserToken as ClientConnection);
+                ServerMain.Current.RefreshUICall();
                 return;
             }
             SocketMessageHandler.ProcessSocketMessage(e.Buffer);
             handleClient(e.UserToken as ClientConnection);
+        }
+
+
+        public static void Stop()
+        {
+            tcpListener.Stop();
         }
     }
 }

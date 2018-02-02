@@ -23,9 +23,11 @@ namespace Adit.Pages
     /// </summary>
     public partial class ServerMain : Page
     {
+        public static ServerMain Current { get; set; }
         public ServerMain()
         {
             InitializeComponent();
+            Current = this;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -53,6 +55,7 @@ namespace Adit.Pages
                     return;
                 }
                 AditServer.Stop();
+                RefreshUI();
             }
             else
             {
@@ -67,16 +70,20 @@ namespace Adit.Pages
             if (AditServer.IsEnabled)
             {
                 buttonServerStatus.Content = "Running";
-                buttonServerStatus.IsChecked = true;
+                buttonServerStatus.Background = new SolidColorBrush(Colors.LightSteelBlue);
             }
             else
             {
                 buttonServerStatus.Content = "Stopped";
-                buttonServerStatus.IsChecked = false;
+                buttonServerStatus.Background = new SolidColorBrush(Colors.White);
             }
             textHost.Text = Config.Current.ServerHost;
             textPort.Text = Config.Current.ServerPort.ToString();
             buttonConnectedClients.Content = AditServer.ClientCount.ToString();
+        }
+        public void RefreshUICall()
+        {
+            this.Dispatcher.Invoke(() => RefreshUI());
         }
     }
 }

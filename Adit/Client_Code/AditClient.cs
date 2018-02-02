@@ -39,7 +39,7 @@ namespace Adit.Client_Code
             {
                 MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            ClientMain.Current.RefreshUI();
+            ClientMain.Current.RefreshUICall();
             Send(new { Test = "hi" });
         }
     }

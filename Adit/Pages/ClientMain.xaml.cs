@@ -136,7 +136,7 @@ namespace Adit.Pages
             textPartnerStatus.Text = "Not Connected";
         }
 
-        public void RefreshUI()
+        private void RefreshUI()
         {
             textHost.Text = Config.Current.ClientHost;
             textPort.Text = Config.Current.ClientPort.ToString();
@@ -156,6 +156,10 @@ namespace Adit.Pages
                 textPartnerStatus.Foreground = new SolidColorBrush(Colors.Black);
                 textPartnerStatus.Text = "Not Connected";
             }
+        }
+        public void RefreshUICall()
+        {
+            this.Dispatcher.Invoke(() => RefreshUI());
         }
     }
 }

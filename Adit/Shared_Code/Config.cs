@@ -23,7 +23,8 @@ namespace Adit.Shared_Code
         public int ClientPort { get; set; } = 54765;
         public bool IsClientOnly { get; set; }
         public bool IsViewerHidden { get; set; }
-        public bool IsAutoConnect { get; set; }
+        public bool IsAutoConnectEnabled { get; set; }
+        public bool IsUACHandled { get; set; }
 
         public enum StartupModes
         {
@@ -37,11 +38,11 @@ namespace Adit.Shared_Code
         public static void Save()
         {
             var di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit"));
-            File.WriteAllText(Path.Combine(di.FullName, "GlobalSettings.json"), Utilities.JSON.Serialize(Config.Current));
+            File.WriteAllText(Path.Combine(di.FullName, "Config.json"), Utilities.JSON.Serialize(Config.Current));
         }
         public static void Load()
         {
-            var fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit", "GlobalSettings.json"));
+            var fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit", "Config.json"));
             if (fileInfo.Exists)
             {
                 var settings = Utilities.JSON.Deserialize<Config>(File.ReadAllText(fileInfo.FullName));

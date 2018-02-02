@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adit.Shared_Code;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,17 @@ namespace Adit.Pages
 
         private void HandleUAC_Click(object sender, MouseButtonEventArgs e)
         {
+            Config.Current.IsUACHandled = (sender as Controls.ToggleSwitch).IsOn;
+            Config.Save();
+        }
 
+        private void UnattendedAccess_Click(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+        private void RefreshUI()
+        {
+            toggleUAC.IsOn = Config.Current.IsUACHandled;
         }
     }
 }

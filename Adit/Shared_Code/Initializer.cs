@@ -64,7 +64,7 @@ namespace Adit.Shared_Code
             {
                 MainWindow.Current.HideViewer();
             }
-            if (Config.Current.IsAutoConnect)
+            if (Config.Current.IsAutoConnectEnabled)
             {
                 // TODO
             }

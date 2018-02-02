@@ -16,17 +16,24 @@
 
     <Grid>
         <StackPanel Margin="10">
-            <TextBlock Text="Adit Server" FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+            <TextBlock Text="Adit Options" FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,10,0,0"/>
             <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,15"/>
             <Grid>
                 <TextBlock><Run Text="Handle UAC Prompts:"/></TextBlock>
-                <Controls:ToggleSwitch HorizontalAlignment="Right" PreviewMouseLeftButtonUp="HandleUAC_Click">
+                <Controls:ToggleSwitch x:Name="toggleUAC" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="HandleUAC_Click" IsOn="True">
                     <Controls:ToggleSwitch.ToolTip>
                         <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, UAC prompts will be closed automatically if they appear.  This prevents the cursor from 'getting stuck,' since this client can't interact with UAC prompts.  To interact with UAC, install the service or do a one-time upgrade."/>
                     </Controls:ToggleSwitch.ToolTip>
                 </Controls:ToggleSwitch>
             </Grid>
-
+            <Grid Margin="0,10,0,0">
+                <TextBlock><Run Text="Unattended Access:"/></TextBlock>
+                <Controls:ToggleSwitch x:Name="toggleUnattendedAccess" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="UnattendedAccess_Click" IsOn="False">
+                    <Controls:ToggleSwitch.ToolTip>
+                        <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Installs or uninstalls a service that will allow unattended access to this computer."/>
+                    </Controls:ToggleSwitch.ToolTip>
+                </Controls:ToggleSwitch>
+            </Grid>
         </StackPanel>
     </Grid>
 </Page>

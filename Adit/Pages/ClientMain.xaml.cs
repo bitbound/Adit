@@ -73,7 +73,7 @@ namespace Adit.Pages
             //    ShowToolTip(textFilesTransferred, "No files available.", Colors.Black);
             //}
         }
-        private void MenuUpgrade_Click(object sender, RoutedEventArgs e)
+        private void UpgradeToService(object sender, RoutedEventArgs e)
         {
             //var services = System.ServiceProcess.ServiceController.GetServices();
             //var aditService = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
@@ -157,6 +157,7 @@ namespace Adit.Pages
                 textPartnerStatus.Text = "Not Connected";
             }
         }
+        // To refresh UI from other threads.
         public void RefreshUICall()
         {
             this.Dispatcher.Invoke(() => RefreshUI());

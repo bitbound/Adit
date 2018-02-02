@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Assets\icons8-connect-50.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\icons8-connect-64.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura, Version=1.6.2.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
@@ -79,6 +79,9 @@
     <Compile Include="Controls\ClosedToTrayBalloon.xaml.cs">
       <DependentUpon>ClosedToTrayBalloon.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ToggleSwitch.xaml.cs">
+      <DependentUpon>ToggleSwitch.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\ClientConnection.cs" />
     <Compile Include="Models\ClientSession.cs" />
     <Compile Include="Pages\AboutMain.xaml.cs">
@@ -89,6 +92,9 @@
     </Compile>
     <Compile Include="Pages\Notifier.xaml.cs">
       <DependentUpon>Notifier.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\OptionsMain.xaml.cs">
+      <DependentUpon>OptionsMain.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ServerMain.xaml.cs">
       <DependentUpon>ServerMain.xaml</DependentUpon>
@@ -103,6 +109,10 @@
     <Compile Include="Shared_Code\TrayIcon.cs" />
     <Compile Include="Shared_Code\Utilities.cs" />
     <Page Include="Controls\ClosedToTrayBalloon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ToggleSwitch.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -129,6 +139,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\Notifier.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\OptionsMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

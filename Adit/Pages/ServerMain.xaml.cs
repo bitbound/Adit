@@ -81,6 +81,7 @@ namespace Adit.Pages
             textPort.Text = Config.Current.ServerPort.ToString();
             buttonConnectedClients.Content = AditServer.ClientCount.ToString();
         }
+        // To refresh UI from other threads.
         public void RefreshUICall()
         {
             this.Dispatcher.Invoke(() => RefreshUI());

@@ -109,6 +109,11 @@ namespace Adit
             mainFrame.Navigate(new ViewerMain());
         }
 
+        private void Options_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleButtonClicked(sender as ToggleButton);
+            mainFrame.Navigate(new OptionsMain());
+        }
         private void About_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);

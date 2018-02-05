@@ -63,15 +63,15 @@ namespace Adit.Pages
 
         private void TextFilesTransferred_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //var di = new DirectoryInfo(Path.GetTempPath() + @"\InstaTech");
-            //if (di.Exists)
-            //{
-            //    Process.Start("explorer.exe", di.FullName);
-            //}
-            //else
-            //{
-            //    ShowToolTip(textFilesTransferred, "No files available.", Colors.Black);
-            //}
+            var di = new DirectoryInfo(System.IO.Path.GetTempPath() + @"\Adit");
+            if (di.Exists)
+            {
+                Process.Start("explorer.exe", di.FullName);
+            }
+            else
+            {
+                Utilities.ShowToolTip(textFilesTransferred, "No files available.", Colors.Black);
+            }
         }
         private void UpgradeToService(object sender, RoutedEventArgs e)
         {
@@ -99,11 +99,11 @@ namespace Adit.Pages
             //var psi = new ProcessStartInfo(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Adit_Service.exe"), "-install -once");
             //psi.WindowStyle = ProcessWindowStyle.Hidden;
             //Process.Start(psi);
-            AditClient.Send(new
-            {
-                Type = "ConnectUpgrade",
-                ComputerName = Environment.MachineName
-            });
+            //AditClient.Send(new
+            //{
+            //    Type = "ConnectUpgrade",
+            //    ComputerName = Environment.MachineName
+            //});
         }
 
         private void MenuUnattended_Click(object sender, RoutedEventArgs e)
@@ -121,46 +121,46 @@ namespace Adit.Pages
             //handleUAC = menuUAC.IsChecked;
         }
       
-        private void ConnectButtonClicked(object sender, RoutedEventArgs e)
+        private async void ConnectButtonClicked(object sender, RoutedEventArgs e)
         {
             stackConnect.Visibility = Visibility.Collapsed;
             stackMain.Visibility = Visibility.Visible;
-            AditClient.Connect();
+            await AditClient.Connect(Models.ConnectionTypes.Client);
         }
 
-        public void SessionStopped()
+        private void ButtonDisconnect_Click(object sender, RoutedEventArgs e)
         {
-            stackMain.Visibility = Visibility.Collapsed;
-            textPartnerStatus.FontWeight = FontWeights.Normal;
-            textPartnerStatus.Foreground = new SolidColorBrush(Colors.Black);
-            textPartnerStatus.Text = "Not Connected";
+            if (AditClient.TcpClient?.Client?.Connected == true)
+            {
+                AditClient.TcpClient.Close();
+            }
+            RefreshUI();
         }
 
         private void RefreshUI()
         {
             textHost.Text = Config.Current.ClientHost;
             textPort.Text = Config.Current.ClientPort.ToString();
-            if (AditClient.TcpClient?.Connected == true)
+            textSessionID.Text = AditClient.SessionID;
+            buttonPartnersConnected.Text = AditClient.PartnersConnected.ToString();
+            if (AditClient.TcpClient?.Client?.Connected == true)
             {
                 stackConnect.Visibility = Visibility.Collapsed;
                 stackMain.Visibility = Visibility.Visible;
-                textPartnerStatus.FontWeight = FontWeights.Bold;
-                textPartnerStatus.Foreground = new SolidColorBrush(Colors.Black);
-                textPartnerStatus.Text = "Connected";
             }
             else
             {
                 stackMain.Visibility = Visibility.Collapsed;
                 stackConnect.Visibility = Visibility.Visible;
-                textPartnerStatus.FontWeight = FontWeights.Normal;
-                textPartnerStatus.Foreground = new SolidColorBrush(Colors.Black);
-                textPartnerStatus.Text = "Not Connected";
             }
+            
         }
         // To refresh UI from other threads.
         public void RefreshUICall()
         {
             this.Dispatcher.Invoke(() => RefreshUI());
         }
+
+       
     }
 }

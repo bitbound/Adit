@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adit.Client_Code
+namespace Adit.Models
 {
-    public class SocketMessageHandler
+    public enum ConnectionTypes
     {
+        Client,
+        Service,
+        Viewer
     }
 }

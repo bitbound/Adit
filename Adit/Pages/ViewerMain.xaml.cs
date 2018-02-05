@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adit.Client_Code;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,24 @@ namespace Adit.Pages
     /// </summary>
     public partial class ViewerMain : Page
     {
+        public static ViewerMain Current { get; set; }
+        public Viewer Viewer { get; set; }
+
         public ViewerMain()
         {
             InitializeComponent();
+            Current = this;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            Viewer = new Viewer();
+            viewerFrame.Children.Add(Viewer);
+        }
+  
+        public void DrawImageCall(byte[] imageBytes)
+        {
+            this.Dispatcher.Invoke(() => Viewer.DrawImage(imageBytes));
         }
     }
 }

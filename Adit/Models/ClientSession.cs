@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adit.Shared_Code;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Adit.Models
 {
-    class ClientSession
+    public class ClientSession
     {
-        public string SessionID { get; set; } = Guid.NewGuid().ToString();
+        public string ID { get; set; } = Guid.NewGuid().ToString();
 
-        public List<ClientConnection> ConnectedClients { get; set; }
+        public string SessionID { get; set; } = Utilities.CreateSessionID();
+
+        public List<ClientConnection> ConnectedClients { get; set; } = new List<ClientConnection>();
     }
 }

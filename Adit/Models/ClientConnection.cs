@@ -1,4 +1,5 @@
-﻿using Adit.Shared_Code;
+﻿using Adit.Server_Code;
+using Adit.Shared_Code;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,11 @@ namespace Adit.Models
 {
     public class ClientConnection
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public Server_Code.ServerSocketMessages SocketMessageHandler { get; set; }
 
-        public ClientTypes ClientType { get; set; }
+        public string ID { get; set; } = Guid.NewGuid().ToString();
+
+        public ConnectionTypes ConnectionType { get; set; }
 
         public Socket Socket { get; set; }
 
@@ -23,13 +26,6 @@ namespace Adit.Models
             var socketArgs = new SocketAsyncEventArgs();
             socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
             Socket.SendAsync(socketArgs);
-        }
-
-        public enum ClientTypes
-        {
-            Client,
-            Service,
-            Viewer
         }
     }
 }

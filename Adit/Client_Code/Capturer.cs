@@ -78,7 +78,7 @@ namespace InstaTech_Client
             }
             catch (Exception ex)
             {
-                Utilities.WriteToLog(ex, Config.Current.StartupMode.ToString());
+                Utilities.WriteToLog(ex);
                 if (graphDC != IntPtr.Zero)
                 {
                     graphic.ReleaseHdc(graphDC);

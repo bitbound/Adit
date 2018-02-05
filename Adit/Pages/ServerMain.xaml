@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Adit.Pages"
       xmlns:Server_Code="clr-namespace:Adit.Server_Code" xmlns:Shared_Code="clr-namespace:Adit.Shared_Code" x:Class="Adit.Pages.ServerMain"
+      xmlns:Controls="clr-namespace:Adit.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="400"
       Title="Adit Server" Background="White" Loaded="Page_Loaded">
@@ -19,7 +20,7 @@
             <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Server Status:" FontSize="15"/>
-                <Button x:Name="buttonServerStatus" HorizontalAlignment="Right" Content="Stopped" Width="100" Margin="10,0,0,0" ToolTip="Starts or stops the Adit server." Click="ButtonServerStatus_Click" Style="{DynamicResource PrimaryButton}" Height="25"  />
+                <Controls:ToggleSwitch x:Name="toggleServerStatus" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ToggleServerStatus_Click" ToolTip="Starts or stops the Adit server." IsOn="False" />
             </Grid>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Connected Clients:" FontSize="15"/>

@@ -45,27 +45,31 @@ namespace Adit.Shared_Code
             item = new MenuItem() { Header = "Show" };
             item.Click += (send, arg) =>
             {
+                Config.Current.StartupMode = Config.StartupModes.Normal;
                 new MainWindow().Show();
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Client" };
             item.Click += (send, arg) =>
             {
-                Config.Current.StartupMode = Config.StartupModes.Client;
+                Config.Current.StartupMode = Config.StartupModes.Normal;
+                Config.Current.StartupTab = Config.StartupTabs.Client;
                 new MainWindow().Show();
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Viewer" };
             item.Click += (send, arg) =>
             {
-                Config.Current.StartupMode = Config.StartupModes.Viewer;
+                Config.Current.StartupMode = Config.StartupModes.Normal;
+                Config.Current.StartupTab = Config.StartupTabs.Viewer;
                 new MainWindow().Show();
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Server" };
             item.Click += (send, arg) =>
             {
-                Config.Current.StartupMode = Config.StartupModes.Server;
+                Config.Current.StartupMode = Config.StartupModes.Normal;
+                Config.Current.StartupTab = Config.StartupTabs.Server;
                 new MainWindow().Show();
             };
             Icon.ContextMenu.Items.Add(item);

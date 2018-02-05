@@ -32,7 +32,11 @@ namespace Adit.Pages
             Config.Save();
         }
 
-        private void UnattendedAccess_Click(object sender, MouseButtonEventArgs e)
+        private void ServiceInstalled_Click(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+        private void ServiceRunning_Click(object sender, MouseButtonEventArgs e)
         {
 
         }
@@ -40,5 +44,6 @@ namespace Adit.Pages
         {
             toggleUAC.IsOn = Config.Current.IsUACHandled;
         }
+
     }
 }

@@ -11,19 +11,18 @@ namespace Adit.Client_Code
     public class Viewer : FrameworkElement
     {
         private VisualCollection children;
+        public DrawingVisual DrawingSurface { get; set; } = new DrawingVisual();
 
         public Viewer()
         {
             children = new VisualCollection(this);
+            children.Add(DrawingSurface);
 
-            var visual = new DrawingVisual();
-            children.Add(visual);
-
-            using (var dc = visual.RenderOpen())
-            {
-                dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 0), new Point(400, 400));
-                dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 400), new Point(400, 0));
-            }
+            //using (var dc = DrawingSurface.RenderOpen())
+            //{
+            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 0), new Point(400, 400));
+            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 400), new Point(400, 0));
+            //}
             //mainGrid.Children.Add(new ViewingCanvas());
             //var visual = new DrawingVisual();
 
@@ -35,7 +34,9 @@ namespace Adit.Client_Code
             //new RenderTargetBitmap(300, 300,)
             //mainImage.Source = new BitmapImage(visual);
         }
-
+        public void DrawImage(byte[] imageBytes)
+        {
+        }
         protected override int VisualChildrenCount
         {
             get { return children.Count; }

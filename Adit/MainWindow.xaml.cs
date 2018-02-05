@@ -49,28 +49,36 @@ namespace Adit
             Initializer.ProcessConfiguration();
             Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
             TrayIcon.Create();
-            switch (Config.Current.StartupMode)
+            switch (Config.Current.StartupTab)
             {
-                case Config.StartupModes.Welcome:
+                case Config.StartupTabs.Welcome:
                     welcomeToggle.IsChecked = true;
                     mainFrame.Navigate(new Welcome());
                     break;
-                case Config.StartupModes.Client:
+                case Config.StartupTabs.Client:
                     clientToggle.IsChecked = true;
                     mainFrame.Navigate(new ClientMain());
                     break;
-                case Config.StartupModes.Server:
+                case Config.StartupTabs.Server:
                     serverToggle.IsChecked = true;
                     mainFrame.Navigate(new ServerMain());
                     break;
-                case Config.StartupModes.Viewer:
+                case Config.StartupTabs.Viewer:
                     viewerToggle.IsChecked = true;
                     mainFrame.Navigate(new ViewerMain());
+                    break;
+                default:
+                    break;
+            }
+            switch (Config.Current.StartupMode)
+            {
+                case Config.StartupModes.Normal:
                     break;
                 case Config.StartupModes.Notifier:
                     mainFrame.Navigate(new Notifier());
                     break;
-                case Config.StartupModes.Hidden:
+                case Config.StartupModes.Background:
+                    this.Close();
                     break;
                 default:
                     break;

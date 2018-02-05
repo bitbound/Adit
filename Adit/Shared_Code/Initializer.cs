@@ -15,9 +15,21 @@ namespace Adit.Shared_Code
     {
         public static void ProcessCommandLineArgs(string[] args)
         {
-            if (args.Contains("-notifier"))
+            if (args.Contains("-background"))
+            {
+                Config.Current.StartupMode = Config.StartupModes.Background;
+            }
+            else if (args.Contains("-notifier"))
             {
                 Config.Current.StartupMode = Config.StartupModes.Notifier;
+            }
+            else if (args.Contains("-install"))
+            {
+                // TODO
+            }
+            else if (args.Contains("-upgrade"))
+            {
+                // TODO
             }
         }
 
@@ -37,7 +49,7 @@ namespace Adit.Shared_Code
         private static void DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            Utilities.WriteToLog(e.Exception, Config.Current.StartupMode.ToString());
+            Utilities.WriteToLog(e.Exception);
             System.Windows.MessageBox.Show("There was an error from which Adit couldn't recover.  If the issue persists, please contact the developer.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         public static void SetShutdownMode()
@@ -58,7 +70,7 @@ namespace Adit.Shared_Code
             if (Config.Current.IsClientOnly)
             {
                 MainWindow.Current.ConfigureUIForClient();
-                Config.Current.StartupMode = Config.StartupModes.Client;
+                Config.Current.StartupTab = Config.StartupTabs.Client;
             }
             if (Config.Current.IsViewerHidden)
             {

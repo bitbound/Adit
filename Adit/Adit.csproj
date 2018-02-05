@@ -38,6 +38,16 @@
   <PropertyGroup>
     <ApplicationIcon>Assets\icons8-connect-64.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura, Version=1.6.2.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.1.6.2\lib\dotnet\Costura.dll</HintPath>
@@ -62,9 +72,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="ToggleSwitch, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WPF_ToggleSwitch.1.2.0\lib\net452\ToggleSwitch.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -75,7 +82,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Client_Code\AditClient.cs" />
-    <Compile Include="Client_Code\SocketMessageHandler.cs" />
+    <Compile Include="Client_Code\ClientSocketMessages.cs" />
     <Compile Include="Controls\ClosedToTrayBalloon.xaml.cs">
       <DependentUpon>ClosedToTrayBalloon.xaml</DependentUpon>
     </Compile>
@@ -84,6 +91,7 @@
     </Compile>
     <Compile Include="Models\ClientConnection.cs" />
     <Compile Include="Models\ClientSession.cs" />
+    <Compile Include="Models\ConnectionTypes.cs" />
     <Compile Include="Pages\AboutMain.xaml.cs">
       <DependentUpon>AboutMain.xaml</DependentUpon>
     </Compile>
@@ -103,7 +111,7 @@
       <DependentUpon>ViewerMain.xaml</DependentUpon>
     </Compile>
     <Compile Include="Server_Code\AditServer.cs" />
-    <Compile Include="Server_Code\SocketMessageHandler.cs" />
+    <Compile Include="Server_Code\ServerSocketMessages.cs" />
     <Compile Include="Shared_Code\Initializer.cs" />
     <Compile Include="Shared_Code\Config.cs" />
     <Compile Include="Shared_Code\TrayIcon.cs" />
@@ -189,9 +197,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Win32_Code\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Assets\HamburgerMenu_16x.png" />
   </ItemGroup>

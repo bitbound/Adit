@@ -13,8 +13,10 @@ namespace Adit.Server_Code
     public class AditServer
     {
         private static TcpListener tcpListener;
-        private static int bufferSize;
-        private static List<ClientConnection> clientList = new List<ClientConnection>();
+        private static int bufferSize = 9999999;
+        public static List<ClientConnection> ClientList { get; set; } = new List<ClientConnection>();
+        public static List<ClientSession> SessionList { get; set; } = new List<ClientSession>();
+
         public static void Start()
         {
             if (tcpListener?.Server?.IsBound == true)
@@ -22,9 +24,10 @@ namespace Adit.Server_Code
                 throw new Exception("Server is already running.");
             }
             tcpListener = TcpListener.Create(Config.Current.ServerPort);
-            bufferSize = tcpListener.Server.ReceiveBufferSize;
+            tcpListener.Server.ReceiveBufferSize = bufferSize;
+            tcpListener.Server.SendBufferSize = bufferSize;
             tcpListener.Start();
-            handleServer();
+            WaitForClientConnection();
         }
 
         public static bool IsEnabled
@@ -42,54 +45,89 @@ namespace Adit.Server_Code
         {
             get
             {
-                return clientList.Count;
+                return ClientList.Count;
             }
         }
-        private static void acceptClientCompleted(object sender, SocketAsyncEventArgs e)
+        private static void AcceptClientCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError == SocketError.Success)
             {
-                var aditClient = new ClientConnection();
-                aditClient.Socket = e.AcceptSocket;
-                clientList.Add(aditClient);
+                var clientConnection = new ClientConnection();
+                clientConnection.Socket = e.AcceptSocket;
+                clientConnection.SocketMessageHandler = new ServerSocketMessages(clientConnection);
+                ClientList.Add(clientConnection);
+                var session = new ClientSession();
+                session.ConnectedClients.Add(clientConnection);
+                SessionList.Add(session);
                 ServerMain.Current.RefreshUICall();
-                handleClient(aditClient);
-                handleServer();
+                WaitForClientMessage(clientConnection);
+                WaitForClientConnection();
             }
         }
-        private static void handleServer()
+        private static void WaitForClientConnection()
         {
             var acceptArgs = new SocketAsyncEventArgs();
-            acceptArgs.Completed += acceptClientCompleted;
+            acceptArgs.Completed += AcceptClientCompleted;
             tcpListener.Server.AcceptAsync(acceptArgs);
         }
-        private static void handleClient(ClientConnection aditClient)
+        private static void WaitForClientMessage(ClientConnection aditClient)
         {
             var receiveBuffer = new byte[bufferSize];
             var socketArgs = new SocketAsyncEventArgs();
             socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
             socketArgs.UserToken = aditClient;
-            socketArgs.Completed += receiveFromClientCompleted;
+            socketArgs.Completed += ReceiveFromClientCompleted;
             aditClient.Socket.ReceiveAsync(socketArgs);
-           
         }
 
-        private static void receiveFromClientCompleted(object sender, SocketAsyncEventArgs e)
+        private static void ReceiveFromClientCompleted(object sender, SocketAsyncEventArgs e)
         {
-            if (e.SocketError != SocketError.Success)
+            if ((e.UserToken as ClientConnection).Socket.Connected == false)
             {
-                clientList.Remove(e.UserToken as ClientConnection);
-                ServerMain.Current.RefreshUICall();
+                HandleClientDisconnect(e.UserToken as ClientConnection);
                 return;
             }
-            SocketMessageHandler.ProcessSocketMessage(e.Buffer);
-            handleClient(e.UserToken as ClientConnection);
+            if (e.SocketError != SocketError.Success)
+            {
+                Utilities.WriteToLog($"Socket error in AditServer: {e.SocketError.ToString()}");
+                HandleClientDisconnect(e.UserToken as ClientConnection);
+                return;
+            }
+            var result = (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e.Buffer);
+            if (!result)
+            {
+                HandleClientDisconnect(e.UserToken as ClientConnection);
+                return;
+            }
+            WaitForClientMessage(e.UserToken as ClientConnection);
         }
 
+        private static void HandleClientDisconnect(ClientConnection connection)
+        {
+            var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
+            if (session != null)
+            {
+                session.ConnectedClients.Remove(connection);
+                if (session.ConnectedClients.Count == 0)
+                {
+                    SessionList.Remove(session);
+                }
+            }
+            ClientList.Remove(connection);
+            ServerMain.Current.RefreshUICall();
+        }
 
         public static void Stop()
         {
             tcpListener.Stop();
+            foreach (var client in ClientList)
+            {
+                client.Socket.Close();
+            }
+            ClientList.Clear();
+            SessionList.Clear();
+            tcpListener.Server.Close();
+            ServerMain.Current.RefreshUICall();
         }
     }
 }

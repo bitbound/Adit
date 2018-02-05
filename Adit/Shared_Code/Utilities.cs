@@ -15,6 +15,12 @@ namespace Adit.Shared_Code
     class Utilities
     {
         public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer();
+
+        public static string CreateSessionID()
+        {
+            var random = new Random();
+            return random.Next(0, 999).ToString().PadLeft(3, '0') + " " + random.Next(0, 999).ToString().PadLeft(3, '0');
+        }
         public async static void ShowToolTip(FrameworkElement placementTarget, string message, System.Windows.Media.Color fontColor)
         {
             var tt = new System.Windows.Controls.ToolTip();
@@ -44,16 +50,21 @@ namespace Adit.Shared_Code
                     break;
                 }
             }
-            if (firstZero == 0)
-            {
-                throw new Exception("Byte array is empty.");
-            }
+           
             // Return non-empty bytes.
             return bytes.Take(firstZero).ToArray();
         }
-        public static void WriteToLog(Exception ex, string appMode)
+
+        public static bool IsJSONMessage(byte[] bytes)
+        {
+            return bytes[0] == 123 && bytes[1] == 34 && bytes[2] == 84 &&
+                    bytes[3] == 121 && bytes[4] == 112 && bytes[5] == 101 &&
+                    bytes[6] == 34 && bytes[7] == 58 && bytes[8] == 34;
+        }
+        public static void WriteToLog(Exception ex)
         {
             var exception = ex;
+            var appMode = Config.Current.StartupMode.ToString();
             var path = Path.GetTempPath() + $"Adit_{appMode}_Logs.txt";
             if (File.Exists(path))
             {
@@ -79,8 +90,9 @@ namespace Adit.Shared_Code
                 exception = exception.InnerException;
             }
         }
-        public static void WriteToLog(string Message, string appMode)
+        public static void WriteToLog(string Message)
         {
+            var appMode = Config.Current.StartupMode.ToString();
             var path = Path.GetTempPath() + $"Adit_{appMode}_Logs.txt";
             if (File.Exists(path))
             {

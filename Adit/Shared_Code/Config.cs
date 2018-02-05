@@ -13,7 +13,8 @@ namespace Adit.Shared_Code
     public class Config
     {
         public static Config Current { get; set; } = new Config();
-        public StartupModes StartupMode { get; set; } = StartupModes.Welcome;
+        public StartupModes StartupMode { get; set; } = StartupModes.Normal;
+        public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
 
         public string ServerHost { get; set; } = "localhost";
         public int ServerPort { get; set; } = 54765;
@@ -28,12 +29,16 @@ namespace Adit.Shared_Code
 
         public enum StartupModes
         {
+            Normal,
+            Notifier,
+            Background
+        }
+        public enum StartupTabs
+        {
             Welcome,
             Client,
             Server,
-            Viewer,
-            Notifier,
-            Hidden
+            Viewer
         }
         public static void Save()
         {
@@ -46,7 +51,7 @@ namespace Adit.Shared_Code
             if (fileInfo.Exists)
             {
                 var settings = Utilities.JSON.Deserialize<Config>(File.ReadAllText(fileInfo.FullName));
-                foreach (var prop in typeof(Config).GetProperties(BindingFlags.SetProperty))
+                foreach (var prop in typeof(Config).GetProperties())
                 {
                     var savedValue = prop.GetValue(settings);
                     if (savedValue != null)

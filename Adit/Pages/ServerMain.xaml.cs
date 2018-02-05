@@ -45,37 +45,35 @@ namespace Adit.Pages
             MessageBox.Show("Clients must be created from this screen in order to use this server.\r\n\r\nThe connection information is embedded in the client EXE so there is no configuration required for the end user.\r\n\r\nIf you update the host or port, you must create new clients.", "Create Client", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void ButtonServerStatus_Click(object sender, RoutedEventArgs e)
+
+        private void ToggleServerStatus_Click(object sender, MouseButtonEventArgs e)
         {
             if (Server_Code.AditServer.IsEnabled)
             {
+                e.Handled = true;
                 var result = MessageBox.Show("Your server is currently running.  Are you sure you want to stop it?", "Confirm Shutdown", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     return;
                 }
                 AditServer.Stop();
-                RefreshUI();
+                toggleServerStatus.IsOn = false;
             }
             else
             {
                 AditServer.Start();
             }
-            RefreshUI();
         }
-
 
         private void RefreshUI()
         {
             if (AditServer.IsEnabled)
             {
-                buttonServerStatus.Content = "Running";
-                buttonServerStatus.Background = new SolidColorBrush(Colors.LightSteelBlue);
+                toggleServerStatus.IsOn = true;
             }
             else
             {
-                buttonServerStatus.Content = "Stopped";
-                buttonServerStatus.Background = new SolidColorBrush(Colors.White);
+                toggleServerStatus.IsOn = false;
             }
             textHost.Text = Config.Current.ServerHost;
             textPort.Text = Config.Current.ServerPort.ToString();
@@ -86,5 +84,6 @@ namespace Adit.Pages
         {
             this.Dispatcher.Invoke(() => RefreshUI());
         }
+
     }
 }

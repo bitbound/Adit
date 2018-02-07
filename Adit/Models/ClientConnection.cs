@@ -13,8 +13,6 @@ namespace Adit.Models
     {
         public ServerSocketMessages SocketMessageHandler { get; set; }
 
-        public SocketAsyncEventArgs SocketReceiveEventArgs { get; set; }
-
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
         public ConnectionTypes ConnectionType { get; set; }
@@ -24,7 +22,6 @@ namespace Adit.Models
         public void Dispose()
         {
             SocketMessageHandler = null;
-            SocketReceiveEventArgs.Dispose();
             if (Socket?.Connected == true)
             {
                 Socket.Close();

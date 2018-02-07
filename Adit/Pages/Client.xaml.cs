@@ -36,6 +36,7 @@ namespace Adit.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            
             if (Config.Current.IsAutoConnectEnabled)
             {
                 // TODO
@@ -49,11 +50,6 @@ namespace Adit.Pages
             Utilities.ShowToolTip(textSessionID, "Copied to clipboard!", Colors.Green);
 
         }
-        private void ButtonMenu_Click(object sender, RoutedEventArgs e)
-        {
-            buttonMenu.ContextMenu.IsOpen = !buttonMenu.ContextMenu.IsOpen;
-        }
-
         private void TextAgentStatus_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             //if (capturing)

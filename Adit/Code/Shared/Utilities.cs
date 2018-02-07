@@ -38,22 +38,6 @@ namespace Adit.Code.Shared
             tt = null;
         }
         
-        public static byte[] TrimBytes(byte[] bytes)
-        {
-            // Loop backwards through array until the first non-zero byte is found.
-            var firstZero = 0;
-            for (int i = bytes.Length - 1; i >= 0; i--)
-            {
-                if (bytes[i] != 0)
-                {
-                    firstZero = i + 1;
-                    break;
-                }
-            }
-           
-            // Return non-empty bytes.
-            return bytes.Take(firstZero).ToArray();
-        }
 
         public static bool IsjsonData(byte[] bytes)
         {

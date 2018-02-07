@@ -45,10 +45,13 @@ namespace Adit.Code.Viewer
                 }
                 socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
+                socketArgs.Completed += ReceiveFromServerCompleted;
             }
             catch
             {
                 MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                Pages.Viewer.Current.RefreshUICall();
+                return;
             }
             SocketMessageHandler = new ViewerSocketMessages(TcpClient.Client);
             WaitForServerMessage();
@@ -57,13 +60,13 @@ namespace Adit.Code.Viewer
 
         private static void WaitForServerMessage()
         {
-            socketArgs.Completed += ReceiveFromServerCompleted;
+            //socketArgs.Completed += ReceiveFromServerCompleted;
             var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
             if (!willFireCallback)
             {
                 ReceiveFromServerCompleted(TcpClient.Client, socketArgs);
             }
-            Pages.Client.Current.RefreshUICall();
+            Pages.Viewer.Current.RefreshUICall();
         }
 
 
@@ -75,7 +78,7 @@ namespace Adit.Code.Viewer
                 Pages.Viewer.Current.RefreshUICall();
                 return;
             }
-            var result = SocketMessageHandler.ProcessSocketMessage(e.Buffer);
+            var result = SocketMessageHandler.ProcessSocketMessage(e);
             if (!result)
             {
                 TcpClient?.Dispose();

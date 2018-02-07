@@ -55,18 +55,18 @@ namespace Adit.Code.Server
         {
             if (e.SocketError == SocketError.Success)
             {
-                // Create ClientConnection and add to list.
                 var clientConnection = new ClientConnection();
                 clientConnection.Socket = e.AcceptSocket;
                 clientConnection.SocketMessageHandler = new ServerSocketMessages(clientConnection);
                 ClientList.Add(clientConnection);
 
-                clientConnection.SocketReceiveEventArgs = new SocketAsyncEventArgs();
-                clientConnection.SocketReceiveEventArgs.SetBuffer(new byte[bufferSize], 0, bufferSize);
-                clientConnection.SocketReceiveEventArgs.UserToken = clientConnection;
+                var socketArgs = new SocketAsyncEventArgs();
+                socketArgs.SetBuffer(new byte[bufferSize], 0, bufferSize);
+                socketArgs.UserToken = clientConnection;
+                socketArgs.Completed += ReceiveFromClientCompleted;
 
                 Pages.Server.Current.RefreshUICall();
-                WaitForClientMessage(clientConnection.SocketReceiveEventArgs);
+                WaitForClientMessage(socketArgs);
                 WaitForClientConnection();
             }
         }
@@ -86,7 +86,7 @@ namespace Adit.Code.Server
         private static void WaitForClientMessage(SocketAsyncEventArgs e)
         {
             var aditClient = (e.UserToken as ClientConnection);
-            e.Completed += ReceiveFromClientCompleted;
+            //e.Completed += ReceiveFromClientCompleted;
             var willFireCallback = aditClient.Socket.ReceiveAsync(e);
             if (!willFireCallback)
             {
@@ -98,27 +98,27 @@ namespace Adit.Code.Server
         {
             if ((e.UserToken as ClientConnection).Socket.Connected == false)
             {
-                HandleClientDisconnect(e.UserToken as ClientConnection);
+                HandleClientDisconnect(e);
                 return;
             }
             if (e.SocketError != SocketError.Success)
             {
                 Utilities.WriteToLog($"Socket error in AditServer: {e.SocketError.ToString()}");
-                HandleClientDisconnect(e.UserToken as ClientConnection);
+                HandleClientDisconnect(e);
                 return;
             }
-            var result = (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e.Buffer);
+            var result = (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e);
             if (!result)
             {
-                HandleClientDisconnect(e.UserToken as ClientConnection);
+                HandleClientDisconnect(e);
                 return;
             }
-            
             WaitForClientMessage(e);
         }
 
-        private static void HandleClientDisconnect(ClientConnection connection)
+        private static void HandleClientDisconnect(SocketAsyncEventArgs socketArgs)
         {
+            var connection = socketArgs.UserToken as ClientConnection;
             var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
             if (session != null)
             {
@@ -130,6 +130,7 @@ namespace Adit.Code.Server
             }
             ClientList.Remove(connection);
             connection.Dispose();
+            socketArgs.Dispose();
             Pages.Server.Current.RefreshUICall();
         }
 

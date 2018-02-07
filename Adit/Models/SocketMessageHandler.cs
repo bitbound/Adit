@@ -34,13 +34,13 @@ namespace Adit.Models
             });
         }
 
-        public bool ProcessSocketMessage(byte[] buffer)
+        public bool ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
         {
-            var trimmedBuffer = Utilities.TrimBytes(buffer);
-            if (trimmedBuffer.Count() == 0)
+            if (socketArgs.BytesTransferred == 0)
             {
                 return false;
             }
+            var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
             if (Utilities.IsjsonData(trimmedBuffer))
             {
                 var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
@@ -56,7 +56,7 @@ namespace Adit.Models
                     catch (Exception ex)
                     {
                         Utilities.WriteToLog(ex);
-                        throw ex;
+                        return false;
                     }
                 }
             }

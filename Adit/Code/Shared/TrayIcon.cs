@@ -23,7 +23,15 @@ namespace Adit.Code.Shared
             Icon.IconSource = new BitmapImage(new Uri("pack://application:,,,/Assets/icons8-connect-64.ico"));
             CreateContextMenu();
             Icon.TrayMouseDoubleClick += (send, arg) => {
-                new MainWindow().Show();
+                if (MainWindow.Current.IsLoaded)
+                {
+                    MainWindow.Current.Show();
+                    MainWindow.Current.Activate();
+                }
+                else
+                {
+                    new MainWindow().Show();
+                }
             };
             Icon.TrayRightMouseUp += (send, arg) => {
                 if (MainWindow.Current.IsVisible == true)
@@ -46,7 +54,15 @@ namespace Adit.Code.Shared
             item.Click += (send, arg) =>
             {
                 Config.Current.StartupMode = Config.StartupModes.Normal;
-                new MainWindow().Show();
+                if (MainWindow.Current.IsLoaded)
+                {
+                    MainWindow.Current.Show();
+                    MainWindow.Current.Activate();
+                }
+                else
+                {
+                    new MainWindow().Show();
+                }
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Client" };
@@ -54,7 +70,15 @@ namespace Adit.Code.Shared
             {
                 Config.Current.StartupMode = Config.StartupModes.Normal;
                 Config.Current.StartupTab = Config.StartupTabs.Client;
-                new MainWindow().Show();
+                if (MainWindow.Current.IsLoaded)
+                {
+                    MainWindow.Current.Show();
+                    MainWindow.Current.Activate();
+                }
+                else
+                {
+                    new MainWindow().Show();
+                }
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Viewer" };
@@ -62,7 +86,15 @@ namespace Adit.Code.Shared
             {
                 Config.Current.StartupMode = Config.StartupModes.Normal;
                 Config.Current.StartupTab = Config.StartupTabs.Viewer;
-                new MainWindow().Show();
+                if (MainWindow.Current.IsLoaded)
+                {
+                    MainWindow.Current.Show();
+                    MainWindow.Current.Activate();
+                }
+                else
+                {
+                    new MainWindow().Show();
+                }
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Open Server" };
@@ -70,7 +102,15 @@ namespace Adit.Code.Shared
             {
                 Config.Current.StartupMode = Config.StartupModes.Normal;
                 Config.Current.StartupTab = Config.StartupTabs.Server;
-                new MainWindow().Show();
+                if (MainWindow.Current.IsLoaded)
+                {
+                    MainWindow.Current.Show();
+                    MainWindow.Current.Activate();
+                }
+                else
+                {
+                    new MainWindow().Show();
+                }
             };
             Icon.ContextMenu.Items.Add(item);
             item = new MenuItem() { Header = "Exit" };

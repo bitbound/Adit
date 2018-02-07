@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Adit.Client_Code
+namespace Adit.Code.Viewer
 {
-    public class Viewer : FrameworkElement
+    public class ViewerSurface : FrameworkElement
     {
         private VisualCollection children;
         public DrawingVisual DrawingSurface { get; set; } = new DrawingVisual();
 
-        public Viewer()
+        public ViewerSurface()
         {
             children = new VisualCollection(this);
             children.Add(DrawingSurface);

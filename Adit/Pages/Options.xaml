@@ -5,13 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:Controls="clr-namespace:Adit.Controls"
       xmlns:local="clr-namespace:Adit.Pages"
-      xmlns:Shared_Code="clr-namespace:Adit.Shared_Code" x:Class="Adit.Pages.OptionsMain"
+      xmlns:Code.Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.Pages.Options"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="400"
       Title="Adit Options" Background="White">
 
     <Page.DataContext>
-        <Shared_Code:Config/>
+        <Code.Shared:Config/>
     </Page.DataContext>
 
     <Grid>

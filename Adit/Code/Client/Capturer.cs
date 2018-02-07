@@ -1,5 +1,5 @@
 ﻿using Adit.Pages;
-using Adit.Shared_Code;
+using Adit.Code.Shared;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using Win32_Classes;
 
-namespace InstaTech_Client
+namespace Adit.Code.Client
 {
     public class Capturer
     {

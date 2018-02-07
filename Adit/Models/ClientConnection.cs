@@ -1,5 +1,5 @@
-﻿using Adit.Server_Code;
-using Adit.Shared_Code;
+﻿using Adit.Code.Server;
+using Adit.Code.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 
 namespace Adit.Models
 {
-    public class ClientConnection
+    public class ClientConnection : IDisposable
     {
-        public Server_Code.ServerSocketMessages SocketMessageHandler { get; set; }
+        public ServerSocketMessages SocketMessageHandler { get; set; }
+
+        public SocketAsyncEventArgs SocketReceiveEventArgs { get; set; }
 
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
@@ -19,13 +21,27 @@ namespace Adit.Models
 
         public Socket Socket { get; set; }
 
+        public void Dispose()
+        {
+            SocketMessageHandler = null;
+            SocketReceiveEventArgs.Dispose();
+            if (Socket?.Connected == true)
+            {
+                Socket.Close();
+            }
+            if (Socket != null)
+            {
+                Socket.Dispose();
+            }
+        }
+
         public void Send(dynamic jsonData)
         {
             string jsonRequest = Utilities.JSON.Serialize(jsonData);
-            byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
-            var socketArgs = new SocketAsyncEventArgs();
-            socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-            Socket.SendAsync(socketArgs);
+            var outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
+            var socketSendEventArgs = new SocketAsyncEventArgs();
+            socketSendEventArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
+            Socket.SendAsync(socketSendEventArgs);
         }
     }
 }

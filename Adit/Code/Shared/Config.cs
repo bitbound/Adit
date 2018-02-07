@@ -1,6 +1,4 @@
-﻿using Adit.Client_Code;
-using Adit.Server_Code;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adit.Shared_Code
+namespace Adit.Code.Shared
 {
     public class Config
     {
@@ -23,9 +21,14 @@ namespace Adit.Shared_Code
         public string ClientHost { get; set; } = "localhost";
         public int ClientPort { get; set; } = 54765;
         public bool IsClientOnly { get; set; }
+        public bool IsTargetServerConfigurable { get; set; } = true;
         public bool IsViewerHidden { get; set; }
         public bool IsAutoConnectEnabled { get; set; }
         public bool IsUACHandled { get; set; }
+
+
+        public string ViewerHost { get; set; } = "localhost";
+        public int ViewerPort { get; set; } = 54765;
 
         public enum StartupModes
         {

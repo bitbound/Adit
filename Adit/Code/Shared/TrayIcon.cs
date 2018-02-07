@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace Adit.Shared_Code
+namespace Adit.Code.Shared
 {
     public static class TrayIcon
     {

@@ -1,4 +1,4 @@
-﻿<Page x:Class="Adit.Pages.AboutMain"
+﻿<Page x:Class="Adit.Pages.About"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -14,13 +14,13 @@
                 <TextBlock Text=" Adit" Margin="0, 0, 0, 10" FontWeight="Bold" FontSize="15"/>
                 <TextBlock Margin="0, 0, 0, 10">
                 <TextBlock Text="Version "></TextBlock>
-                <TextBlock Text="{Binding Version, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AboutMain}}}"></TextBlock>
+                <TextBlock Text="{Binding Version, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:About}}}"></TextBlock>
             </TextBlock>
                 <TextBlock Margin="0, 0, 0, 10" >
                 <TextBlock>Website: </TextBlock>
                 <Hyperlink x:Name="hyperAditWebsite" Click="hyperAditWebsite_Click">http://invis.me</Hyperlink>
             </TextBlock>
-                <TextBox Height="120" Margin="0, 0, 0, 5" TextWrapping="Wrap" Text="Adit is a free remote access solution.  Customization is available from the developer.  Please visit the website for more information.&#x0a;&#x0a;Adit uses the following third party packages:&#x0a;&#x0a;Fody (https://github.com/Fody/Fody)&#x0a;&#x0a;Costura.Fody (https://github.com/Fody/Costura)" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+                <TextBox Height="120" Margin="0, 0, 0, 5" TextWrapping="Wrap" Text="Adit is a free remote access solution.  Customization is available from the developer.  Please visit the website for more information.&#x0a;&#x0a;Adit uses the following third party packages:&#x0a;&#x0a;Fody (https://github.com/Fody/Fody)&#x0a;&#x0a;Costura.Fody (https://github.com/Fody/Costura)&#x0a;&#x0a;WPF NotifyIcon (http://www.hardcodet.net/wpf-notifyicon)" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
                 <Grid>
                     <TextBlock>
                         <Run>Icons by </Run>        

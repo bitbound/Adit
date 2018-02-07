@@ -35,18 +35,18 @@ namespace Adit.Controls
                 {
                     buttonToggle.Tag = "On";
                     borderToggle.Background = new SolidColorBrush(Colors.Gray);
-                    var ca = new ColorAnimation(Colors.DeepSkyBlue, TimeSpan.FromSeconds(.25));
+                    var ca = new ColorAnimation(Colors.DeepSkyBlue, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                     borderToggle.Background.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-                    var da = new DoubleAnimation(10, TimeSpan.FromSeconds(.25));
+                    var da = new DoubleAnimation(10, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                     translateTransform.BeginAnimation(TranslateTransform.XProperty, da);
                 }
                 else
                 {
                     buttonToggle.Tag = "Off";
                     borderToggle.Background = new SolidColorBrush(Colors.DeepSkyBlue);
-                    var ca = new ColorAnimation(Colors.Gray, TimeSpan.FromSeconds(.25));
+                    var ca = new ColorAnimation(Colors.Gray, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                     borderToggle.Background.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-                    var da = new DoubleAnimation(-10, TimeSpan.FromSeconds(.25));
+                    var da = new DoubleAnimation(-10, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                     translateTransform.BeginAnimation(TranslateTransform.XProperty, da);
                 }
                 Switched(this, EventArgs.Empty);
@@ -55,22 +55,22 @@ namespace Adit.Controls
 
         private void buttonToggle_Click(object sender, RoutedEventArgs e)
         {
-            if (buttonToggle.Tag.ToString() == "Off")
+            if (!IsOn)
             {
                 buttonToggle.Tag = "On";
                 borderToggle.Background = new SolidColorBrush(Colors.Gray);
-                var ca = new ColorAnimation(Colors.SkyBlue, TimeSpan.FromSeconds(.25));
+                var ca = new ColorAnimation(Colors.SkyBlue, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                 borderToggle.Background.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-                var da = new DoubleAnimation(10, TimeSpan.FromSeconds(.25));
+                var da = new DoubleAnimation(10, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                 translateTransform.BeginAnimation(TranslateTransform.XProperty, da);
             }
             else
             {
                 buttonToggle.Tag = "Off";
                 borderToggle.Background = new SolidColorBrush(Colors.SkyBlue);
-                var ca = new ColorAnimation(Colors.Gray, TimeSpan.FromSeconds(.25));
+                var ca = new ColorAnimation(Colors.Gray, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                 borderToggle.Background.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-                var da = new DoubleAnimation(-10, TimeSpan.FromSeconds(.25));
+                var da = new DoubleAnimation(-10, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
                 translateTransform.BeginAnimation(TranslateTransform.XProperty, da);
             }
             Switched(this, EventArgs.Empty);

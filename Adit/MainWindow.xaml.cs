@@ -1,7 +1,7 @@
-﻿using Adit.Client_Code;
+﻿using Adit.Code.Client;
 using Adit.Controls;
 using Adit.Pages;
-using Adit.Shared_Code;
+using Adit.Code.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Linq;
-using Adit.Server_Code;
+using Adit.Code.Server;
 
 namespace Adit
 {
@@ -46,9 +46,29 @@ namespace Adit
             Initializer.SetGlobalErrorHandler();
             Initializer.SetShutdownMode();
             Config.Load();
-            Initializer.ProcessConfiguration();
             Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
             TrayIcon.Create();
+
+            ProcessConfiguration();
+        }
+
+        private void ProcessConfiguration()
+        {
+            if (Config.Current.IsClientOnly)
+            {
+                welcomeToggle.Visibility = Visibility.Collapsed;
+                serverToggle.Visibility = Visibility.Collapsed;
+                Config.Current.StartupTab = Config.StartupTabs.Client;
+            }
+            if (Config.Current.IsViewerHidden)
+            {
+                viewerToggle.Visibility = Visibility.Collapsed;
+            }
+            if (Config.Current.IsAutoConnectEnabled)
+            {
+                // TODO
+            }
+
             switch (Config.Current.StartupTab)
             {
                 case Config.StartupTabs.Welcome:
@@ -57,15 +77,15 @@ namespace Adit
                     break;
                 case Config.StartupTabs.Client:
                     clientToggle.IsChecked = true;
-                    mainFrame.Navigate(new ClientMain());
+                    mainFrame.Navigate(new Client());
                     break;
                 case Config.StartupTabs.Server:
                     serverToggle.IsChecked = true;
-                    mainFrame.Navigate(new ServerMain());
+                    mainFrame.Navigate(new Server());
                     break;
                 case Config.StartupTabs.Viewer:
                     viewerToggle.IsChecked = true;
-                    mainFrame.Navigate(new ViewerMain());
+                    mainFrame.Navigate(new Pages.Viewer());
                     break;
                 default:
                     break;
@@ -84,16 +104,6 @@ namespace Adit
                     break;
             }
         }
-        public void HideViewer()
-        {
-            viewerToggle.Visibility = Visibility.Collapsed;
-        }
-
-        public void ConfigureUIForClient()
-        {
-            welcomeToggle.Visibility = Visibility.Collapsed;
-            serverToggle.Visibility = Visibility.Collapsed;
-        }
 
         private void Welcome_Click(object sender, RoutedEventArgs e)
         {
@@ -104,28 +114,28 @@ namespace Adit
         private void Server_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
-            mainFrame.Navigate(new ServerMain());
+            mainFrame.Navigate(new Server());
         }
         private void Client_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
-            mainFrame.Navigate(new ClientMain());
+            mainFrame.Navigate(new Client());
         }
         private void Viewer_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
-            mainFrame.Navigate(new ViewerMain());
+            mainFrame.Navigate(new Pages.Viewer());
         }
 
         private void Options_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
-            mainFrame.Navigate(new OptionsMain());
+            mainFrame.Navigate(new Options());
         }
         private void About_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
-            mainFrame.Navigate(new AboutMain());
+            mainFrame.Navigate(new About());
         }
         private void ToggleButtonClicked(ToggleButton sender)
         {

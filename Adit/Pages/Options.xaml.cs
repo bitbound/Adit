@@ -1,4 +1,4 @@
-﻿using Adit.Shared_Code;
+﻿using Adit.Code.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +19,9 @@ namespace Adit.Pages
     /// <summary>
     /// Interaction logic for OptionsMain.xaml
     /// </summary>
-    public partial class OptionsMain : Page
+    public partial class Options : Page
     {
-        public OptionsMain()
+        public Options()
         {
             InitializeComponent();
         }

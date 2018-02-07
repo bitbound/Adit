@@ -1,5 +1,5 @@
-﻿using Adit.Server_Code;
-using Adit.Shared_Code;
+﻿using Adit.Code.Server;
+using Adit.Code.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +21,10 @@ namespace Adit.Pages
     /// <summary>
     /// Interaction logic for ServerMain.xaml
     /// </summary>
-    public partial class ServerMain : Page
+    public partial class Server : Page
     {
-        public static ServerMain Current { get; set; }
-        public ServerMain()
+        public static Server Current { get; set; }
+        public Server()
         {
             InitializeComponent();
             Current = this;
@@ -48,7 +48,7 @@ namespace Adit.Pages
 
         private void ToggleServerStatus_Click(object sender, MouseButtonEventArgs e)
         {
-            if (Server_Code.AditServer.IsEnabled)
+            if (Code.Server.AditServer.IsEnabled)
             {
                 e.Handled = true;
                 var result = MessageBox.Show("Your server is currently running.  Are you sure you want to stop it?", "Confirm Shutdown", MessageBoxButton.YesNo, MessageBoxImage.Warning);

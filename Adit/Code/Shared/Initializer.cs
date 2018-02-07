@@ -1,5 +1,4 @@
-﻿using Adit.Client_Code;
-using Adit.Models;
+﻿using Adit.Models;
 using Adit.Pages;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Adit.Shared_Code
+namespace Adit.Code.Shared
 {
     public static class Initializer
     {
@@ -63,23 +62,6 @@ namespace Adit.Shared_Code
                     TrayIcon.Icon.Dispose();
                 }
             };
-        }
-
-        public static void ProcessConfiguration()
-        {
-            if (Config.Current.IsClientOnly)
-            {
-                MainWindow.Current.ConfigureUIForClient();
-                Config.Current.StartupTab = Config.StartupTabs.Client;
-            }
-            if (Config.Current.IsViewerHidden)
-            {
-                MainWindow.Current.HideViewer();
-            }
-            if (Config.Current.IsAutoConnectEnabled)
-            {
-                // TODO
-            }
         }
     }
 }

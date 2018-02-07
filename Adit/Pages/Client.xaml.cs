@@ -1,5 +1,5 @@
-﻿using Adit.Client_Code;
-using Adit.Shared_Code;
+﻿using Adit.Code.Client;
+using Adit.Code.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,11 +23,11 @@ namespace Adit.Pages
     /// <summary>
     /// Interaction logic for ClientMain.xaml
     /// </summary>
-    public partial class ClientMain : Page
+    public partial class Client : Page
     {
-        public static ClientMain Current { get; set; }
+        public static Client Current { get; set; }
 
-        public ClientMain()
+        public Client()
         {
             InitializeComponent();
             Current = this;
@@ -36,6 +36,10 @@ namespace Adit.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            if (Config.Current.IsAutoConnectEnabled)
+            {
+                // TODO
+            }
             RefreshUI();
         }
         private void TextSessionID_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -125,7 +129,7 @@ namespace Adit.Pages
         {
             stackConnect.Visibility = Visibility.Collapsed;
             stackMain.Visibility = Visibility.Visible;
-            await AditClient.Connect(Models.ConnectionTypes.Client);
+            await AditClient.Connect();
         }
 
         private void ButtonDisconnect_Click(object sender, RoutedEventArgs e)
@@ -133,6 +137,7 @@ namespace Adit.Pages
             if (AditClient.TcpClient?.Client?.Connected == true)
             {
                 AditClient.TcpClient.Close();
+                AditClient.TcpClient.Dispose();
             }
             RefreshUI();
         }

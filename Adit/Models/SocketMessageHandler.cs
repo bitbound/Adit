@@ -1,7 +1,4 @@
-﻿using Adit.Client_Code;
-using Adit.Models;
-using Adit.Pages;
-using Adit.Shared_Code;
+﻿using Adit.Code.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +7,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adit.Shared_Code
+namespace Adit.Models
 {
-    public class ClientSocketMessages
+    public class SocketMessageHandler
     {
         Socket socketOut;
-        public ClientSocketMessages(Socket socketOut)
+        public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
         }
-        private void Send(dynamic jsonData)
+        public void Send(dynamic jsonData)
         {
             string jsonRequest = Utilities.JSON.Serialize(jsonData);
             byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
@@ -30,7 +27,8 @@ namespace Adit.Shared_Code
 
         public void SendConnectionType(ConnectionTypes connectionType)
         {
-            Send(new {
+            Send(new
+            {
                 Type = "ConnectionType",
                 ConnectionType = connectionType.ToString()
             });
@@ -43,16 +41,17 @@ namespace Adit.Shared_Code
             {
                 return false;
             }
-            if (Utilities.IsJSONMessage(trimmedBuffer))
+            if (Utilities.IsjsonData(trimmedBuffer))
             {
-                var jsonMessage = (dynamic)Utilities.JSON.DeserializeObject(Encoding.UTF8.GetString(trimmedBuffer));
+                var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
+                var jsonData = Utilities.JSON.Deserialize<dynamic>(decodedString);
                 var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                    FirstOrDefault(mi => mi.Name == "Receive" + jsonMessage["Type"]);
+                    FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
                 if (methodHandler != null)
                 {
                     try
                     {
-                        methodHandler.Invoke(this, new object[] { jsonMessage });
+                        methodHandler.Invoke(this, new object[] { jsonData });
                     }
                     catch (Exception ex)
                     {
@@ -66,12 +65,6 @@ namespace Adit.Shared_Code
 
             }
             return true;
-        }
-
-        private void ReceiveSessionID(dynamic jsonMessage)
-        {
-            AditClient.SessionID = jsonMessage["SessionID"];
-            ClientMain.Current.RefreshUICall();
         }
     }
 }

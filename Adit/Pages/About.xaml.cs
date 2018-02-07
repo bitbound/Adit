@@ -18,9 +18,9 @@ namespace Adit.Pages
     /// <summary>
     /// Interaction logic for AboutMain.xaml
     /// </summary>
-    public partial class AboutMain : Page
+    public partial class About : Page
     {
-        public AboutMain()
+        public About()
         {
             InitializeComponent();
         }

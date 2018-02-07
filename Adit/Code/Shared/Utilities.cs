@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace Adit.Shared_Code
+namespace Adit.Code.Shared
 {
     class Utilities
     {
@@ -55,7 +55,7 @@ namespace Adit.Shared_Code
             return bytes.Take(firstZero).ToArray();
         }
 
-        public static bool IsJSONMessage(byte[] bytes)
+        public static bool IsjsonData(byte[] bytes)
         {
             return bytes[0] == 123 && bytes[1] == 34 && bytes[2] == 84 &&
                     bytes[3] == 121 && bytes[4] == 112 && bytes[5] == 101 &&

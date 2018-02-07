@@ -4,14 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Adit.Pages"
-      xmlns:Server_Code="clr-namespace:Adit.Server_Code" xmlns:Shared_Code="clr-namespace:Adit.Shared_Code" x:Class="Adit.Pages.ServerMain"
+      xmlns:Code.Server="clr-namespace:Adit.Code.Server" xmlns:Code.Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.Pages.Server"
       xmlns:Controls="clr-namespace:Adit.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="400"
       Title="Adit Server" Background="White" Loaded="Page_Loaded">
 
     <Page.DataContext>
-        <Shared_Code:Config/>
+        <Code.Shared:Config/>
     </Page.DataContext>
 
     <Grid Margin="10,0,10,10">

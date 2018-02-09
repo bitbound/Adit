@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Adit.Pages"
-      xmlns:Code.Client="clr-namespace:Adit.Code.Client" xmlns:Code.Shared="clr-namespace:Adit.Code.Shared" xmlns:ToggleSwitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch" x:Class="Adit.Pages.Client"
+      xmlns:Code.Client="clr-namespace:Adit.Code.Client" xmlns:Code.Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.Pages.Client"
       mc:Ignorable="d" 
       d:DesignHeight="350" d:DesignWidth="500"
         Title="Adit Client" Background="White" Loaded="Page_Loaded">
@@ -25,7 +25,7 @@
             </Grid>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Partners Connected:" FontSize="15"/>
-                <TextBox x:Name="buttonPartnersConnected" HorizontalAlignment="Right" Height="22"  Padding="0,1,0,0" Text="0" IsReadOnly="True" Width="100" Margin="10,0,0,0" TextAlignment="Center" ToolTip="The number of partners currently connected and viewing your screen."/>
+                <TextBox x:Name="textPartnersConnected" HorizontalAlignment="Right" Height="22"  Padding="0,1,0,0" Text="0" IsReadOnly="True" Width="100" Margin="10,0,0,0" TextAlignment="Center" ToolTip="The number of partners currently connected and viewing your screen."/>
             </Grid>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Files Transferred:" FontSize="15"/>

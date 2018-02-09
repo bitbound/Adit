@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Adit.Code.Client
 {
@@ -34,10 +35,29 @@ namespace Adit.Code.Client
 
         private void ReceiveImageRequest(dynamic jsonData)
         {
+            var requesterBytes = Encoding.UTF8.GetBytes(jsonData["RequesterID"]);
+            Capturer.Current.CaptureScreen();
             if (jsonData["Fullscreen"])
             {
-                // TODO
+                using (var ms = Capturer.Current.GetFullscreenStream(requesterBytes))
+                {
+                    SendBytes(ms.ToArray());
+                }
             }
+            else
+            {
+                if (Capturer.Current.IsNewFrameDifferent())
+                {
+                    using (var ms = Capturer.Current.GetDiffStream(requesterBytes))
+                    {
+                        SendBytes(ms.ToArray());
+                    }
+                }
+            }
+        }
+        private void ReceiveByteArray(byte[] bytesReceived)
+        {
+
         }
     }
 }

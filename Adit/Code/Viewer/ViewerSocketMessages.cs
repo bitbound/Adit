@@ -22,7 +22,7 @@ namespace Adit.Code.Viewer
 
         public void SendViewerConnectRequest()
         {
-            Send(new
+            SendJSON(new
             {
                 Type = "ViewerConnectRequest",
                 SessionID = AditViewer.SessionID
@@ -47,14 +47,22 @@ namespace Adit.Code.Viewer
         {
             SendViewerConnectRequest();
         }
-        private void SendImageRequest(bool fullscreen)
+        public void SendImageRequest(bool fullscreen)
         {
-            Send(new
+            SendJSON(new
             {
                 Type = "ImageRequest",
                 Fullscreen = fullscreen
             });
         }
-
+        private void ReceiveByteArray(byte[] bytesReceived)
+        {
+            var metadata = bytesReceived.Take(6).ToArray();
+            var xPosition = metadata[0] * 10000 + metadata[1] * 100 + metadata[2];
+            var yPosition = metadata[3] * 10000 + metadata[4] * 100 + metadata[5];
+            var startDrawingPoint = new Point(xPosition, yPosition);
+            var imageData = bytesReceived.Skip(6).ToArray();
+            Pages.Viewer.Current.DrawImageCall(startDrawingPoint, imageData);
+        }
     }
 }

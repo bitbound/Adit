@@ -32,13 +32,19 @@ namespace Adit.Models
             }
         }
 
-        public void Send(dynamic jsonData)
+        public void SendJSON(dynamic jsonData)
         {
             string jsonRequest = Utilities.JSON.Serialize(jsonData);
             var outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
             var socketSendEventArgs = new SocketAsyncEventArgs();
             socketSendEventArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
             Socket.SendAsync(socketSendEventArgs);
+        }
+        public void SendBytes(byte[] bytes)
+        {
+            var socketArgs = new SocketAsyncEventArgs();
+            socketArgs.SetBuffer(bytes, 0, bytes.Length);
+            Socket.SendAsync(socketArgs);
         }
     }
 }

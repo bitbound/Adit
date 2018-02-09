@@ -43,11 +43,11 @@ namespace Adit.Code.Server
 
         private void SendSessionID()
         {
-            Send( new { Type = "SessionID", SessionID = Session.SessionID });
+            SendJSON( new { Type = "SessionID", SessionID = Session.SessionID });
         }
         private void SendReadyForViewer()
         {
-            Send(new { Type = "ReadyForViewer" });
+            SendJSON(new { Type = "ReadyForViewer" });
         }
         private void ReceiveViewerConnectRequest(dynamic jsonData)
         {
@@ -55,20 +55,20 @@ namespace Adit.Code.Server
             if (session == null)
             {
                 jsonData["Status"] = "notfound";
-                Send(jsonData);
+                SendBytes(jsonData);
                 return;
             }
             SendPartnerCount(session);
             session.ConnectedClients.Add(connectionToClient);
             Session = session;
             jsonData["Status"] = "ok";
-            Send(jsonData);
+            SendJSON(jsonData);
         }
         private void SendPartnerCount(ClientSession session)
         {
             foreach (var connection in session.ConnectedClients)
             {
-                connection.Send(new
+                connection.SendJSON(new
                 {
                     Type = "PartnerCount",
                     PartnerCount = session.ConnectedClients.Count
@@ -78,8 +78,14 @@ namespace Adit.Code.Server
         private void ReceiveImageRequest(dynamic jsonData)
         {
             jsonData["RequesterID"] = connectionToClient.ID;
-            Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client).Send(jsonData);
+            Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client).SendJSON(jsonData);
 
+        }
+        private void ReceiveByteArray(byte[] bytesReceived)
+        {
+            var requesterID = Encoding.UTF8.GetString(bytesReceived.Take(36).ToArray());
+            var requester = AditServer.ClientList.Find(x => x.ID == requesterID);
+            requester.SendBytes(bytesReceived.Skip(36).ToArray());
         }
     }
 }

@@ -9,11 +9,13 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Win32_Classes;
+using System.Linq;
 
 namespace Adit.Code.Client
 {
     public class Capturer
     {
+        public static Capturer Current { get; set; } = new Capturer();
         private Bitmap currentFrame;
         private Bitmap lastFrame;
         private Rectangle boundingBox;
@@ -89,11 +91,12 @@ namespace Adit.Code.Client
                 }
             }
         }
-        public MemoryStream GetFullscreenStream()
+        public MemoryStream GetFullscreenStream(byte[] metadataToPrepend)
         {
             var ms = new MemoryStream();
-            currentFrame.Save(ms, ImageFormat.Jpeg);
+            ms.Write(metadataToPrepend, 0, 36);
             ms.Write(new byte[] { 0, 0, 0, 0, 0, 0 }, 0, 6);
+            currentFrame.Save(ms, ImageFormat.Png);
             return ms;
         }
         public bool IsNewFrameDifferent()
@@ -102,19 +105,20 @@ namespace Adit.Code.Client
             return diffData != null;
         }
 
-        public MemoryStream GetDiffStream()
+        public MemoryStream GetDiffStream(byte[] metadataToPrepend)
         {
             var ms = new MemoryStream();
             using (var croppedFrame = currentFrame.Clone(boundingBox, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
             {
-                croppedFrame.Save(ms, ImageFormat.Jpeg);
                 // Add x,y coordinates of top-left of image so receiver knows where to draw it.
+                ms.Write(metadataToPrepend, 0, 36);
                 ms.Write(diffData, 0, 6);
+                croppedFrame.Save(ms, ImageFormat.Png);
             }
             return ms;
         }
 
-        public byte[] GetDiffData()
+        private byte[] GetDiffData()
         {
             if (currentFrame.Height != lastFrame.Height || currentFrame.Width != lastFrame.Width)
             {

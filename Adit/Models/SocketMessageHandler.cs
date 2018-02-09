@@ -1,4 +1,6 @@
-﻿using Adit.Code.Shared;
+﻿using Adit.Code.Server;
+using Adit.Code.Shared;
+using Adit.Code.Viewer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +18,7 @@ namespace Adit.Models
         {
             this.socketOut = socketOut;
         }
-        public void Send(dynamic jsonData)
+        public void SendJSON(dynamic jsonData)
         {
             string jsonRequest = Utilities.JSON.Serialize(jsonData);
             byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
@@ -24,10 +26,16 @@ namespace Adit.Models
             socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
             socketOut.SendAsync(socketArgs);
         }
+        public void SendBytes(byte[] bytes)
+        {
+            var socketArgs = new SocketAsyncEventArgs();
+            socketArgs.SetBuffer(bytes, 0, bytes.Length);
+            socketOut.SendAsync(socketArgs);
+        }
 
         public void SendConnectionType(ConnectionTypes connectionType)
         {
-            Send(new
+            SendJSON(new
             {
                 Type = "ConnectionType",
                 ConnectionType = connectionType.ToString()
@@ -41,7 +49,7 @@ namespace Adit.Models
                 return false;
             }
             var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
-            if (Utilities.IsjsonData(trimmedBuffer))
+            if (Utilities.IsJSONData(trimmedBuffer))
             {
                 var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
                 var jsonData = Utilities.JSON.Deserialize<dynamic>(decodedString);
@@ -62,7 +70,8 @@ namespace Adit.Models
             }
             else
             {
-
+                this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                     FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
             }
             return true;
         }

@@ -3,6 +3,7 @@ using Adit.Code.Shared;
 using Adit.Code.Viewer;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace Adit.Pages
     public partial class Viewer : Page
     {
         public static Viewer Current { get; set; }
-        public ViewerSurface Canvas { get; set; }
+        public ViewerSurface DrawingSurface { get; set; }
 
         public Viewer()
         {
@@ -38,14 +39,13 @@ namespace Adit.Pages
             {
                 stackServerInfo.Visibility = Visibility.Collapsed;
             }
-            Canvas = new ViewerSurface();
-            viewerFrame.Children.Add(Canvas);
+            DrawingSurface = new ViewerSurface();
+            viewerFrame.Children.Add(DrawingSurface);
             RefreshUI();
         }
-  
-        public void DrawImageCall(byte[] imageBytes)
+        public void DrawImageCall(Point startDrawingPoint, byte[] imageBytes)
         {
-            this.Dispatcher.Invoke(() => Canvas.DrawImage(imageBytes));
+            this.Dispatcher.Invoke(() => DrawingSurface.DrawImage(startDrawingPoint, imageBytes));
         }
 
         private async void ButtonConnect_Click(object sender, RoutedEventArgs e)

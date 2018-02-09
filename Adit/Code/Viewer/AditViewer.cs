@@ -24,6 +24,8 @@ namespace Adit.Code.Viewer
 
         public static int PartnersConnected { get; set; } = 0;
 
+        public static bool ScaleToFit { get; set; } = true;
+
 
         public static async Task Connect(string sessionID)
         {

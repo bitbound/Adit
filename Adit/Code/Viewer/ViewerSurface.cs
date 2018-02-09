@@ -1,42 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Adit.Code.Viewer
 {
     public class ViewerSurface : FrameworkElement
     {
-        private VisualCollection children;
         public DrawingVisual DrawingSurface { get; set; } = new DrawingVisual();
+        private VisualCollection children;
+        private BitmapImage bitmapImage;
+        private TranslateTransform translateTransform;
+        private Rect imageRegion;
+
+        private double maxWidth = 0;
+        private double maxHeight = 0;
 
         public ViewerSurface()
         {
+            DrawingSurface.Transform = new ScaleTransform(1, 1);
             children = new VisualCollection(this);
             children.Add(DrawingSurface);
-
-            //using (var dc = DrawingSurface.RenderOpen())
-            //{
-            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 0), new Point(400, 400));
-            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 400), new Point(400, 0));
-            //}
-            //mainGrid.Children.Add(new ViewingCanvas());
-            //var visual = new DrawingVisual();
-
-            //using (var dc = visual.RenderOpen())
-            //{
-            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 0), new Point(400, 400));
-            //    dc.DrawLine(new Pen(Brushes.Black, 1), new Point(0, 400), new Point(400, 0));
-            //}
-            //new RenderTargetBitmap(300, 300,)
-            //mainImage.Source = new BitmapImage(visual);
+            this.SizeChanged += (send, args) =>
+            {
+                calculateScaleTransform(maxWidth, maxHeight);
+            };
         }
-        public void DrawImage(byte[] imageBytes)
+
+        public void DrawImage(Point startDrawingPoint, byte[] imageBytes)
         {
+            using (var ms = new MemoryStream())
+            {
+                using (var context = DrawingSurface.RenderOpen())
+                {
+                    ms.Write(imageBytes, 0, imageBytes.Length);
+
+                    bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
+
+
+                    calculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
+
+                    context.DrawDrawing(DrawingSurface.Drawing);
+
+                    translateTransform = new TranslateTransform(startDrawingPoint.X, startDrawingPoint.Y);
+                    context.PushTransform(translateTransform);
+
+                    imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
+                    context.DrawImage(bitmapImage, imageRegion);
+
+                }
+            }
+            AditViewer.SocketMessageHandler.SendImageRequest(false);
         }
+
+        private void calculateScaleTransform(double width, double height)
+        {
+            maxWidth = Math.Max(width, maxWidth);
+            maxHeight = Math.Max(height, maxHeight);
+            if (AditViewer.ScaleToFit)
+            {
+                this.Width = double.NaN;
+                this.Height = double.NaN;
+                (DrawingSurface.Transform as ScaleTransform).ScaleX = this.ActualWidth / maxWidth;
+                (DrawingSurface.Transform as ScaleTransform).ScaleY = this.ActualHeight / maxHeight;
+            }
+            else
+            {
+                (DrawingSurface.Transform as ScaleTransform).ScaleX = 1;
+                (DrawingSurface.Transform as ScaleTransform).ScaleY = 1;
+                this.Width = maxWidth;
+                this.Height = maxHeight;
+            }
+        }
+
         protected override int VisualChildrenCount
         {
             get { return children.Count; }

@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Windows;
 
 namespace Adit.Code.Server
 {
@@ -29,7 +30,18 @@ namespace Adit.Code.Server
             tcpListener = TcpListener.Create(Config.Current.ServerPort);
             tcpListener.Server.ReceiveBufferSize = bufferSize;
             tcpListener.Server.SendBufferSize = bufferSize;
-            tcpListener.Start();
+            try
+            {
+                tcpListener.Start();
+            }
+            catch (SocketException ex)
+            {
+                if (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
+                {
+                    MessageBox.Show("The port is already in use.", "In Use", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
             WaitForClientConnection();
         }
 

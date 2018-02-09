@@ -47,18 +47,8 @@ namespace Adit.Pages
         {
             System.Windows.Clipboard.SetText(textSessionID.Text);
             textSessionID.SelectAll();
-            Utilities.ShowToolTip(textSessionID, "Copied to clipboard!", Colors.Green);
+            Utilities.ShowToolTip(textSessionID, "Copied to clipboard!");
 
-        }
-        private void TextAgentStatus_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            //if (capturing)
-            //{
-            //    capturing = false;
-            //    Socket.Dispose();
-            //    stackMain.Visibility = Visibility.Collapsed;
-            //    stackReconnect.Visibility = Visibility.Visible;
-            //}
         }
 
         private void TextFilesTransferred_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -70,7 +60,7 @@ namespace Adit.Pages
             }
             else
             {
-                Utilities.ShowToolTip(textFilesTransferred, "No files available.", Colors.Black);
+                Utilities.ShowToolTip(textFilesTransferred, "No files available.");
             }
         }
         private void UpgradeToService(object sender, RoutedEventArgs e)
@@ -143,7 +133,18 @@ namespace Adit.Pages
             textHost.Text = Config.Current.ClientHost;
             textPort.Text = Config.Current.ClientPort.ToString();
             textSessionID.Text = AditClient.SessionID;
-            buttonPartnersConnected.Text = AditClient.PartnersConnected.ToString();
+            if (textPartnersConnected.Text != AditClient.PartnersConnected.ToString())
+            {
+                if (int.Parse(textPartnersConnected.Text) < AditClient.PartnersConnected)
+                {
+                    Utilities.ShowToolTip(textPartnersConnected, "Partner connected.");
+                }
+                else
+                {
+                    Utilities.ShowToolTip(textPartnersConnected, "Partner disconnected.");
+                }
+            }
+            textPartnersConnected.Text = AditClient.PartnersConnected.ToString();
             if (AditClient.TcpClient?.Client?.Connected == true)
             {
                 stackConnect.Visibility = Visibility.Collapsed;
@@ -161,7 +162,5 @@ namespace Adit.Pages
         {
             this.Dispatcher.Invoke(() => RefreshUI());
         }
-
-       
     }
 }

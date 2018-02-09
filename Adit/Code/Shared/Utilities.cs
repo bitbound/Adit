@@ -21,7 +21,7 @@ namespace Adit.Code.Shared
             var random = new Random();
             return random.Next(0, 999).ToString().PadLeft(3, '0') + " " + random.Next(0, 999).ToString().PadLeft(3, '0');
         }
-        public async static void ShowToolTip(FrameworkElement placementTarget, string message, System.Windows.Media.Color fontColor)
+        public async static void ShowToolTip(FrameworkElement placementTarget, string message)
         {
             var tt = new System.Windows.Controls.ToolTip();
             tt.PlacementTarget = placementTarget;
@@ -39,7 +39,7 @@ namespace Adit.Code.Shared
         }
         
 
-        public static bool IsjsonData(byte[] bytes)
+        public static bool IsJSONData(byte[] bytes)
         {
             return bytes[0] == 123 && bytes[1] == 34 && bytes[2] == 84 &&
                     bytes[3] == 121 && bytes[4] == 112 && bytes[5] == 101 &&

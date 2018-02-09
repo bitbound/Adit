@@ -49,7 +49,6 @@ namespace Adit.Pages
         }
         public void DrawImageCall(Point startDrawingPoint, byte[] imageBytes)
         {
-            DrawingSurface.DrawQueue.Add(new Tuple<Point, byte[]>(startDrawingPoint, imageBytes));
             this.Dispatcher.Invoke(() =>
                 {
                     DrawingSurface.DrawImage(startDrawingPoint, imageBytes);

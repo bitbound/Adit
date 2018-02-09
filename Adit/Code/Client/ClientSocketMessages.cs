@@ -53,6 +53,10 @@ namespace Adit.Code.Client
                         SendBytes(ms.ToArray());
                     }
                 }
+                else
+                {
+                    // TODO: Resend after delay.
+                }
             }
 
         }

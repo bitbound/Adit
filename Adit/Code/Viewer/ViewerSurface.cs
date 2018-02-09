@@ -15,7 +15,6 @@ namespace Adit.Code.Viewer
     public class ViewerSurface : FrameworkElement
     {
         public DrawingVisual DrawingSurface { get; set; }
-        public List<Tuple<Point, byte[]>> DrawQueue { get; set; } = new List<Tuple<Point, byte[]>>();
         private VisualCollection children;
         private BitmapImage bitmapImage;
         private TranslateTransform translateTransform;
@@ -51,8 +50,6 @@ namespace Adit.Code.Viewer
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
-
-
 
                 renderTargetBitmap = new RenderTargetBitmap(
                     (int)this.ActualWidth,

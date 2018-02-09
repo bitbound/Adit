@@ -44,40 +44,37 @@ namespace Adit.Models
 
         public bool ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
         {
-            lock (this)
+            if (socketArgs.BytesTransferred == 0)
             {
-                if (socketArgs.BytesTransferred == 0)
+                return false;
+            }
+            var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
+            if (Utilities.IsJSONData(trimmedBuffer))
+            {
+                var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
+                var jsonData = Utilities.JSON.Deserialize<dynamic>(decodedString);
+                var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                    FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
+                if (methodHandler != null)
                 {
-                    return false;
-                }
-                var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
-                if (Utilities.IsJSONData(trimmedBuffer))
-                {
-                    var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
-                    var jsonData = Utilities.JSON.Deserialize<dynamic>(decodedString);
-                    var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                        FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
-                    if (methodHandler != null)
+                    try
                     {
-                        try
-                        {
-                            methodHandler.Invoke(this, new object[] { jsonData });
-                        }
-                        catch (Exception ex)
-                        {
-                            Utilities.WriteToLog(ex);
-                            return false;
-                        }
+                        methodHandler.Invoke(this, new object[] { jsonData });
+                    }
+                    catch (Exception ex)
+                    {
+                        Utilities.WriteToLog(ex);
+                        return false;
                     }
                 }
-                else
-                {
-                    this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                         FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
-                }
-                return true;
             }
-          
+            else
+            {
+                this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                        FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
+            }
+            return true;
         }
+
     }
 }

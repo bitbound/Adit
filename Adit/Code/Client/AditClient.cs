@@ -22,7 +22,7 @@ namespace Adit.Code.Client
         public static ClientSocketMessages SocketMessageHandler { get; set; }
 
         private static int bufferSize = 9999999;
-        public static int PartnersConnected { get; set; } = 0;
+        public static List<string> PartnerList { get; set; } = new List<string>();
 
         public static string SessionID { get; set; }
 
@@ -60,7 +60,6 @@ namespace Adit.Code.Client
 
         private static void WaitForServerMessage()
         {
-            //socketArgs.Completed += ReceiveFromServerCompleted;
             var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
             if (!willFireCallback)
             {

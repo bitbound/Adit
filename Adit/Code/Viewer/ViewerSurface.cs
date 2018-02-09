@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adit.Code.Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,62 +14,72 @@ namespace Adit.Code.Viewer
 {
     public class ViewerSurface : FrameworkElement
     {
-        public DrawingVisual DrawingSurface { get; set; } = new DrawingVisual();
+        public DrawingVisual DrawingSurface { get; set; }
+        public List<Tuple<Point, byte[]>> DrawQueue { get; set; } = new List<Tuple<Point, byte[]>>();
         private VisualCollection children;
         private BitmapImage bitmapImage;
         private TranslateTransform translateTransform;
         private Rect imageRegion;
+        private RenderTargetBitmap renderTargetBitmap;
 
         private double maxWidth = 0;
         private double maxHeight = 0;
 
         public ViewerSurface()
         {
+            DrawingSurface = new DrawingVisual();
             DrawingSurface.Transform = new ScaleTransform(1, 1);
             children = new VisualCollection(this);
             children.Add(DrawingSurface);
-            this.SizeChanged += (send, args) =>
-            {
-                calculateScaleTransform(maxWidth, maxHeight);
-            };
+            this.SizeChanged += ViewerSurface_SizeChanged;
         }
 
+        private void ViewerSurface_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            calculateScaleTransform(maxWidth, maxHeight);
+        }
+        
         public void DrawImage(Point startDrawingPoint, byte[] imageBytes)
         {
             using (var ms = new MemoryStream())
             {
+                ms.Write(imageBytes, 0, imageBytes.Length);
+
+                bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = ms;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+
+
+
+                renderTargetBitmap = new RenderTargetBitmap(
+                    (int)this.ActualWidth,
+                    (int)this.ActualHeight,
+                    VisualTreeHelper.GetDpi(DrawingSurface).PixelsPerInchX,
+                    VisualTreeHelper.GetDpi(DrawingSurface).PixelsPerInchY, PixelFormats.Default
+                );
+                renderTargetBitmap.Render(DrawingSurface);
+                
+                calculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
+                translateTransform = new TranslateTransform(startDrawingPoint.X, startDrawingPoint.Y);
+                imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
                 using (var context = DrawingSurface.RenderOpen())
                 {
-                    ms.Write(imageBytes, 0, imageBytes.Length);
-
-                    bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = ms;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-
-
-                    calculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
-
-                    context.DrawDrawing(DrawingSurface.Drawing);
-
-                    translateTransform = new TranslateTransform(startDrawingPoint.X, startDrawingPoint.Y);
+                    context.DrawImage(renderTargetBitmap, new Rect(0, 0, maxWidth, maxHeight));
                     context.PushTransform(translateTransform);
-
-                    imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
                     context.DrawImage(bitmapImage, imageRegion);
-
                 }
+
             }
-            AditViewer.SocketMessageHandler.SendImageRequest(false);
         }
 
         private void calculateScaleTransform(double width, double height)
         {
             maxWidth = Math.Max(width, maxWidth);
             maxHeight = Math.Max(height, maxHeight);
-            if (AditViewer.ScaleToFit)
+            if (Config.Current.ViewerScaleToFit)
             {
                 this.Width = double.NaN;
                 this.Height = double.NaN;

@@ -58,20 +58,20 @@ namespace Adit.Code.Server
                 SendBytes(jsonData);
                 return;
             }
-            SendPartnerCount(session);
             session.ConnectedClients.Add(connectionToClient);
+            SendPartnerList(session);
             Session = session;
             jsonData["Status"] = "ok";
             SendJSON(jsonData);
         }
-        private void SendPartnerCount(ClientSession session)
+        private void SendPartnerList(ClientSession session)
         {
             foreach (var connection in session.ConnectedClients)
             {
                 connection.SendJSON(new
                 {
-                    Type = "PartnerCount",
-                    PartnerCount = session.ConnectedClients.Count
+                    Type = "PartnerList",
+                    PartnerList = session.ConnectedClients.Where(x=>x.ConnectionType != ConnectionTypes.Client).Select(x=>x.ID)
                 });
             }
         }

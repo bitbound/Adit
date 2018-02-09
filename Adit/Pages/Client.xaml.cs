@@ -96,20 +96,6 @@ namespace Adit.Pages
             //});
         }
 
-        private void MenuUnattended_Click(object sender, RoutedEventArgs e)
-        {
-
-            if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
-            {
-                System.Windows.MessageBox.Show("The client must be running as an administrator (i.e. elevated) in order to access unattended features.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            //new UnattendedWindow().ShowDialog();
-        }
-        private void MenuUAC_Click(object sender, RoutedEventArgs e)
-        {
-            //handleUAC = menuUAC.IsChecked;
-        }
       
         private async void ConnectButtonClicked(object sender, RoutedEventArgs e)
         {
@@ -133,18 +119,8 @@ namespace Adit.Pages
             textHost.Text = Config.Current.ClientHost;
             textPort.Text = Config.Current.ClientPort.ToString();
             textSessionID.Text = AditClient.SessionID;
-            if (textPartnersConnected.Text != AditClient.PartnersConnected.ToString())
-            {
-                if (int.Parse(textPartnersConnected.Text) < AditClient.PartnersConnected)
-                {
-                    Utilities.ShowToolTip(textPartnersConnected, "Partner connected.");
-                }
-                else
-                {
-                    Utilities.ShowToolTip(textPartnersConnected, "Partner disconnected.");
-                }
-            }
-            textPartnersConnected.Text = AditClient.PartnersConnected.ToString();
+
+            textPartnersConnected.Text = AditClient.PartnerList.Count.ToString();
             if (AditClient.TcpClient?.Client?.Connected == true)
             {
                 stackConnect.Visibility = Visibility.Collapsed;

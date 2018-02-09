@@ -27,9 +27,9 @@ namespace Adit.Code.Client
             AditClient.SessionID = jsonData["SessionID"];
             Pages.Client.Current.RefreshUICall();
         }
-        private void ReceivePartnerCount(dynamic jsonData)
+        private void ReceivePartnerList(dynamic jsonData)
         {
-            AditClient.PartnersConnected = jsonData["PartnerCount"];
+            AditClient.PartnerList = ((object[])jsonData["PartnerList"]).Select(x=>x.ToString()).ToList();
             Pages.Client.Current.RefreshUICall();
         }
 
@@ -54,6 +54,7 @@ namespace Adit.Code.Client
                     }
                 }
             }
+
         }
         private void ReceiveByteArray(byte[] bytesReceived)
         {

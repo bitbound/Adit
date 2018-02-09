@@ -42,10 +42,20 @@ namespace Adit.Pages
             DrawingSurface = new ViewerSurface();
             viewerFrame.Children.Add(DrawingSurface);
             RefreshUI();
+            if (AditViewer.TcpClient?.Connected == true)
+            {
+                AditViewer.SocketMessageHandler.SendImageRequest(true);
+            }
         }
         public void DrawImageCall(Point startDrawingPoint, byte[] imageBytes)
         {
-            this.Dispatcher.Invoke(() => DrawingSurface.DrawImage(startDrawingPoint, imageBytes));
+            DrawingSurface.DrawQueue.Add(new Tuple<Point, byte[]>(startDrawingPoint, imageBytes));
+            this.Dispatcher.Invoke(() =>
+                {
+                    DrawingSurface.DrawImage(startDrawingPoint, imageBytes);
+                    AditViewer.SocketMessageHandler.SendImageRequest(false);
+                }
+            );
         }
 
         private async void ButtonConnect_Click(object sender, RoutedEventArgs e)

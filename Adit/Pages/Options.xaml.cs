@@ -40,6 +40,21 @@ namespace Adit.Pages
         {
 
         }
+
+        //private void MenuUnattended_Click(object sender, RoutedEventArgs e)
+        //{
+
+        //    if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+        //    {
+        //        System.Windows.MessageBox.Show("The client must be running as an administrator (i.e. elevated) in order to access unattended features.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //        return;
+        //    }
+        //    new UnattendedWindow().ShowDialog();
+        //}
+        //private void MenuUAC_Click(object sender, RoutedEventArgs e)
+        //{
+        //    handleUAC = menuUAC.IsChecked;
+        //}
         private void RefreshUI()
         {
             toggleUAC.IsOn = Config.Current.IsUACHandled;

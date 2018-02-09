@@ -25,6 +25,10 @@ namespace Adit.Code.Client
         // be converted to a 0-based max left/top to render images on the canvas properly.
         int offsetX = SystemInformation.VirtualScreen.Left;
         int offsetY = SystemInformation.VirtualScreen.Top;
+        Graphics graphic;
+        IntPtr hWnd;
+        IntPtr hDC;
+        IntPtr graphDC;
 
 
         public int TotalHeight { get; private set; } = 0;
@@ -43,10 +47,7 @@ namespace Adit.Code.Client
         {
             lastFrame = (Bitmap)currentFrame.Clone();
 
-            Graphics graphic = Graphics.FromImage(currentFrame);
-            IntPtr hWnd = IntPtr.Zero;
-            IntPtr hDC = IntPtr.Zero;
-            IntPtr graphDC = IntPtr.Zero;
+            graphic = Graphics.FromImage(currentFrame);
             hWnd = User32.GetDesktopWindow();
             hDC = User32.GetWindowDC(hWnd);
             graphDC = graphic.GetHdc();
@@ -193,13 +194,6 @@ namespace Adit.Code.Client
 
                 // Byte array that indicates top left coordinates of the image.
                 newImgData = new byte[6];
-                //newImgData[0] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(0, 2));
-                //newImgData[1] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(2, 2));
-                //newImgData[2] = Byte.Parse(left.ToString().PadLeft(6, '0').Substring(4, 2));
-                //newImgData[3] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(0, 2));
-                //newImgData[4] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(2, 2));
-                //newImgData[5] = Byte.Parse(top.ToString().PadLeft(6, '0').Substring(4, 2));
-
                 newImgData[0] = (byte)(left % 1000000 / 10000);
                 newImgData[1] = (byte)(left % 10000 / 100);
                 newImgData[2] = (byte)(left % 100);

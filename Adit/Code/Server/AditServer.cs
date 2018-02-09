@@ -98,7 +98,6 @@ namespace Adit.Code.Server
         private static void WaitForClientMessage(SocketAsyncEventArgs e)
         {
             var aditClient = (e.UserToken as ClientConnection);
-            //e.Completed += ReceiveFromClientCompleted;
             var willFireCallback = aditClient.Socket.ReceiveAsync(e);
             if (!willFireCallback)
             {

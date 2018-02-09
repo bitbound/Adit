@@ -29,6 +29,7 @@ namespace Adit.Code.Shared
 
         public string ViewerHost { get; set; } = "localhost";
         public int ViewerPort { get; set; } = 54765;
+        public bool ViewerScaleToFit { get; set; } = true;
 
         public enum StartupModes
         {

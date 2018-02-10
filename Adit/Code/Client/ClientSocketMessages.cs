@@ -55,7 +55,11 @@ namespace Adit.Code.Client
                 }
                 else
                 {
-                    // TODO: Resend after delay.
+                    Task.Run(() =>
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        ReceiveImageRequest(jsonData);
+                    });
                 }
             }
 

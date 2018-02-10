@@ -23,7 +23,7 @@ namespace Adit.Code.Viewer
         private static int bufferSize = 9999999;
 
         public static int PartnersConnected { get; set; } = 0;
-
+        public static bool RequestFullscreen { get; set; }
 
         public static async Task Connect(string sessionID)
         {

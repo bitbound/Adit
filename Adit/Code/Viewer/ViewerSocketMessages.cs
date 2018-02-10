@@ -39,7 +39,8 @@ namespace Adit.Code.Viewer
             }
             else if (jsonData["Status"] == "ok")
             {
-                SendImageRequest(true);
+                AditViewer.RequestFullscreen = true;
+                SendImageRequest();
                 Pages.Viewer.Current.RefreshUICall();
             }
         }
@@ -47,13 +48,14 @@ namespace Adit.Code.Viewer
         {
             SendViewerConnectRequest();
         }
-        public void SendImageRequest(bool fullscreen)
+        public void SendImageRequest()
         {
             SendJSON(new
             {
                 Type = "ImageRequest",
-                Fullscreen = fullscreen
+                Fullscreen = AditViewer.RequestFullscreen
             });
+            AditViewer.RequestFullscreen = false;
         }
         private void ReceiveByteArray(byte[] bytesReceived)
         {

@@ -88,6 +88,7 @@ namespace Adit.Pages
             toggleIsClientVisible.IsOn = Config.Current.IsClientTabVisible;
             toggleIsViewerVisible.IsOn = Config.Current.IsViewerTabVisible;
             toggleIsOptionsVisible.IsOn = Config.Current.IsOptionsTabVisible;
+            toggleChangeServer.IsOn = Config.Current.IsTargetServerConfigurable;
         }
 
         private void MaximizeViewer_Click(object sender, MouseButtonEventArgs e)
@@ -140,6 +141,12 @@ namespace Adit.Pages
         {
             Config.Current.IsOptionsTabVisible = !(sender as Controls.ToggleSwitch).IsOn;
             MainWindow.Current.optionsToggle.Visibility = Config.Current.IsOptionsTabVisible ? Visibility.Visible : Visibility.Collapsed;
+            Config.Save();
+        }
+
+        private void CanChangeServer_Click(object sender, MouseButtonEventArgs e)
+        {
+            Config.Current.IsTargetServerConfigurable = !(sender as Controls.ToggleSwitch).IsOn;
             Config.Save();
         }
     }

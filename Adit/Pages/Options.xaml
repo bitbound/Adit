@@ -29,14 +29,24 @@
                 </Grid>
             </GroupBox>
             <GroupBox Header="Client Options" Margin="0,10,0,0" Padding="0,10,0,0">
-                <Grid>
-                    <TextBlock><Run Text="Handle UAC Prompts:"/></TextBlock>
-                    <Controls:ToggleSwitch x:Name="toggleUAC" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="HandleUAC_Click">
-                        <Controls:ToggleSwitch.ToolTip>
-                            <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, UAC prompts will be closed automatically if they appear.  This prevents the cursor from 'getting stuck,' since this client can't interact with UAC prompts.  To interact with UAC, install the service or do a one-time upgrade."/>
-                        </Controls:ToggleSwitch.ToolTip>
-                    </Controls:ToggleSwitch>
-                </Grid>
+                <StackPanel>
+                    <Grid>
+                        <TextBlock><Run Text="Handle UAC Prompts:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleUAC" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="HandleUAC_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, UAC prompts will be closed automatically if they appear.  This prevents the cursor from 'getting stuck,' since this client can't interact with UAC prompts.  To interact with UAC, install the service or do a one-time upgrade."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="User Can Change Server:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleChangeServer" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="CanChangeServer_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If disabled, the user will not be able to see or change the server to which the client and viewer connnect."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                </StackPanel>
             </GroupBox>
             <GroupBox Header="Viewer Options"  Margin="0,10,0,0" Padding="0,10,0,0">
                 <StackPanel>
@@ -68,7 +78,7 @@
                             </Controls:ToggleSwitch.ToolTip>
                         </Controls:ToggleSwitch>
                     </Grid>
-                    <Grid Margin="0,10,0,0">
+                    <Grid>
                         <TextBlock><Run Text="Service Running:"/></TextBlock>
                         <Controls:ToggleSwitch x:Name="toggleServiceRunning" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ServiceRunning_Click">
                             <Controls:ToggleSwitch.ToolTip>

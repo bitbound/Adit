@@ -80,6 +80,10 @@ namespace Adit.Models
                         return false;
                     }
                 }
+                else
+                {
+                    // TODO: If server, pass JSON.
+                }
             }
             else
             {

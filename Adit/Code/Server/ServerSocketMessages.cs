@@ -20,6 +20,7 @@ namespace Adit.Code.Server
         {
             this.connectionToClient = connection;
         }
+
         private void ReceiveConnectionType(dynamic jsonData)
         {
             switch (jsonData["ConnectionType"])

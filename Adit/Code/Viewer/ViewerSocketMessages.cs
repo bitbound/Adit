@@ -29,7 +29,17 @@ namespace Adit.Code.Viewer
                 SessionID = AditViewer.SessionID
             });
         }
-        
+
+        public void SendMouseMove(double x, double y)
+        {
+            SendJSON(new
+            {
+                Type = "MouseMove",
+                X = x,
+                Y = y
+            });
+        }
+
         private void ReceiveViewerConnectRequest(dynamic jsonData)
         {
             if (jsonData["Status"] == "notfound")

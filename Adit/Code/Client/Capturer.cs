@@ -28,8 +28,8 @@ namespace Adit.Code.Client
         // Offsets are the left and top edge of the screen, in case multiple monitor setups
         // create a situation where the edge of a monitor is in the negative.  This must
         // be converted to a 0-based max left/top to render images on the canvas properly.
-        private int offsetX = SystemInformation.VirtualScreen.Left;
-        private int offsetY = SystemInformation.VirtualScreen.Top;
+        public int OffsetX { get; set; } = SystemInformation.VirtualScreen.Left;
+        public int OffsetY { get; set; } = SystemInformation.VirtualScreen.Top;
         private Graphics graphic;
         private IntPtr hWnd;
         private IntPtr hDC;
@@ -37,8 +37,8 @@ namespace Adit.Code.Client
         private User32.CursorInfo ci = new User32.CursorInfo();
 
 
-        private int TotalHeight { get; set; } = 0;
-        private int TotalWidth { get; set; } = 0;
+        public int TotalHeight { get; private set; } = 0;
+        public int TotalWidth { get; private set; } = 0;
 
 
         public Capturer()
@@ -59,7 +59,7 @@ namespace Adit.Code.Client
             graphDC = graphic.GetHdc();
             try
             {
-                var copyResult = GDI32.BitBlt(graphDC, 0, 0, TotalWidth, TotalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
+                var copyResult = GDI32.BitBlt(graphDC, 0, 0, TotalWidth, TotalHeight, hDC, 0 + OffsetX, 0 + OffsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
                 if (!copyResult)
                 {
                     graphic.ReleaseHdc(graphDC);

@@ -25,7 +25,8 @@ namespace Adit.Pages
     public partial class Viewer : Page
     {
         public static Viewer Current { get; set; }
-        public ViewerSurface DrawingSurface { get; set; }
+        public ViewerSurface DrawingSurface { get; private set; }
+        public InputHandler InputHandler { get; private set; }
 
         public Viewer()
         {
@@ -40,6 +41,7 @@ namespace Adit.Pages
                 stackServerInfo.Visibility = Visibility.Collapsed;
             }
             DrawingSurface = new ViewerSurface();
+            InputHandler = new InputHandler(DrawingSurface);
             viewerFrame.Content = DrawingSurface;
             RefreshUI();
             if (AditViewer.IsConnected)

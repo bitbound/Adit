@@ -86,6 +86,7 @@
     <Compile Include="Code\Client\ClientSocketMessages.cs" />
     <Compile Include="Code\Shared\ServiceConfig.cs" />
     <Compile Include="Code\Viewer\AditViewer.cs" />
+    <Compile Include="Code\Viewer\InputHandler.cs" />
     <Compile Include="Code\Viewer\ViewerSocketMessages.cs" />
     <Compile Include="Controls\ClosedToTrayBalloon.xaml.cs">
       <DependentUpon>ClosedToTrayBalloon.xaml</DependentUpon>

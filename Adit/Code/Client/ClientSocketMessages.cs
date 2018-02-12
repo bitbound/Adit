@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using Win32_Classes;
 
 namespace Adit.Code.Client
 {
@@ -78,6 +79,11 @@ namespace Adit.Code.Client
         private void ReceiveByteArray(byte[] bytesReceived)
         {
 
+        }
+        private void ReceiveMouseMove(dynamic jsonData)
+        {
+            User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * Capturer.Current.TotalWidth) + Capturer.Current.OffsetX, 
+                                (int)Math.Round((double)jsonData["Y"] * Capturer.Current.TotalHeight) + Capturer.Current.OffsetY);
         }
     }
 }

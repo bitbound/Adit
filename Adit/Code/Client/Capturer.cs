@@ -20,19 +20,25 @@ namespace Adit.Code.Client
         private Bitmap lastFrame;
         private Rectangle boundingBox;
         private byte[] diffData;
+        private byte[] newImgData;
+        private byte[] rgbValues1;
+        private byte[] rgbValues2;
+        private BitmapData bd1;
+        private BitmapData bd2;
         // Offsets are the left and top edge of the screen, in case multiple monitor setups
         // create a situation where the edge of a monitor is in the negative.  This must
         // be converted to a 0-based max left/top to render images on the canvas properly.
-        int offsetX = SystemInformation.VirtualScreen.Left;
-        int offsetY = SystemInformation.VirtualScreen.Top;
-        Graphics graphic;
-        IntPtr hWnd;
-        IntPtr hDC;
-        IntPtr graphDC;
+        private int offsetX = SystemInformation.VirtualScreen.Left;
+        private int offsetY = SystemInformation.VirtualScreen.Top;
+        private Graphics graphic;
+        private IntPtr hWnd;
+        private IntPtr hDC;
+        private IntPtr graphDC;
+        private User32.CursorInfo ci = new User32.CursorInfo();
 
 
-        public int TotalHeight { get; private set; } = 0;
-        public int TotalWidth { get; private set; } = 0;
+        private int TotalHeight { get; set; } = 0;
+        private int TotalWidth { get; set; } = 0;
 
 
         public Capturer()
@@ -41,6 +47,7 @@ namespace Adit.Code.Client
             TotalHeight = SystemInformation.VirtualScreen.Height;
             currentFrame = new Bitmap(TotalWidth, TotalHeight);
             lastFrame = new Bitmap(TotalWidth, TotalHeight);
+            hWnd = User32.GetDesktopWindow();
         }
 
         public void CaptureScreen()
@@ -48,7 +55,6 @@ namespace Adit.Code.Client
             lastFrame = (Bitmap)currentFrame.Clone();
 
             graphic = Graphics.FromImage(currentFrame);
-            hWnd = User32.GetDesktopWindow();
             hDC = User32.GetWindowDC(hWnd);
             graphDC = graphic.GetHdc();
             try
@@ -68,7 +74,6 @@ namespace Adit.Code.Client
                 }
 
                 // Get cursor information to draw on the screenshot.
-                var ci = new User32.CursorInfo();
                 ci.cbSize = Marshal.SizeOf(ci);
                 User32.GetCursorInfo(out ci);
                 if (ci.flags == User32.CURSOR_SHOWING)
@@ -132,26 +137,25 @@ namespace Adit.Code.Client
             }
             var width = currentFrame.Width;
             var height = currentFrame.Height;
-            byte[] newImgData;
             int left = int.MaxValue;
             int top = int.MaxValue;
             int right = int.MinValue;
             int bottom = int.MinValue;
 
-            var bd1 = currentFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
-            var bd2 = lastFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, lastFrame.PixelFormat);
+            bd1 = currentFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
+            bd2 = lastFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, lastFrame.PixelFormat);
             // Get the address of the first line.
             IntPtr ptr1 = bd1.Scan0;
             IntPtr ptr2 = bd2.Scan0;
 
             // Declare an array to hold the bytes of the bitmap.
-            int bytes = Math.Abs(bd1.Stride) * currentFrame.Height;
-            byte[] rgbValues1 = new byte[bytes];
-            byte[] rgbValues2 = new byte[bytes];
+            int arraySize = Math.Abs(bd1.Stride) * currentFrame.Height;
+            rgbValues1 = new byte[arraySize];
+            rgbValues2 = new byte[arraySize];
 
             // Copy the RGBA values into the array.
-            Marshal.Copy(ptr1, rgbValues1, 0, bytes);
-            Marshal.Copy(ptr2, rgbValues2, 0, bytes);
+            Marshal.Copy(ptr1, rgbValues1, 0, arraySize);
+            Marshal.Copy(ptr2, rgbValues2, 0, arraySize);
 
             // Check RGBA value for each pixel.
             for (int counter = 0; counter < rgbValues1.Length - 4; counter += 4)

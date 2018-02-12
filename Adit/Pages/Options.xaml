@@ -7,30 +7,62 @@
       xmlns:local="clr-namespace:Adit.Pages"
       xmlns:Code.Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.Pages.Options"
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="400"
-      Title="Adit Options" Background="White">
+      d:DesignHeight="600" d:DesignWidth="400"
+      Title="Adit Options" Background="White" Loaded="Page_Loaded">
 
     <Page.DataContext>
         <Code.Shared:Config/>
     </Page.DataContext>
 
-    <Grid>
+    <ScrollViewer>
         <StackPanel Margin="10">
             <TextBlock Text="Adit Options" FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,10,0,0"/>
-            <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,15"/>
-            <Grid>
-                <TextBlock><Run Text="Handle UAC Prompts:"/></TextBlock>
-                <Controls:ToggleSwitch x:Name="toggleUAC" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="HandleUAC_Click" IsOn="True">
-                    <Controls:ToggleSwitch.ToolTip>
-                        <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, UAC prompts will be closed automatically if they appear.  This prevents the cursor from 'getting stuck,' since this client can't interact with UAC prompts.  To interact with UAC, install the service or do a one-time upgrade."/>
-                    </Controls:ToggleSwitch.ToolTip>
-                </Controls:ToggleSwitch>
-            </Grid>
-            <GroupBox Header="Unattended Access" Margin="0,10,0,0">
+            <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,5"/>
+            <GroupBox Header="Server Options"  Margin="0,10,0,0" Padding="0,10,0,0">
+                <Grid>
+                    <TextBlock><Run Text="Start Server Automatically:"/></TextBlock>
+                    <Controls:ToggleSwitch x:Name="toggleStartServerAutomatically" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="StartServerAutomatically_Click">
+                        <Controls:ToggleSwitch.ToolTip>
+                            <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, the server will start immediately when Adit is opened."/>
+                        </Controls:ToggleSwitch.ToolTip>
+                    </Controls:ToggleSwitch>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Client Options" Margin="0,10,0,0" Padding="0,10,0,0">
+                <Grid>
+                    <TextBlock><Run Text="Handle UAC Prompts:"/></TextBlock>
+                    <Controls:ToggleSwitch x:Name="toggleUAC" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="HandleUAC_Click">
+                        <Controls:ToggleSwitch.ToolTip>
+                            <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, UAC prompts will be closed automatically if they appear.  This prevents the cursor from 'getting stuck,' since this client can't interact with UAC prompts.  To interact with UAC, install the service or do a one-time upgrade."/>
+                        </Controls:ToggleSwitch.ToolTip>
+                    </Controls:ToggleSwitch>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Viewer Options"  Margin="0,10,0,0" Padding="0,10,0,0">
                 <StackPanel>
-                    <Grid Margin="0,10,0,0">
+                    <Grid>
+                        <TextBlock><Run Text="Scale-To-Fit Viewer:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleScaleToFitViewer" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ScaleToFitViewer_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, the viewer will scale to fit the Adit window.  Otherwise, the remote screen will appear at its original size, and you can pan if it's bigger than the Adit window."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Maximize Viewer on Connect:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleMaximizeViewer" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="MaximizeViewer_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, the window will automatically maximize when the viewer connects to a client."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Unattended Access" Margin="0,10,0,0" Padding="0,10,0,0">
+                <StackPanel>
+                    <Grid>
                         <TextBlock><Run Text="Service Installed:"/></TextBlock>
-                        <Controls:ToggleSwitch x:Name="toggleServiceInstalled" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ServiceInstalled_Click" IsOn="False">
+                        <Controls:ToggleSwitch x:Name="toggleServiceInstalled" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ServiceInstalled_Click">
                             <Controls:ToggleSwitch.ToolTip>
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Installs or uninstalls a service that will allow unattended access to this computer."/>
                             </Controls:ToggleSwitch.ToolTip>
@@ -38,16 +70,58 @@
                     </Grid>
                     <Grid Margin="0,10,0,0">
                         <TextBlock><Run Text="Service Running:"/></TextBlock>
-                        <Controls:ToggleSwitch x:Name="toggleServiceRunning" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ServiceRunning_Click" IsOn="False">
+                        <Controls:ToggleSwitch x:Name="toggleServiceRunning" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ServiceRunning_Click">
                             <Controls:ToggleSwitch.ToolTip>
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Starts or stops the service that will allow unattended access to this computer."/>
                             </Controls:ToggleSwitch.ToolTip>
                         </Controls:ToggleSwitch>
                     </Grid>
                 </StackPanel>
-
             </GroupBox>
-            
+            <GroupBox Header="Application Options"  Margin="0,10,0,0" Padding="0,10,0,0">
+                <StackPanel>
+                    <Grid>
+                        <TextBlock><Run Text="Welcome Tab Visible:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleIsWelcomeVisible" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="IsWelcomeVisible_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Welcome tab is visible."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Server Tab Visible:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleIsServerVisible" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="IsServerVisible_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Server tab is visible."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Client Tab Visible:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleIsClientVisible" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="IsClientVisible_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Client tab is visible."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Viewer Tab Visible:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleIsViewerVisible" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="IsViewerVisible_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Viewer tab is visible."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Options Tab Visible:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleIsOptionsVisible" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="IsOptionsVisible_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Options tab is visible."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </Page>

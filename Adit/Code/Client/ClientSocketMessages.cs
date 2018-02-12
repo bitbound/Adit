@@ -1,4 +1,5 @@
 ﻿using Adit.Code.Shared;
+using Adit.Controls;
 using Adit.Models;
 using Adit.Pages;
 using System;
@@ -9,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace Adit.Code.Client
@@ -27,9 +29,18 @@ namespace Adit.Code.Client
             AditClient.SessionID = jsonData["SessionID"];
             Pages.Client.Current.RefreshUICall();
         }
-        private void ReceivePartnerList(dynamic jsonData)
+        private void ReceiveParticipantList(dynamic jsonData)
         {
-            AditClient.PartnerList = ((object[])jsonData["PartnerList"]).Select(x=>x.ToString()).ToList();
+            var ParticipantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
+            if (ParticipantList.Count > AditClient.ParticipantList.Count)
+            {
+                FlyoutNotification.Show("A partner has connected.");
+            }
+            else if (ParticipantList.Count < AditClient.ParticipantList.Count)
+            {
+                FlyoutNotification.Show("A partner has disconnected.");
+            }
+            AditClient.ParticipantList = ((object[])jsonData["ParticipantList"]).Select(x=>x.ToString()).ToList();
             Pages.Client.Current.RefreshUICall();
         }
 

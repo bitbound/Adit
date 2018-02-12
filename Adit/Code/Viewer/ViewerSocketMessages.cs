@@ -1,4 +1,5 @@
 ﻿using Adit.Code.Shared;
+using Adit.Controls;
 using Adit.Models;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,13 @@ namespace Adit.Code.Viewer
         }
         private void ReceiveReadyForViewer(dynamic jsonData)
         {
+            if (Config.Current.MaximizeViewerOnConnect)
+            {
+                MainWindow.Current.Dispatcher.Invoke(() => 
+                {
+                    MainWindow.Current.WindowState = WindowState.Maximized;
+                });
+            }
             SendViewerConnectRequest();
         }
         public void SendImageRequest()
@@ -66,5 +74,26 @@ namespace Adit.Code.Viewer
             var imageData = bytesReceived.Skip(6).ToArray();
             Pages.Viewer.Current.DrawImageCall(startDrawingPoint, imageData);
         }
+
+        private void ReceiveParticipantList(dynamic jsonData)
+        {
+            var participantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
+            if (participantList.Count == 1)
+            {
+                FlyoutNotification.Show("Connection to partner has been closed.");
+                AditViewer.Disconnect();
+            }
+            else if (participantList.Count > AditViewer.ParticipantList.Count)
+            {
+                FlyoutNotification.Show("A partner has connected.");
+            }
+            else if (participantList.Count < AditViewer.ParticipantList.Count)
+            {
+                FlyoutNotification.Show("A partner has disconnected.");
+            }
+            AditViewer.ParticipantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
+            Pages.Client.Current.RefreshUICall();
+        }
+
     }
 }

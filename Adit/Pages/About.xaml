@@ -20,7 +20,7 @@
                 <TextBlock>Website: </TextBlock>
                 <Hyperlink x:Name="hyperAditWebsite" Click="hyperAditWebsite_Click">http://invis.me</Hyperlink>
             </TextBlock>
-                <TextBox Height="120" Margin="0, 0, 0, 5" TextWrapping="Wrap" Text="Adit is a free remote access solution.  Customization is available from the developer.  Please visit the website for more information.&#x0a;&#x0a;Adit uses the following third party packages:&#x0a;&#x0a;Fody (https://github.com/Fody/Fody)&#x0a;&#x0a;Costura.Fody (https://github.com/Fody/Costura)&#x0a;&#x0a;WPF NotifyIcon (http://www.hardcodet.net/wpf-notifyicon)" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+                <TextBox Height="120" Margin="0, 0, 0, 5" TextWrapping="Wrap" Text="Adit is a free remote access solution.  Customization and additional features are available from the developer.  Please visit the website for more information.&#x0a;&#x0a;Adit uses the following third party packages:&#x0a;&#x0a;Fody (https://github.com/Fody/Fody)&#x0a;&#x0a;Costura.Fody (https://github.com/Fody/Costura)&#x0a;&#x0a;WPF NotifyIcon (http://www.hardcodet.net/wpf-notifyicon)" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
                 <Grid>
                     <TextBlock>
                         <Run>Icons by </Run>        

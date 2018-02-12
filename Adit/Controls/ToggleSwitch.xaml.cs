@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -53,27 +54,15 @@ namespace Adit.Controls
             }
         }
 
-        private void buttonToggle_Click(object sender, RoutedEventArgs e)
+        private void ButtonToggle_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsOn)
+            this.IsEnabled = false;
+            IsOn = !IsOn;
+            Task.Run(() => 
             {
-                buttonToggle.Tag = "On";
-                borderToggle.Background = new SolidColorBrush(Colors.Gray);
-                var ca = new ColorAnimation(Colors.SkyBlue, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
-                borderToggle.Background.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-                var da = new DoubleAnimation(10, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
-                translateTransform.BeginAnimation(TranslateTransform.XProperty, da);
-            }
-            else
-            {
-                buttonToggle.Tag = "Off";
-                borderToggle.Background = new SolidColorBrush(Colors.SkyBlue);
-                var ca = new ColorAnimation(Colors.Gray, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
-                borderToggle.Background.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-                var da = new DoubleAnimation(-10, TimeSpan.FromSeconds(.25), FillBehavior.HoldEnd);
-                translateTransform.BeginAnimation(TranslateTransform.XProperty, da);
-            }
-            Switched(this, EventArgs.Empty);
+                System.Threading.Thread.Sleep(500);
+                this.Dispatcher.Invoke(() => this.IsEnabled = true);
+            });
         }
     }
 }

@@ -14,22 +14,30 @@ namespace Adit.Code.Shared
         public StartupModes StartupMode { get; set; } = StartupModes.Normal;
         public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
 
+
+        public bool IsServerTabVisible { get; set; } = true;
+        public bool IsViewerTabVisible { get; set; } = true;
+        public bool IsOptionsTabVisible { get; set; } = true;
+        public bool IsWelcomeTabVisible { get; set; } = true;
+        public bool IsClientTabVisible { get; set; } = true;
+        public bool IsTargetServerConfigurable { get; set; } = true;
+
+
         public string ServerHost { get; set; } = "localhost";
         public int ServerPort { get; set; } = 54765;
+        public bool IsServerAutoStartEnabled { get; set; }
 
 
         public string ClientHost { get; set; } = "localhost";
         public int ClientPort { get; set; } = 54765;
-        public bool IsClientOnly { get; set; }
-        public bool IsTargetServerConfigurable { get; set; } = true;
-        public bool IsViewerHidden { get; set; }
-        public bool IsAutoConnectEnabled { get; set; }
+        public bool IsClientAutoConnectEnabled { get; set; }
         public bool IsUACHandled { get; set; }
 
 
         public string ViewerHost { get; set; } = "localhost";
         public int ViewerPort { get; set; } = 54765;
         public bool ViewerScaleToFit { get; set; } = true;
+        public bool MaximizeViewerOnConnect { get; set; } = true;
 
         public enum StartupModes
         {

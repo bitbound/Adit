@@ -25,7 +25,7 @@ namespace Adit.Pages
     /// </summary>
     public partial class Client : Page
     {
-        public static Client Current { get; set; }
+        public static Client Current { get; set; } = new Client();
 
         public Client()
         {
@@ -37,7 +37,7 @@ namespace Adit.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             
-            if (Config.Current.IsAutoConnectEnabled)
+            if (Config.Current.IsClientAutoConnectEnabled)
             {
                 // TODO
             }
@@ -106,7 +106,7 @@ namespace Adit.Pages
 
         private void ButtonDisconnect_Click(object sender, RoutedEventArgs e)
         {
-            if (AditClient.TcpClient?.Client?.Connected == true)
+            if (AditClient.IsConnected)
             {
                 AditClient.TcpClient.Close();
                 AditClient.TcpClient.Dispose();
@@ -120,14 +120,16 @@ namespace Adit.Pages
             textPort.Text = Config.Current.ClientPort.ToString();
             textSessionID.Text = AditClient.SessionID;
 
-            textPartnersConnected.Text = AditClient.PartnerList.Count.ToString();
-            if (AditClient.TcpClient?.Client?.Connected == true)
+            if (AditClient.IsConnected)
             {
+                textPartnersConnected.Text = AditClient.ParticipantList.Count.ToString();
                 stackConnect.Visibility = Visibility.Collapsed;
                 stackMain.Visibility = Visibility.Visible;
             }
             else
             {
+                textSessionID.Text = "Retrieving...";
+                textPartnersConnected.Text = "0";
                 stackMain.Visibility = Visibility.Collapsed;
                 stackConnect.Visibility = Visibility.Visible;
             }

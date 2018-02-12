@@ -22,13 +22,21 @@ namespace Adit.Code.Client
         public static ClientSocketMessages SocketMessageHandler { get; set; }
 
         private static int bufferSize = 9999999;
-        public static List<string> PartnerList { get; set; } = new List<string>();
+        public static List<string> ParticipantList { get; set; } = new List<string>();
+        public static bool IsConnected
+        {
+            get
+            {
+                return TcpClient?.Client?.Connected == true;
+            }
+        }
+
 
         public static string SessionID { get; set; }
 
         public static async Task Connect()
         {
-            if (TcpClient?.Client?.Connected == true)
+            if (IsConnected)
             {
                 MessageBox.Show("The client is already connected.", "Already Connected", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -60,10 +68,13 @@ namespace Adit.Code.Client
 
         private static void WaitForServerMessage()
         {
-            var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
-            if (!willFireCallback)
+            if (IsConnected)
             {
-                ReceiveFromServerCompleted(TcpClient.Client, socketArgs);
+                var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
+                if (!willFireCallback)
+                {
+                    ReceiveFromServerCompleted(TcpClient.Client, socketArgs);
+                }
             }
             Pages.Client.Current.RefreshUICall();
         }

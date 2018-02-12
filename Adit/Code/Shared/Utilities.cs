@@ -49,7 +49,7 @@ namespace Adit.Code.Shared
         {
             var exception = ex;
             var appMode = Config.Current.StartupMode.ToString();
-            var path = Path.GetTempPath() + $"Adit_{appMode}_Logs.txt";
+            var path = Path.GetTempPath() + "Adit_Logs.txt";
             if (File.Exists(path))
             {
                 var fi = new FileInfo(path);
@@ -77,7 +77,7 @@ namespace Adit.Code.Shared
         public static void WriteToLog(string Message)
         {
             var appMode = Config.Current.StartupMode.ToString();
-            var path = Path.GetTempPath() + $"Adit_{appMode}_Logs.txt";
+            var path = Path.GetTempPath() + "Adit_Logs.txt";
             if (File.Exists(path))
             {
                 var fi = new FileInfo(path);

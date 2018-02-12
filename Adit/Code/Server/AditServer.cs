@@ -19,11 +19,21 @@ namespace Adit.Code.Server
         private static int bufferSize = 9999999;
         public static List<ClientConnection> ClientList { get; set; } = new List<ClientConnection>();
         public static List<ClientSession> SessionList { get; set; } = new List<ClientSession>();
-
+        public static bool IsEnabled
+        {
+            get
+            {
+                if (tcpListener == null)
+                {
+                    return false;
+                }
+                return tcpListener?.Server?.IsBound == true;
+            }
+        }
 
         public static void Start()
         {
-            if (tcpListener?.Server?.IsBound == true)
+            if (IsEnabled)
             {
                 throw new Exception("Server is already running.");
             }
@@ -45,17 +55,6 @@ namespace Adit.Code.Server
             WaitForClientConnection();
         }
 
-        public static bool IsEnabled
-        {
-            get
-            {
-                if (tcpListener == null)
-                {
-                    return false;
-                }
-                return tcpListener.Server.IsBound;
-            }
-        }
         public static int ClientCount
         {
             get
@@ -137,6 +136,10 @@ namespace Adit.Code.Server
                 if (session.ConnectedClients.Count == 0)
                 {
                     SessionList.Remove(session);
+                }
+                else
+                {
+                    session.ConnectedClients[0].SocketMessageHandler.SendParticipantList(session);
                 }
             }
             ClientList.Remove(connection);

@@ -14,8 +14,9 @@
     </Page.DataContext>
 
     <Grid x:Name="mainGrid">
-        <Grid x:Name="viewerFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        </Grid>
+        <ScrollViewer x:Name="viewerFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PanningMode="Both">
+            
+        </ScrollViewer>
         <Grid x:Name="controlsFrame">
             <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center" Width="200">
                 <TextBlock FontSize="19" TextAlignment="Center" FontWeight="Bold" Margin="0,0,0,20"><Run Text="Connect to a session."/></TextBlock>

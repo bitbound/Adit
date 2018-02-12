@@ -59,19 +59,19 @@ namespace Adit.Code.Server
                 return;
             }
             session.ConnectedClients.Add(connectionToClient);
-            SendPartnerList(session);
+            SendParticipantList(session);
             Session = session;
             jsonData["Status"] = "ok";
             SendJSON(jsonData);
         }
-        private void SendPartnerList(ClientSession session)
+        public void SendParticipantList(ClientSession session)
         {
             foreach (var connection in session.ConnectedClients)
             {
                 connection.SendJSON(new
                 {
-                    Type = "PartnerList",
-                    PartnerList = session.ConnectedClients.Where(x=>x.ConnectionType != ConnectionTypes.Client).Select(x=>x.ID)
+                    Type = "ParticipantList",
+                    ParticipantList = session.ConnectedClients.Select(x=>x.ID)
                 });
             }
         }

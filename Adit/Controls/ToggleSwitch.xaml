@@ -39,7 +39,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Button x:Name="buttonToggle" Tag="Off" Style="{DynamicResource ToggleSwitchButton}" Click="buttonToggle_Click" Cursor="Hand">
+    <Button x:Name="buttonToggle" Tag="Off" Style="{DynamicResource ToggleSwitchButton}" Click="ButtonToggle_Click" Cursor="Hand">
         <Grid>
             <Border x:Name="borderToggle" Width="35" Height="15" Background="Gray" CornerRadius="5"></Border>
             <Ellipse x:Name="ellipseToggle" Height="20" Width="20" Fill="SteelBlue" Stroke="White" HorizontalAlignment="Center">

@@ -14,23 +14,36 @@ namespace Adit.Models
     public class SocketMessageHandler
     {
         Socket socketOut;
+        SocketAsyncEventArgs socketArgs;
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
         }
         public void SendJSON(dynamic jsonData)
         {
-            string jsonRequest = Utilities.JSON.Serialize(jsonData);
-            byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
-            var socketArgs = new SocketAsyncEventArgs();
-            socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-            socketOut.SendAsync(socketArgs);
+            if (socketOut.Connected)
+            {
+                string jsonRequest = Utilities.JSON.Serialize(jsonData);
+                byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
+                if (socketArgs == null)
+                {
+                    socketArgs = new SocketAsyncEventArgs();
+                }
+                socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
+                socketOut.SendAsync(socketArgs);
+            }
         }
         public void SendBytes(byte[] bytes)
         {
-            var socketArgs = new SocketAsyncEventArgs();
-            socketArgs.SetBuffer(bytes, 0, bytes.Length);
-            socketOut.SendAsync(socketArgs);
+            if (socketOut.Connected)
+            {
+                if (socketArgs == null)
+                {
+                    socketArgs = new SocketAsyncEventArgs();
+                }
+                socketArgs.SetBuffer(bytes, 0, bytes.Length);
+                socketOut.SendAsync(socketArgs);
+            }
         }
 
         public void SendConnectionType(ConnectionTypes connectionType)

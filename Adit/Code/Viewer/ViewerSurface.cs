@@ -14,7 +14,7 @@ namespace Adit.Code.Viewer
 {
     public class ViewerSurface : FrameworkElement
     {
-        public DrawingVisual DrawingSurface { get; set; }
+        private DrawingVisual drawingSurface;
         private VisualCollection children;
         private BitmapImage bitmapImage;
         private TranslateTransform translateTransform;
@@ -26,10 +26,10 @@ namespace Adit.Code.Viewer
 
         public ViewerSurface()
         {
-            DrawingSurface = new DrawingVisual();
-            DrawingSurface.Transform = new ScaleTransform(1, 1);
+            drawingSurface = new DrawingVisual();
+            drawingSurface.Transform = new ScaleTransform(1, 1);
             children = new VisualCollection(this);
-            children.Add(DrawingSurface);
+            children.Add(drawingSurface);
             this.SizeChanged += ViewerSurface_SizeChanged;
         }
 
@@ -51,18 +51,20 @@ namespace Adit.Code.Viewer
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
 
-                renderTargetBitmap = new RenderTargetBitmap(
-                    (int)this.ActualWidth,
-                    (int)this.ActualHeight,
-                    VisualTreeHelper.GetDpi(DrawingSurface).PixelsPerInchX,
-                    VisualTreeHelper.GetDpi(DrawingSurface).PixelsPerInchY, PixelFormats.Default
-                );
-                renderTargetBitmap.Render(DrawingSurface);
-                
+
                 calculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
+
+                renderTargetBitmap = new RenderTargetBitmap(
+                    (int)(this.ActualWidth == 0 ? maxWidth : this.ActualWidth),
+                    (int)(this.ActualHeight == 0 ? maxHeight : this.ActualHeight),
+                    VisualTreeHelper.GetDpi(drawingSurface).PixelsPerInchX,
+                    VisualTreeHelper.GetDpi(drawingSurface).PixelsPerInchY, PixelFormats.Default
+                );
+                renderTargetBitmap.Render(drawingSurface);
+                
                 translateTransform = new TranslateTransform(startDrawingPoint.X, startDrawingPoint.Y);
                 imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
-                using (var context = DrawingSurface.RenderOpen())
+                using (var context = drawingSurface.RenderOpen())
                 {
                     context.DrawImage(renderTargetBitmap, new Rect(0, 0, maxWidth, maxHeight));
                     context.PushTransform(translateTransform);
@@ -80,15 +82,19 @@ namespace Adit.Code.Viewer
             {
                 this.Width = double.NaN;
                 this.Height = double.NaN;
-                (DrawingSurface.Transform as ScaleTransform).ScaleX = this.ActualWidth / maxWidth;
-                (DrawingSurface.Transform as ScaleTransform).ScaleY = this.ActualHeight / maxHeight;
+                //(this.Parent as Grid).Width = double.NaN;
+                //(this.Parent as Grid).Height = double.NaN;
+                (drawingSurface.Transform as ScaleTransform).ScaleX = this.ActualWidth / maxWidth;
+                (drawingSurface.Transform as ScaleTransform).ScaleY = this.ActualHeight / maxHeight;
             }
             else
             {
-                (DrawingSurface.Transform as ScaleTransform).ScaleX = 1;
-                (DrawingSurface.Transform as ScaleTransform).ScaleY = 1;
+                (drawingSurface.Transform as ScaleTransform).ScaleX = 1;
+                (drawingSurface.Transform as ScaleTransform).ScaleY = 1;
                 this.Width = maxWidth;
                 this.Height = maxHeight;
+                //(this.Parent as Grid).Width = maxWidth;
+                //(this.Parent as Grid).Height = maxHeight;
             }
         }
 

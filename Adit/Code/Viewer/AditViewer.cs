@@ -24,10 +24,18 @@ namespace Adit.Code.Viewer
 
         public static int PartnersConnected { get; set; } = 0;
         public static bool RequestFullscreen { get; set; }
+        public static List<string> ParticipantList { get; set; } = new List<string>();
+        public static bool IsConnected
+        {
+            get
+            {
+                return TcpClient?.Client?.Connected == true;
+            }
+        }
 
         public static async Task Connect(string sessionID)
         {
-            if (TcpClient?.Client?.Connected == true)
+            if (IsConnected)
             {
                 MessageBox.Show("The client is already connected.", "Already Connected", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -60,20 +68,32 @@ namespace Adit.Code.Viewer
 
         private static void WaitForServerMessage()
         {
-            var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
-            if (!willFireCallback)
+            if (IsConnected)
             {
-                ReceiveFromServerCompleted(TcpClient.Client, socketArgs);
+                var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
+                if (!willFireCallback)
+                {
+                    ReceiveFromServerCompleted(TcpClient.Client, socketArgs);
+                }
+                Pages.Viewer.Current.RefreshUICall();
             }
-            Pages.Viewer.Current.RefreshUICall();
         }
 
+        public static void Disconnect()
+        {
+            TcpClient.Close();
+            Pages.Viewer.Current.RefreshUICall();
+        }
 
         private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError != SocketError.Success)
             {
                 Utilities.WriteToLog($"Socket error in AditClient: {e.SocketError.ToString()}");
+                MainWindow.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow.Current.WindowState = WindowState.Normal;
+                });
                 Pages.Viewer.Current.RefreshUICall();
                 return;
             }

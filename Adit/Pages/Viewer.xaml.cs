@@ -35,14 +35,14 @@ namespace Adit.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Config.Current.IsAutoConnectEnabled)
+            if (Config.Current.IsClientAutoConnectEnabled)
             {
                 stackServerInfo.Visibility = Visibility.Collapsed;
             }
             DrawingSurface = new ViewerSurface();
-            viewerFrame.Children.Add(DrawingSurface);
+            viewerFrame.Content = DrawingSurface;
             RefreshUI();
-            if (AditViewer.TcpClient?.Client?.Connected == true)
+            if (AditViewer.IsConnected)
             {
                 AditViewer.RequestFullscreen = true;
             }
@@ -61,20 +61,25 @@ namespace Adit.Pages
         {
             if (string.IsNullOrWhiteSpace(textSessionID.Text))
             {
+                MessageBox.Show("Session ID is required.", "Session ID Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+            controlsFrame.Visibility = Visibility.Collapsed;
             await AditViewer.Connect(textSessionID.Text.Trim());
+            RefreshUI();
         }
 
         private void RefreshUI()
         {
-            if (AditViewer.TcpClient?.Client?.Connected == true)
+            if (AditViewer.IsConnected)
             {
                 controlsFrame.Visibility = Visibility.Collapsed;
+                viewerFrame.Visibility = Visibility.Visible;
             }
             else
             {
                 controlsFrame.Visibility = Visibility.Visible;
+                viewerFrame.Visibility = Visibility.Collapsed;
             }
 
         }

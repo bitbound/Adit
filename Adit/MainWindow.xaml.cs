@@ -54,17 +54,35 @@ namespace Adit
 
         private void ProcessConfiguration()
         {
-            if (Config.Current.IsClientOnly)
+            if (!Config.Current.IsWelcomeTabVisible)
             {
                 welcomeToggle.Visibility = Visibility.Collapsed;
-                serverToggle.Visibility = Visibility.Collapsed;
-                Config.Current.StartupTab = Config.StartupTabs.Client;
+                if (Config.Current.StartupTab == Config.StartupTabs.Welcome)
+                {
+                    Config.Current.StartupTab = Config.StartupTabs.Server;
+                }
             }
-            if (Config.Current.IsViewerHidden)
+            if (!Config.Current.IsServerTabVisible)
+            {
+                serverToggle.Visibility = Visibility.Collapsed;
+                if (Config.Current.StartupTab == Config.StartupTabs.Server)
+                {
+                    Config.Current.StartupTab = Config.StartupTabs.Client;
+                }
+            }
+            if (!Config.Current.IsViewerTabVisible)
             {
                 viewerToggle.Visibility = Visibility.Collapsed;
+                if (Config.Current.StartupTab == Config.StartupTabs.Viewer)
+                {
+                    Config.Current.StartupTab = Config.StartupTabs.Client;
+                }
             }
-            if (Config.Current.IsAutoConnectEnabled)
+            if (!Config.Current.IsOptionsTabVisible)
+            {
+                optionsToggle.Visibility = Visibility.Collapsed;
+            }
+            if (Config.Current.IsClientAutoConnectEnabled)
             {
                 // TODO
             }
@@ -108,22 +126,26 @@ namespace Adit
         private void Welcome_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
+            Config.Current.StartupTab = Config.StartupTabs.Welcome;
             mainFrame.Navigate(new Welcome());
         }
 
         private void Server_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
+            Config.Current.StartupTab = Config.StartupTabs.Server;
             mainFrame.Navigate(new Server());
         }
         private void Client_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
+            Config.Current.StartupTab = Config.StartupTabs.Client;
             mainFrame.Navigate(new Client());
         }
         private void Viewer_Click(object sender, RoutedEventArgs e)
         {
             ToggleButtonClicked(sender as ToggleButton);
+            Config.Current.StartupTab = Config.StartupTabs.Viewer;
             mainFrame.Navigate(new Pages.Viewer());
         }
 

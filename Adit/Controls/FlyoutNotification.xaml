@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="Adit.Controls.FlyoutNotification"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Adit.Controls"
+             mc:Ignorable="d" 
+             MinHeight="75" Width="275" PreviewMouseUp="UserControl_PreviewMouseUp">
+    <Border Background="White" BorderBrush="LightGray" BorderThickness="1">
+        <Grid>
+            <Image Source="/Adit;component/Assets/icons8-connect-50.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Margin="10,6,0,0"/>
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" Margin="65,10,0,0"><Run Text="Adit"/></TextBlock>
+            <TextBlock x:Name="textMessage" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="65,34,0,0" TextWrapping="Wrap"></TextBlock>
+        </Grid>
+    </Border>
+</UserControl>

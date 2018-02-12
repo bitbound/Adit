@@ -73,9 +73,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="ToggleSwitch">
-      <HintPath>..\..\ToggleSwitch\ToggleSwitch\bin\Release\ToggleSwitch.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -87,10 +84,14 @@
     </ApplicationDefinition>
     <Compile Include="Code\Client\AditClient.cs" />
     <Compile Include="Code\Client\ClientSocketMessages.cs" />
+    <Compile Include="Code\Shared\ServiceConfig.cs" />
     <Compile Include="Code\Viewer\AditViewer.cs" />
     <Compile Include="Code\Viewer\ViewerSocketMessages.cs" />
     <Compile Include="Controls\ClosedToTrayBalloon.xaml.cs">
       <DependentUpon>ClosedToTrayBalloon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FlyoutNotification.xaml.cs">
+      <DependentUpon>FlyoutNotification.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ToggleSwitch.xaml.cs">
       <DependentUpon>ToggleSwitch.xaml</DependentUpon>
@@ -124,6 +125,10 @@
     <Compile Include="Code\Shared\TrayIcon.cs" />
     <Compile Include="Code\Shared\Utilities.cs" />
     <Page Include="Controls\ClosedToTrayBalloon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FlyoutNotification.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

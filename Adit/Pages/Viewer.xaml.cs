@@ -42,6 +42,19 @@ namespace Adit.Pages
             }
             DrawingSurface = new ViewerSurface();
             InputHandler = new InputHandler(DrawingSurface);
+            DrawingSurface.PreviewMouseMove += InputHandler.InputSurface_PreviewMouseMove;
+            DrawingSurface.PreviewMouseLeftButtonDown += InputHandler.InputSurface_PreviewMouseLeftButtonDown;
+            DrawingSurface.PreviewMouseLeftButtonUp += InputHandler.InputSurface_PreviewMouseLeftButtonUp;
+            DrawingSurface.PreviewMouseRightButtonDown += InputHandler.InputSurface_PreviewMouseRightButtonDown;
+            DrawingSurface.PreviewMouseRightButtonUp += InputHandler.InputSurface_PreviewMouseRightButtonUp;
+            DrawingSurface.PreviewMouseWheel += InputHandler.InputSurface_PreviewMouseWheel;
+            MainWindow.Current.PreviewKeyDown -= InputHandler.Window_PreviewKeyDown;
+            MainWindow.Current.PreviewKeyDown += InputHandler.Window_PreviewKeyDown;
+            MainWindow.Current.PreviewKeyUp -= InputHandler.Window_PreviewKeyUp;
+            MainWindow.Current.PreviewKeyUp += InputHandler.Window_PreviewKeyUp;
+            MainWindow.Current.LostFocus -= InputHandler.Window_LostFocus;
+            MainWindow.Current.LostFocus += InputHandler.Window_LostFocus;
+            DrawingSurface.Unloaded += InputHandler.InputSurface_Unloaded;
             viewerFrame.Content = DrawingSurface;
             RefreshUI();
             if (AditViewer.IsConnected)

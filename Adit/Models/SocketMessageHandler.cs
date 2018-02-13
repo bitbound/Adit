@@ -14,7 +14,7 @@ namespace Adit.Models
     public class SocketMessageHandler
     {
         Socket socketOut;
-        SocketAsyncEventArgs socketArgs;
+        
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -25,10 +25,7 @@ namespace Adit.Models
             {
                 string jsonRequest = Utilities.JSON.Serialize(jsonData);
                 byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
-                if (socketArgs == null)
-                {
-                    socketArgs = new SocketAsyncEventArgs();
-                }
+                var socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
                 socketOut.SendAsync(socketArgs);
             }
@@ -37,10 +34,7 @@ namespace Adit.Models
         {
             if (socketOut.Connected)
             {
-                if (socketArgs == null)
-                {
-                    socketArgs = new SocketAsyncEventArgs();
-                }
+                var socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(bytes, 0, bytes.Length);
                 socketOut.SendAsync(socketArgs);
             }

@@ -19,8 +19,6 @@ namespace Adit.Models
 
         public Socket Socket { get; set; }
 
-        private SocketAsyncEventArgs socketArgs;
-
         public void Dispose()
         {
             SocketMessageHandler = null;
@@ -38,19 +36,13 @@ namespace Adit.Models
         {
             string jsonRequest = Utilities.JSON.Serialize(jsonData);
             var outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
-            if (socketArgs == null)
-            {
-                socketArgs = new SocketAsyncEventArgs();
-            }
+            var socketArgs = new SocketAsyncEventArgs();
             socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
             Socket.SendAsync(socketArgs);
         }
         public void SendBytes(byte[] bytes)
         {
-            if (socketArgs == null)
-            {
-                socketArgs = new SocketAsyncEventArgs();
-            }
+            var socketArgs = new SocketAsyncEventArgs();
             socketArgs.SetBuffer(bytes, 0, bytes.Length);
             Socket.SendAsync(socketArgs);
         }

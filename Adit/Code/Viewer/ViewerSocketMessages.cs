@@ -108,7 +108,9 @@ namespace Adit.Code.Viewer
         {
             SendJSON(new
             {
-                Type = "MouseLeftDown"
+                Type = "MouseLeftDown",
+                X = x,
+                Y = y
             });
         }
 
@@ -116,7 +118,9 @@ namespace Adit.Code.Viewer
         {
             SendJSON(new
             {
-                Type = "MouseLeftUp"
+                Type = "MouseLeftUp",
+                X = x,
+                Y = y
             });
         }
 
@@ -134,7 +138,9 @@ namespace Adit.Code.Viewer
         {
             SendJSON(new
             {
-                Type = "MouseRightDown"
+                Type = "MouseRightDown",
+                X = x,
+                Y = y
             });
         }
 
@@ -142,7 +148,9 @@ namespace Adit.Code.Viewer
         {
             SendJSON(new
             {
-                Type = "MouseRightUp"
+                Type = "MouseRightUp",
+                X = x,
+                Y = y
             });
         }
 
@@ -173,6 +181,7 @@ namespace Adit.Code.Viewer
                 FlyoutNotification.Show("A partner has disconnected.");
             }
             AditViewer.ParticipantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
+            // TODO: Issue here.
             Pages.Client.Current.RefreshUICall();
         }
 

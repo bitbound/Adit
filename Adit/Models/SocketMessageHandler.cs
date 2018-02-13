@@ -27,6 +27,9 @@ namespace Adit.Models
                 byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
                 var socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
+                socketArgs.Completed += (sender, args) => {
+                    socketArgs.Dispose();
+                };
                 socketOut.SendAsync(socketArgs);
             }
         }
@@ -36,6 +39,9 @@ namespace Adit.Models
             {
                 var socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(bytes, 0, bytes.Length);
+                socketArgs.Completed += (sender, args) => {
+                    socketArgs.Dispose();
+                };
                 socketOut.SendAsync(socketArgs);
             }
         }

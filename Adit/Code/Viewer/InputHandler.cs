@@ -15,22 +15,35 @@ namespace Adit.Code.Viewer
         public InputHandler(FrameworkElement inputSurface)
         {
             this.inputSurface = inputSurface;
+            inputSurface.PreviewMouseMove += InputSurface_PreviewMouseMove;
+            inputSurface.PreviewMouseLeftButtonDown += InputSurface_PreviewMouseLeftButtonDown;
+            inputSurface.PreviewMouseLeftButtonUp += InputSurface_PreviewMouseLeftButtonUp;
+            inputSurface.PreviewMouseRightButtonDown += InputSurface_PreviewMouseRightButtonDown;
+            inputSurface.PreviewMouseRightButtonUp += InputSurface_PreviewMouseRightButtonUp;
+            inputSurface.PreviewMouseWheel += InputSurface_PreviewMouseWheel;
+            MainWindow.Current.PreviewKeyDown -= Window_PreviewKeyDown;
+            MainWindow.Current.PreviewKeyDown += Window_PreviewKeyDown;
+            MainWindow.Current.PreviewKeyUp -= Window_PreviewKeyUp;
+            MainWindow.Current.PreviewKeyUp += Window_PreviewKeyUp;
+            MainWindow.Current.LostFocus -= Window_LostFocus;
+            MainWindow.Current.LostFocus += Window_LostFocus;
+            inputSurface.Unloaded += InputSurface_Unloaded;
         }
 
-        public void InputSurface_Unloaded(object sender, RoutedEventArgs e)
+        private void InputSurface_Unloaded(object sender, RoutedEventArgs e)
         {
             MainWindow.Current.PreviewKeyDown -= Window_PreviewKeyDown;
             MainWindow.Current.PreviewKeyUp -= Window_PreviewKeyUp;
             MainWindow.Current.LostFocus -= Window_LostFocus;
         }
 
-        public void Window_LostFocus(object sender, RoutedEventArgs e)
+        private void Window_LostFocus(object sender, RoutedEventArgs e)
         {
             AditViewer.SocketMessageHandler?.SendClearAllKeys();
         }
 
 
-        public void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -39,7 +52,7 @@ namespace Adit.Code.Viewer
             }
         }
 
-        public void Window_PreviewKeyUp(object sender, KeyEventArgs e)
+        private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -48,7 +61,7 @@ namespace Adit.Code.Viewer
             }
         }
 
-        public void InputSurface_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void InputSurface_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -57,7 +70,7 @@ namespace Adit.Code.Viewer
             }
         }
 
-        public void InputSurface_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -67,7 +80,7 @@ namespace Adit.Code.Viewer
             }
         }
 
-        public void InputSurface_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -76,7 +89,7 @@ namespace Adit.Code.Viewer
                 AditViewer.SocketMessageHandler.SendMouseLeftUp(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
             }
         }
-        public void InputSurface_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -85,7 +98,7 @@ namespace Adit.Code.Viewer
                 AditViewer.SocketMessageHandler.SendMouseRightDown(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
             }
         }
-        public void InputSurface_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -96,7 +109,7 @@ namespace Adit.Code.Viewer
         }
 
 
-        public void InputSurface_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        private void InputSurface_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (inputSurface.IsVisible)
             {

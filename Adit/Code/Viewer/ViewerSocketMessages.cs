@@ -180,9 +180,7 @@ namespace Adit.Code.Viewer
             {
                 FlyoutNotification.Show("A partner has disconnected.");
             }
-            AditViewer.ParticipantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
-            // TODO: Issue here.
-            Pages.Client.Current.RefreshUICall();
+            AditViewer.ParticipantList = participantList;
         }
 
     }

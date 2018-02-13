@@ -38,12 +38,18 @@ namespace Adit.Models
             var outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
             var socketArgs = new SocketAsyncEventArgs();
             socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
+            socketArgs.Completed += (sender, args) => {
+                socketArgs.Dispose();
+            };
             Socket.SendAsync(socketArgs);
         }
         public void SendBytes(byte[] bytes)
         {
             var socketArgs = new SocketAsyncEventArgs();
             socketArgs.SetBuffer(bytes, 0, bytes.Length);
+            socketArgs.Completed += (sender, args) => {
+                socketArgs.Dispose();
+            };
             Socket.SendAsync(socketArgs);
         }
     }

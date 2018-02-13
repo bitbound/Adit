@@ -26,7 +26,7 @@ namespace Adit.Controls
         {
             MainWindow.Current.Dispatcher.Invoke(() =>
             {
-                TrayIcon.Icon.ShowCustomBalloon(new FlyoutNotification("A partner has connected."), PopupAnimation.Fade, 5000);
+                TrayIcon.Icon.ShowCustomBalloon(new FlyoutNotification(message), PopupAnimation.Fade, 5000);
             });
         }
         private FlyoutNotification(string message)

@@ -15,7 +15,6 @@ namespace Adit.Code.Client
 {
     public class Capturer
     {
-        public static Capturer Current { get; set; } = new Capturer();
         private Bitmap currentFrame;
         private Bitmap lastFrame;
         private Rectangle boundingBox;

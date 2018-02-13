@@ -122,7 +122,7 @@ namespace Adit.Pages
 
             if (AditClient.IsConnected)
             {
-                textPartnersConnected.Text = AditClient.ParticipantList.Count.ToString();
+                textPartnersConnected.Text = Math.Max(AditClient.ParticipantList.Count - 1, 0).ToString();
                 stackConnect.Visibility = Visibility.Collapsed;
                 stackMain.Visibility = Visibility.Visible;
             }

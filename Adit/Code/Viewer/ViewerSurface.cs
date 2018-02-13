@@ -43,14 +43,12 @@ namespace Adit.Code.Viewer
             using (var ms = new MemoryStream())
             {
                 ms.Write(imageBytes, 0, imageBytes.Length);
-
                 bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = ms;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
-
 
                 calculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
 
@@ -61,7 +59,7 @@ namespace Adit.Code.Viewer
                     VisualTreeHelper.GetDpi(drawingSurface).PixelsPerInchY, PixelFormats.Default
                 );
                 renderTargetBitmap.Render(drawingSurface);
-                
+
                 translateTransform = new TranslateTransform(startDrawingPoint.X, startDrawingPoint.Y);
                 imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
                 using (var context = drawingSurface.RenderOpen())
@@ -70,7 +68,6 @@ namespace Adit.Code.Viewer
                     context.PushTransform(translateTransform);
                     context.DrawImage(bitmapImage, imageRegion);
                 }
-
             }
         }
 

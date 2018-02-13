@@ -21,10 +21,12 @@ namespace Adit.Code.Client
     public class ClientSocketMessages : SocketMessageHandler
     {
         Socket socketOut;
+        Capturer capturer;
         public ClientSocketMessages(Socket socketOut)
             : base(socketOut)
         {
             this.socketOut = socketOut;
+            this.capturer = new Capturer();
         }
 
         private void ReceiveSessionID(dynamic jsonData)
@@ -34,35 +36,35 @@ namespace Adit.Code.Client
         }
         private void ReceiveParticipantList(dynamic jsonData)
         {
-            var ParticipantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
-            if (ParticipantList.Count > AditClient.ParticipantList.Count)
+            var participantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
+            if (participantList.Count > AditClient.ParticipantList.Count)
             {
                 FlyoutNotification.Show("A partner has connected.");
             }
-            else if (ParticipantList.Count < AditClient.ParticipantList.Count)
+            else if (participantList.Count < AditClient.ParticipantList.Count)
             {
                 FlyoutNotification.Show("A partner has disconnected.");
             }
-            AditClient.ParticipantList = ((object[])jsonData["ParticipantList"]).Select(x=>x.ToString()).ToList();
+            AditClient.ParticipantList = participantList;
             Pages.Client.Current.RefreshUICall();
         }
 
         private void ReceiveImageRequest(dynamic jsonData)
         {
             var requesterBytes = Encoding.UTF8.GetBytes(jsonData["RequesterID"]);
-            Capturer.Current.CaptureScreen();
+            capturer.CaptureScreen();
             if (jsonData["Fullscreen"])
             {
-                using (var ms = Capturer.Current.GetFullscreenStream(requesterBytes))
+                using (var ms = capturer.GetFullscreenStream(requesterBytes))
                 {
                     SendBytes(ms.ToArray());
                 }
             }
             else
             {
-                if (Capturer.Current.IsNewFrameDifferent())
+                if (capturer.IsNewFrameDifferent())
                 {
-                    using (var ms = Capturer.Current.GetDiffStream(requesterBytes))
+                    using (var ms = capturer.GetDiffStream(requesterBytes))
                     {
                         SendBytes(ms.ToArray());
                     }
@@ -84,8 +86,8 @@ namespace Adit.Code.Client
         }
         private void ReceiveMouseMove(dynamic jsonData)
         {
-            User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * Capturer.Current.TotalWidth) + Capturer.Current.OffsetX, 
-                                (int)Math.Round((double)jsonData["Y"] * Capturer.Current.TotalHeight) + Capturer.Current.OffsetY);
+            User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * capturer.TotalWidth) + capturer.OffsetX, 
+                                (int)Math.Round((double)jsonData["Y"] * capturer.TotalHeight) + capturer.OffsetY);
         }
         private void ReceiveClearAllKeys(dynamic jsonData)
         {
@@ -123,29 +125,29 @@ namespace Adit.Code.Client
         private void ReceiveMouseLeftDown(dynamic jsonData)
         {
             User32.SendLeftMouseDown(
-                    (int)Math.Round((double)jsonData["X"] * Capturer.Current.TotalWidth) + Capturer.Current.OffsetX,
-                    (int)Math.Round((double)jsonData["Y"] * Capturer.Current.TotalHeight) + Capturer.Current.OffsetY
+                    (int)Math.Round((double)jsonData["X"] * capturer.TotalWidth) + capturer.OffsetX,
+                    (int)Math.Round((double)jsonData["Y"] * capturer.TotalHeight) + capturer.OffsetY
                 );
         }
         private void ReceiveMouseLeftUp(dynamic jsonData)
         {
             User32.SendLeftMouseUp(
-                   (int)Math.Round((double)jsonData["X"] * Capturer.Current.TotalWidth) + Capturer.Current.OffsetX,
-                   (int)Math.Round((double)jsonData["Y"] * Capturer.Current.TotalHeight) + Capturer.Current.OffsetY
+                   (int)Math.Round((double)jsonData["X"] * capturer.TotalWidth) + capturer.OffsetX,
+                   (int)Math.Round((double)jsonData["Y"] * capturer.TotalHeight) + capturer.OffsetY
                );
         }
         private void ReceiveMouseRightDown(dynamic jsonData)
         {
             User32.SendRightMouseDown(
-                  (int)Math.Round((double)jsonData["X"] * Capturer.Current.TotalWidth) + Capturer.Current.OffsetX,
-                  (int)Math.Round((double)jsonData["Y"] * Capturer.Current.TotalHeight) + Capturer.Current.OffsetY
+                  (int)Math.Round((double)jsonData["X"] * capturer.TotalWidth) + capturer.OffsetX,
+                  (int)Math.Round((double)jsonData["Y"] * capturer.TotalHeight) + capturer.OffsetY
               );
         }
         private void ReceiveMouseRightUp(dynamic jsonData)
         {
             User32.SendRightMouseUp(
-                 (int)Math.Round((double)jsonData["X"] * Capturer.Current.TotalWidth) + Capturer.Current.OffsetX,
-                 (int)Math.Round((double)jsonData["Y"] * Capturer.Current.TotalHeight) + Capturer.Current.OffsetY
+                 (int)Math.Round((double)jsonData["X"] * capturer.TotalWidth) + capturer.OffsetX,
+                 (int)Math.Round((double)jsonData["Y"] * capturer.TotalHeight) + capturer.OffsetY
              );
         }
     }

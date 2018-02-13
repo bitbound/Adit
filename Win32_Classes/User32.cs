@@ -1417,12 +1417,12 @@ namespace Win32_Classes
                 return "default";
             }
             string deskName;
-            deskName = Encoding.UTF8.GetString(trimBytes(deskBytes));
+            deskName = Encoding.UTF8.GetString(TrimBytes(deskBytes));
             User32.CloseDesktop(inputDesktop);
             return deskName;
         }
         // Remove trailing empty bytes in the buffer.
-        static public byte[] trimBytes(byte[] bytes)
+        private static byte[] TrimBytes(byte[] bytes)
         {
             // Loop backwards through array until the first non-zero byte is found.
             var firstZero = 0;

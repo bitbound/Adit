@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Adit.Code.Viewer
 {
@@ -55,6 +56,42 @@ namespace Adit.Code.Viewer
                 Pages.Viewer.Current.RefreshUICall();
             }
         }
+
+        internal void SendKeyDown(Key key)
+        {
+            SendJSON(new
+            {
+                Type = "KeyDown",
+                Key = key.ToString()
+            });
+        }
+
+        internal void SendKeyUp(Key key)
+        {
+            SendJSON(new
+            {
+                Type = "KeyUp",
+                Key = key.ToString()
+            });
+        }
+
+        internal void SendClearAllKeys()
+        {
+            SendJSON(new
+            {
+                Type = "ClearAllKeys"
+            });
+        }
+
+        internal void SendMouseWheel(int delta)
+        {
+            SendJSON(new
+            {
+                Type = "MouseWheel",
+                Delta = delta
+            });
+        }
+
         private void ReceiveReadyForViewer(dynamic jsonData)
         {
             if (Config.Current.MaximizeViewerOnConnect)
@@ -66,6 +103,23 @@ namespace Adit.Code.Viewer
             }
             SendViewerConnectRequest();
         }
+
+        internal void SendMouseLeftDown(double x, double y)
+        {
+            SendJSON(new
+            {
+                Type = "MouseLeftDown"
+            });
+        }
+
+        internal void SendMouseLeftUp(double x, double y)
+        {
+            SendJSON(new
+            {
+                Type = "MouseLeftUp"
+            });
+        }
+
         public void SendImageRequest()
         {
             SendJSON(new
@@ -75,6 +129,23 @@ namespace Adit.Code.Viewer
             });
             AditViewer.RequestFullscreen = false;
         }
+
+        internal void SendMouseRightDown(double x, double y)
+        {
+            SendJSON(new
+            {
+                Type = "MouseRightDown"
+            });
+        }
+
+        internal void SendMouseRightUp(double x, double y)
+        {
+            SendJSON(new
+            {
+                Type = "MouseRightUp"
+            });
+        }
+
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             var metadata = bytesReceived.Take(6).ToArray();

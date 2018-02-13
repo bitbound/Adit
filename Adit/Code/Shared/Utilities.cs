@@ -45,6 +45,18 @@ namespace Adit.Code.Shared
                     bytes[3] == 121 && bytes[4] == 112 && bytes[5] == 101 &&
                     bytes[6] == 34 && bytes[7] == 58 && bytes[8] == 34;
         }
+        public static List<string> SplitJSON(string inputString)
+        {
+            var messages = new List<string>(); ;
+            while (inputString.IndexOf("}{") > -1)
+            {
+                var message = inputString.Substring(0, inputString.IndexOf("}{") + 1);
+                messages.Add(message);
+                inputString = inputString.Substring(inputString.IndexOf("}{") + 1);
+            }
+            messages.Add(inputString);
+            return messages;
+        }
         public static void WriteToLog(Exception ex)
         {
             var exception = ex;

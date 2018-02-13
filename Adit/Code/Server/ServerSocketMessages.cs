@@ -13,12 +13,12 @@ namespace Adit.Code.Server
 {
     public class ServerSocketMessages : SocketMessageHandler
     {
-        ClientConnection connectionToClient;
-        ClientSession Session { get; set; }
+        public ClientConnection ConnectionToClient { get; set; }
+        public ClientSession Session { get; set; }
         public ServerSocketMessages(ClientConnection connection)
             : base(connection.Socket)
         {
-            this.connectionToClient = connection;
+            this.ConnectionToClient = connection;
         }
 
         private void ReceiveConnectionType(dynamic jsonData)
@@ -26,15 +26,15 @@ namespace Adit.Code.Server
             switch (jsonData["ConnectionType"])
             {
                 case "Client":
-                    connectionToClient.ConnectionType = ConnectionTypes.Client;
+                    ConnectionToClient.ConnectionType = ConnectionTypes.Client;
                     // Create ClientSession and add to list.
                     Session = new ClientSession();
-                    Session.ConnectedClients.Add(connectionToClient);
+                    Session.ConnectedClients.Add(ConnectionToClient);
                     AditServer.SessionList.Add(Session);
                     SendSessionID();
                     break;
                 case "Viewer":
-                    connectionToClient.ConnectionType = ConnectionTypes.Viewer;
+                    ConnectionToClient.ConnectionType = ConnectionTypes.Viewer;
                     SendReadyForViewer();
                     break;
                 default:
@@ -59,7 +59,7 @@ namespace Adit.Code.Server
                 SendBytes(jsonData);
                 return;
             }
-            session.ConnectedClients.Add(connectionToClient);
+            session.ConnectedClients.Add(ConnectionToClient);
             SendParticipantList(session);
             Session = session;
             jsonData["Status"] = "ok";
@@ -78,7 +78,7 @@ namespace Adit.Code.Server
         }
         private void ReceiveImageRequest(dynamic jsonData)
         {
-            jsonData["RequesterID"] = connectionToClient.ID;
+            jsonData["RequesterID"] = ConnectionToClient.ID;
             Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client).SendJSON(jsonData);
 
         }

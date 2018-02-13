@@ -85,5 +85,37 @@ namespace Adit.Code.Client
             User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * Capturer.Current.TotalWidth) + Capturer.Current.OffsetX, 
                                 (int)Math.Round((double)jsonData["Y"] * Capturer.Current.TotalHeight) + Capturer.Current.OffsetY);
         }
+        private void ReceiveClearAllKeys(dynamic jsonData)
+        {
+            
+        }
+        private void ReceiveKeyDown(dynamic jsonData)
+        {
+
+        }
+        private void ReceiveKeyUp(dynamic jsonData)
+        {
+
+        }
+        private void ReceiveMouseWheel(dynamic jsonData)
+        {
+
+        }
+        private void ReceiveMouseLeftDown(dynamic jsonData)
+        {
+
+        }
+        private void ReceiveMouseLeftUp(dynamic jsonData)
+        {
+
+        }
+        private void ReceiveMouseRightDown(dynamic jsonData)
+        {
+
+        }
+        private void ReceiveMouseRightUp(dynamic jsonData)
+        {
+
+        }
     }
 }

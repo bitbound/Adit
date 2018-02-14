@@ -14,7 +14,6 @@ namespace Adit.Models
     public class SocketMessageHandler
     {
         Socket socketOut;
-        
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -55,11 +54,11 @@ namespace Adit.Models
             });
         }
 
-        public bool ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
+        public void ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
         {
             if (socketArgs.BytesTransferred == 0)
             {
-                return false;
+                return;
             }
             var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
             if (Utilities.IsJSONData(trimmedBuffer))
@@ -80,7 +79,6 @@ namespace Adit.Models
                         catch (Exception ex)
                         {
                             Utilities.WriteToLog(ex);
-                            return false;
                         }
                     }
                     else
@@ -100,10 +98,16 @@ namespace Adit.Models
             }
             else
             {
-                this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                try
+                {
+                    this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
                         FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
+                }
+                catch
+                {
+                    
+                }
             }
-            return true;
         }
 
     }

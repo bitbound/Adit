@@ -15,37 +15,34 @@ namespace Adit.Code.Client
 {
     public class Capturer
     {
-        private Bitmap currentFrame;
-        private Bitmap lastFrame;
-        private Rectangle boundingBox;
-        private byte[] diffData;
-        private byte[] newImgData;
-        private byte[] rgbValues1;
-        private byte[] rgbValues2;
-        private BitmapData bd1;
-        private BitmapData bd2;
+        Bitmap currentFrame;
+        Bitmap lastFrame;
+        Rectangle boundingBox;
+        byte[] diffData;
+        byte[] newImgData;
+        byte[] rgbValues1;
+        byte[] rgbValues2;
+        BitmapData bd1;
+        BitmapData bd2;
         // Offsets are the left and top edge of the screen, in case multiple monitor setups
         // create a situation where the edge of a monitor is in the negative.  This must
         // be converted to a 0-based max left/top to render images on the canvas properly.
-        public int OffsetX { get; set; } = SystemInformation.VirtualScreen.Left;
-        public int OffsetY { get; set; } = SystemInformation.VirtualScreen.Top;
-        private Graphics graphic;
-        private IntPtr hWnd;
-        private IntPtr hDC;
-        private IntPtr graphDC;
-        private User32.CursorInfo ci = new User32.CursorInfo();
+        int offsetX = SystemInformation.VirtualScreen.Left;
+        int offsetY = SystemInformation.VirtualScreen.Top;
+        int totalHeight = SystemInformation.VirtualScreen.Height;
+        int totalWidth = SystemInformation.VirtualScreen.Width;
+        Graphics graphic;
+        IntPtr hWnd;
+        IntPtr hDC;
+        IntPtr graphDC;
+        User32.CursorInfo ci = new User32.CursorInfo();
 
-
-        public int TotalHeight { get; private set; } = 0;
-        public int TotalWidth { get; private set; } = 0;
 
 
         public Capturer()
         {
-            TotalWidth = SystemInformation.VirtualScreen.Width;
-            TotalHeight = SystemInformation.VirtualScreen.Height;
-            currentFrame = new Bitmap(TotalWidth, TotalHeight);
-            lastFrame = new Bitmap(TotalWidth, TotalHeight);
+            currentFrame = new Bitmap(totalWidth, totalHeight);
+            lastFrame = new Bitmap(totalWidth, totalHeight);
             hWnd = User32.GetDesktopWindow();
         }
 
@@ -54,24 +51,25 @@ namespace Adit.Code.Client
             lastFrame = (Bitmap)currentFrame.Clone();
 
             graphic = Graphics.FromImage(currentFrame);
-            hDC = User32.GetWindowDC(hWnd);
-            graphDC = graphic.GetHdc();
+            //hDC = User32.GetWindowDC(hWnd);
+            //graphDC = graphic.GetHdc();
             try
             {
-                var copyResult = GDI32.BitBlt(graphDC, 0, 0, TotalWidth, TotalHeight, hDC, 0 + OffsetX, 0 + OffsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
-                if (!copyResult)
-                {
-                    graphic.ReleaseHdc(graphDC);
-                    graphic.Clear(System.Drawing.Color.White);
-                    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
-                    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((TotalWidth / 2), TotalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
-                }
-                else
-                {
-                    graphic.ReleaseHdc(graphDC);
-                    User32.ReleaseDC(hWnd, hDC);
-                }
+                //var copyResult = GDI32.BitBlt(graphDC, 0, 0, totalWidth, totalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
+                //if (!copyResult)
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //    graphic.Clear(System.Drawing.Color.White);
+                //    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
+                //    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
+                //}
+                //else
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //    User32.ReleaseDC(hWnd, hDC);
+                //}
 
+                graphic.CopyFromScreen(0 + offsetX, 0 + offsetY, 0, 0, new System.Drawing.Size(totalWidth, totalHeight));
                 // Get cursor information to draw on the screenshot.
                 ci.cbSize = Marshal.SizeOf(ci);
                 User32.GetCursorInfo(out ci);
@@ -86,14 +84,14 @@ namespace Adit.Code.Client
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
-                if (graphDC != IntPtr.Zero)
-                {
-                    graphic.ReleaseHdc(graphDC);
-                }
-                if (hDC != IntPtr.Zero)
-                {
-                    User32.ReleaseDC(hWnd, hDC);
-                }
+                //if (graphDC != IntPtr.Zero)
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //}
+                //if (hDC != IntPtr.Zero)
+                //{
+                //    User32.ReleaseDC(hWnd, hDC);
+                //}
             }
         }
         public MemoryStream GetFullscreenStream(byte[] metadataToPrepend)
@@ -141,8 +139,24 @@ namespace Adit.Code.Client
             int right = int.MinValue;
             int bottom = int.MinValue;
 
-            bd1 = currentFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
-            bd2 = lastFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, lastFrame.PixelFormat);
+            try
+            {
+                bd1 = currentFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
+            }
+            catch
+            {
+                currentFrame.UnlockBits(bd1);
+                bd1 = currentFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
+            }
+            try
+            {
+                bd2 = lastFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, lastFrame.PixelFormat);
+            }
+            catch
+            {
+                lastFrame.UnlockBits(bd2);
+                bd2 = lastFrame.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, lastFrame.PixelFormat);
+            }
             // Get the address of the first line.
             IntPtr ptr1 = bd1.Scan0;
             IntPtr ptr2 = bd2.Scan0;
@@ -192,8 +206,8 @@ namespace Adit.Code.Client
 
                 left = Math.Max(left - 20, 0);
                 top = Math.Max(top - 20, 0);
-                right = Math.Min(right + 20, TotalWidth);
-                bottom = Math.Min(bottom + 20, TotalHeight);
+                right = Math.Min(right + 20, totalWidth);
+                bottom = Math.Min(bottom + 20, totalHeight);
 
                 // Byte array that indicates top left coordinates of the image.
                 newImgData = new byte[6];

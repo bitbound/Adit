@@ -49,20 +49,13 @@ namespace Adit.Pages
                 AditViewer.RequestFullscreen = true;
             }
         }
-        public void DrawImageCall(Point startDrawingPoint, byte[] imageBytes)
+        public void DrawImageCall(Point startDrawingPoint, IEnumerable<byte> imageBytes)
         {
             this.Dispatcher.Invoke(() =>
-                {
-                    try
-                    {
-                        DrawingSurface.DrawImage(startDrawingPoint, imageBytes);
-                    }
-                    finally
-                    {
-                        AditViewer.SocketMessageHandler.SendImageRequest();
-                    }
-                }
-            );
+            {
+                DrawingSurface.DrawImage(startDrawingPoint, imageBytes);
+            });          
+            AditViewer.SocketMessageHandler.SendImageRequest();
         }
 
         private async void ButtonConnect_Click(object sender, RoutedEventArgs e)

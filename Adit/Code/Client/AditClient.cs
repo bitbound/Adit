@@ -18,11 +18,9 @@ namespace Adit.Code.Client
         private static SocketAsyncEventArgs socketArgs;
         private static byte[] receiveBuffer;
         public static TcpClient TcpClient { get; set; }
-
         public static ClientSocketMessages SocketMessageHandler { get; set; }
-
         private static int bufferSize = 9999999;
-        public static List<string> ParticipantList { get; set; } = new List<string>();
+        public static List<Participant> ParticipantList { get; set; } = new List<Participant>();
         public static bool IsConnected
         {
             get
@@ -89,12 +87,7 @@ namespace Adit.Code.Client
                 Pages.Client.Current.RefreshUICall();
                 return;
             }
-            var result = SocketMessageHandler.ProcessSocketMessage(e);
-            if (!result)
-            {
-                TcpClient?.Dispose();
-                return;
-            }
+            SocketMessageHandler.ProcessSocketMessage(e);
             WaitForServerMessage();
         }
     }

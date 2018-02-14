@@ -100,6 +100,7 @@
     <Compile Include="Models\ClientConnection.cs" />
     <Compile Include="Models\ClientSession.cs" />
     <Compile Include="Models\ConnectionTypes.cs" />
+    <Compile Include="Models\Participant.cs" />
     <Compile Include="Models\SocketMessageHandler.cs" />
     <Compile Include="Pages\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>

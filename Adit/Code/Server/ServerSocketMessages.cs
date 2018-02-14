@@ -79,7 +79,7 @@ namespace Adit.Code.Server
         private void ReceiveImageRequest(dynamic jsonData)
         {
             jsonData["RequesterID"] = ConnectionToClient.ID;
-            Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client).SendJSON(jsonData);
+            Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client)?.SendJSON(jsonData);
 
         }
         private void ReceiveByteArray(byte[] bytesReceived)

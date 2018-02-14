@@ -50,7 +50,7 @@ namespace Adit.Code.Shared
         {
             Icon.ContextMenu = new ContextMenu();
             MenuItem item;
-            item = new MenuItem() { Header = "Show" };
+            item = new MenuItem() { Header = "Open" };
             item.Click += (send, arg) =>
             {
                 Config.Current.StartupMode = Config.StartupModes.Normal;
@@ -65,54 +65,7 @@ namespace Adit.Code.Shared
                 }
             };
             Icon.ContextMenu.Items.Add(item);
-            item = new MenuItem() { Header = "Open Client" };
-            item.Click += (send, arg) =>
-            {
-                Config.Current.StartupMode = Config.StartupModes.Normal;
-                Config.Current.StartupTab = Config.StartupTabs.Client;
-                if (MainWindow.Current.IsLoaded)
-                {
-                    MainWindow.Current.Show();
-                    MainWindow.Current.Activate();
-                }
-                else
-                {
-                    new MainWindow().Show();
-                }
-            };
-            Icon.ContextMenu.Items.Add(item);
-            item = new MenuItem() { Header = "Open Viewer" };
-            item.Click += (send, arg) =>
-            {
-                Config.Current.StartupMode = Config.StartupModes.Normal;
-                Config.Current.StartupTab = Config.StartupTabs.Viewer;
-                if (MainWindow.Current.IsLoaded)
-                {
-                    MainWindow.Current.Show();
-                    MainWindow.Current.Activate();
-                }
-                else
-                {
-                    new MainWindow().Show();
-                }
-            };
-            Icon.ContextMenu.Items.Add(item);
-            item = new MenuItem() { Header = "Open Server" };
-            item.Click += (send, arg) =>
-            {
-                Config.Current.StartupMode = Config.StartupModes.Normal;
-                Config.Current.StartupTab = Config.StartupTabs.Server;
-                if (MainWindow.Current.IsLoaded)
-                {
-                    MainWindow.Current.Show();
-                    MainWindow.Current.Activate();
-                }
-                else
-                {
-                    new MainWindow().Show();
-                }
-            };
-            Icon.ContextMenu.Items.Add(item);
+
             item = new MenuItem() { Header = "Exit" };
             item.Click += (send, arg) =>
             {

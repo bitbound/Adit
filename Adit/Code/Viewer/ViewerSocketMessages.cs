@@ -52,8 +52,8 @@ namespace Adit.Code.Viewer
             else if (jsonData["Status"] == "ok")
             {
                 AditViewer.RequestFullscreen = true;
-                SendImageRequest();
                 Pages.Viewer.Current.RefreshUICall();
+                SendImageRequest();
             }
         }
 
@@ -160,8 +160,7 @@ namespace Adit.Code.Viewer
             var xPosition = metadata[0] * 10000 + metadata[1] * 100 + metadata[2];
             var yPosition = metadata[3] * 10000 + metadata[4] * 100 + metadata[5];
             var startDrawingPoint = new Point(xPosition, yPosition);
-            var imageData = bytesReceived.Skip(6).ToArray();
-            Pages.Viewer.Current.DrawImageCall(startDrawingPoint, imageData);
+            Pages.Viewer.Current.DrawImageCall(startDrawingPoint, bytesReceived.Skip(6));
         }
 
         private void ReceiveParticipantList(dynamic jsonData)

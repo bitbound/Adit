@@ -97,12 +97,7 @@ namespace Adit.Code.Viewer
                 Pages.Viewer.Current.RefreshUICall();
                 return;
             }
-            var result = SocketMessageHandler.ProcessSocketMessage(e);
-            if (!result)
-            {
-                TcpClient?.Dispose();
-                return;
-            }
+            SocketMessageHandler.ProcessSocketMessage(e);
             WaitForServerMessage();
         }
     }

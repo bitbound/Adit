@@ -117,12 +117,7 @@ namespace Adit.Code.Server
                 HandleClientDisconnect(e);
                 return;
             }
-            var result = (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e);
-            if (!result)
-            {
-                HandleClientDisconnect(e);
-                return;
-            }
+            (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e);
             WaitForClientMessage(e);
         }
 

@@ -49,11 +49,11 @@ namespace Adit.Pages
             }
             if (!ServiceConfig.IsServiceInstalled)
             {
-                ServiceConfig.InstallService();
+                ServiceConfig.InstallService(false);
             }
             else
             {
-                ServiceConfig.RemoveService();
+                ServiceConfig.RemoveService(false);
             }
         }
 

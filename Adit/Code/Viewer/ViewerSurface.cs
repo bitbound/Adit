@@ -35,29 +35,22 @@ namespace Adit.Code.Viewer
 
         private void ViewerSurface_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            calculateScaleTransform(maxWidth, maxHeight);
+            CalculateScaleTransform(maxWidth, maxHeight);
         }
         
         public void DrawImage(Point startDrawingPoint, IEnumerable<byte> imageBytes)
         {
             using (var ms = new MemoryStream())
             {
-                try
-                {
-                    ms.Write(imageBytes.ToArray(), 0, imageBytes.Count());
-                    bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = ms;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-                }
-                catch
-                {
-                    return;
-                }
+                ms.Write(imageBytes.ToArray(), 0, imageBytes.Count());
+                bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = ms;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
 
-                calculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
+                CalculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
 
                 renderTargetBitmap = new RenderTargetBitmap(
                     (int)(this.ActualWidth == 0 ? maxWidth : this.ActualWidth),
@@ -71,14 +64,21 @@ namespace Adit.Code.Viewer
                 imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
                 using (var context = drawingSurface.RenderOpen())
                 {
-                    context.DrawImage(renderTargetBitmap, new Rect(0, 0, maxWidth, maxHeight));
+                    if (Config.Current.ViewerScaleToFit)
+                    {
+                        context.DrawImage(renderTargetBitmap, new Rect(0, 0, maxWidth, maxHeight));
+                    }
+                    else
+                    {
+                        context.DrawImage(renderTargetBitmap, new Rect(0, 0, renderTargetBitmap.Width, renderTargetBitmap.Height));
+                    }
                     context.PushTransform(translateTransform);
                     context.DrawImage(bitmapImage, imageRegion);
                 }
             }
         }
 
-        private void calculateScaleTransform(double width, double height)
+        private void CalculateScaleTransform(double width, double height)
         {
             maxWidth = Math.Max(width, maxWidth);
             maxHeight = Math.Max(height, maxHeight);

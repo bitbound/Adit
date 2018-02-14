@@ -57,7 +57,7 @@ namespace Adit.Code.Viewer
             }
         }
 
-        internal void SendKeyDown(Key key)
+        public void SendKeyDown(Key key)
         {
             SendJSON(new
             {
@@ -66,7 +66,7 @@ namespace Adit.Code.Viewer
             });
         }
 
-        internal void SendKeyUp(Key key)
+        public void SendKeyUp(Key key)
         {
             SendJSON(new
             {
@@ -75,7 +75,7 @@ namespace Adit.Code.Viewer
             });
         }
 
-        internal void SendClearAllKeys()
+        public void SendClearAllKeys()
         {
             SendJSON(new
             {
@@ -83,7 +83,7 @@ namespace Adit.Code.Viewer
             });
         }
 
-        internal void SendMouseWheel(int delta)
+        public void SendMouseWheel(int delta)
         {
             SendJSON(new
             {
@@ -104,7 +104,7 @@ namespace Adit.Code.Viewer
             SendViewerConnectRequest();
         }
 
-        internal void SendMouseLeftDown(double x, double y)
+        public void SendMouseLeftDown(double x, double y)
         {
             SendJSON(new
             {
@@ -114,7 +114,7 @@ namespace Adit.Code.Viewer
             });
         }
 
-        internal void SendMouseLeftUp(double x, double y)
+        public void SendMouseLeftUp(double x, double y)
         {
             SendJSON(new
             {
@@ -123,7 +123,10 @@ namespace Adit.Code.Viewer
                 Y = y
             });
         }
-
+        private void ReceiveNoScreenActivity(dynamic jsonData)
+        {
+            SendImageRequest();
+        }
         public void SendImageRequest()
         {
             SendJSON(new

@@ -63,38 +63,44 @@ namespace Adit.Models
             var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
             if (Utilities.IsJSONData(trimmedBuffer))
             {
-                var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
-                var messages = Utilities.SplitJSON(decodedString);
-                foreach (var message in messages)
+                try
                 {
-                    var jsonData = Utilities.JSON.Deserialize<dynamic>(message);
-                    var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                        FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
-                    if (methodHandler != null)
+                    var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
+                    var messages = Utilities.SplitJSON(decodedString);
+                    foreach (var message in messages)
                     {
-                        try
+                        var jsonData = Utilities.JSON.Deserialize<dynamic>(message);
+                        var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                            FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
+                        if (methodHandler != null)
                         {
-                            methodHandler.Invoke(this, new object[] { jsonData });
-                        }
-                        catch (Exception ex)
-                        {
-                            Utilities.WriteToLog(ex);
-                        }
-                    }
-                    else
-                    {
-                        if (this.GetType() == typeof(ServerSocketMessages))
-                        {
-                            var partners = (this as ServerSocketMessages).Session.ConnectedClients.Where(
-                                x => x.ConnectionType != (this as ServerSocketMessages).ConnectionToClient.ConnectionType);
-                            foreach (var partner in partners)
+                            try
                             {
-                                partner.SendJSON(jsonData);
+                                methodHandler.Invoke(this, new object[] { jsonData });
+                            }
+                            catch (Exception ex)
+                            {
+                                Utilities.WriteToLog(ex);
+                            }
+                        }
+                        else
+                        {
+                            if (this.GetType() == typeof(ServerSocketMessages))
+                            {
+                                var partners = (this as ServerSocketMessages).Session.ConnectedClients.Where(
+                                    x => x.ConnectionType != (this as ServerSocketMessages).ConnectionToClient.ConnectionType);
+                                foreach (var partner in partners)
+                                {
+                                    partner.SendJSON(jsonData);
+                                }
                             }
                         }
                     }
                 }
-                
+                catch (Exception ex)
+                {
+                    Utilities.WriteToLog(ex);
+                }
             }
             else
             {

@@ -50,7 +50,10 @@ namespace Adit.Models
             socketArgs.Completed += (sender, args) => {
                 socketArgs.Dispose();
             };
-            Socket.SendAsync(socketArgs);
+            if (Socket.Connected)
+            {
+                Socket.SendAsync(socketArgs);
+            }
         }
     }
 }

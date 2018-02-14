@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,33 +34,90 @@ namespace Adit.Code.Shared
                 return aditService.Status == System.ServiceProcess.ServiceControllerStatus.Running;
             }
         }
-        public static void InstallService()
+        public static void InstallService(bool silent)
         {
+            if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+            {
+                if (!silent)
+                {
+                    System.Windows.MessageBox.Show("The client must be running as an administrator (i.e. elevated) in order to install the service.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                return;
+            }
+            Utilities.WriteToLog("Install initiated.");
+            Process.Start("cmd.exe", "/c sc delete Adit_Service").WaitForExit();
+
+            foreach (var proc in Process.GetProcessesByName("Adit_Service"))
+            {
+                proc.Kill();
+            }
+
+            foreach (var proc in Process.GetProcessesByName("Adit_Service").Where(proc => proc.Id != Process.GetCurrentProcess().Id))
+            {
+                proc.Kill();
+            }
+
+            var programDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Adit"));
+            var clientProgramPath = Path.Combine(programDir.FullName, Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+            while (File.Exists(clientProgramPath))
+            {
+                try
+                {
+                    File.Delete(clientProgramPath);
+                }
+                catch
+                {
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
+            File.Copy(System.Reflection.Assembly.GetExecutingAssembly().Location, clientProgramPath, true);
+
+            while (File.Exists(Path.Combine(programDir.FullName, "Adit_Service.exe")))
+            {
+                try
+                {
+                    File.Delete(Path.Combine(programDir.FullName, "Adit_Service.exe"));
+                }
+                catch
+                {
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
             try
             {
-                File.WriteAllBytes(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Adit_Service.exe"), Properties.Resources.Adit_Service);
+                File.WriteAllBytes(Path.Combine(programDir.FullName, "Adit_Service.exe"), Properties.Resources.Adit_Service);
             }
             catch
             {
-                MessageBox.Show("Failed to unpack the service into the temp directory.  Try clearing the temp directory.", "Write Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (!silent)
+                {
+                    MessageBox.Show("Failed to unpack the service into the Program Files directory.", "Write Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 return;
             }
-            var psi = new ProcessStartInfo(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Adit_Service.exe"), "-install");
+            var psi = new ProcessStartInfo(Path.Combine(programDir.FullName, "Adit_Service.exe"), "-install");
             psi.WindowStyle = ProcessWindowStyle.Hidden;
-            var proc = Process.Start(psi);
-            proc.WaitForExit();
-            Pages.Options.Current.RefreshUI();
-            if (proc.ExitCode == 0)
+            var installProcess = Process.Start(psi);
+            installProcess.WaitForExit();
+            if (installProcess.ExitCode == 0)
             {
-                MessageBox.Show("Service installation successful.  If necessary, remember to configure access levels in the Computer Hub.  Otherwise, only admins will have access to this computer.", "Install Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (!silent)
+                {
+                    MessageBox.Show("Service installation successful.", "Install Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Pages.Options.Current.RefreshUI();
+                }
             }
             else
             {
-                Utilities.WriteToLog("Service installation failed with exit code " + proc.ExitCode.ToString());
-                MessageBox.Show("Service installation failed.  Please try again or contact the developer for support.", "Install Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                Utilities.WriteToLog("Service installation failed with exit code " + installProcess.ExitCode.ToString());
+                if (!silent)
+                {
+                    MessageBox.Show("Service installation failed.  Please try again or contact the developer for support.", "Install Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Pages.Options.Current.RefreshUI();
+                }
             }
         }
-        public static void RemoveService()
+        public static void RemoveService(bool silent)
         {
             try
             {
@@ -71,14 +129,20 @@ namespace Adit.Code.Shared
                 {
                     proc.Kill();
                 }
-                Pages.Options.Current.RefreshUI();
-                MessageBox.Show("Service removal successful.", "Removal Completed", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (!silent)
+                {
+                    MessageBox.Show("Service removal successful.", "Removal Completed", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Pages.Options.Current.RefreshUI();
+                }
             }
             catch (Exception ex)
             {
-                Pages.Options.Current.RefreshUI();
                 Utilities.WriteToLog(ex);
-                MessageBox.Show("Service removal failed.  Please try again or contact the developer for support.", "Removal Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (!silent)
+                {
+                    Pages.Options.Current.RefreshUI();
+                    MessageBox.Show("Service removal failed.  Please try again or contact the developer for support.", "Removal Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
         public static void StartService()

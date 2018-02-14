@@ -100,15 +100,20 @@ namespace Adit.Code.Client
                 }
                 else
                 {
-                    Task.Run(() =>
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        ReceiveImageRequest(jsonData);
-                    });
+                    SendNoScreenActivity();
                 }
             }
 
         }
+
+        private void SendNoScreenActivity()
+        {
+            SendJSON(new
+            {
+                Type = "NoScreenActivity"
+            });
+        }
+
         private void ReceiveByteArray(byte[] bytesReceived)
         {
 

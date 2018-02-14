@@ -1,17 +1,14 @@
-﻿using Adit.Pages;
-using Adit.Code.Shared;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Media;
 using Win32_Classes;
 using System.Linq;
 
-namespace Adit.Code.Client
+namespace Adit_Service
 {
     public class Capturer
     {

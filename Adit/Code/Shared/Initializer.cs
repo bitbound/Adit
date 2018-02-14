@@ -24,7 +24,7 @@ namespace Adit.Code.Shared
             }
             else if (args.Contains("-install"))
             {
-                // TODO
+                ServiceConfig.InstallService(true);
             }
             else if (args.Contains("-upgrade"))
             {
@@ -43,13 +43,21 @@ namespace Adit.Code.Shared
         }
         public static void SetGlobalErrorHandler()
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             App.Current.DispatcherUnhandledException += DispatcherUnhandledException;
         }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Utilities.WriteToLog(e.ExceptionObject as Exception);
+            Utilities.DisplayErrorMessage();
+        }
+
         private static void DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
             Utilities.WriteToLog(e.Exception);
-            System.Windows.MessageBox.Show("There was an error from which Adit couldn't recover.  If the issue persists, please contact the developer.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Utilities.DisplayErrorMessage();
         }
         public static void SetShutdownMode()
         {

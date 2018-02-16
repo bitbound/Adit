@@ -82,7 +82,7 @@ namespace Adit.Code.Client
         {
             if (e.SocketError != SocketError.Success)
             {
-                Utilities.WriteToLog($"Socket error in AditClient: {e.SocketError.ToString()}");
+                Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
                 SessionID = String.Empty;
                 Pages.Client.Current.RefreshUICall();
                 return;

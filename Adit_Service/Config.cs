@@ -7,7 +7,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adit.Code.Shared
+namespace Adit_Service
 {
     public class Config
     {
@@ -39,7 +39,6 @@ namespace Adit.Code.Shared
         public int ViewerPort { get; set; } = 54765;
         public bool ViewerScaleToFit { get; set; } = true;
         public bool MaximizeViewerOnConnect { get; set; } = true;
-        public bool IsClipboardShared { get; set; } = true;
 
         public enum StartupModes
         {
@@ -56,28 +55,12 @@ namespace Adit.Code.Shared
         }
         public static void Save()
         {
-            DirectoryInfo di;
-            if (WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
-            {
-                di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit"));
-            }
-            else
-            {
-                di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit"));
-            }
+            var di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit"));
             File.WriteAllText(Path.Combine(di.FullName, "Config.json"), Utilities.JSON.Serialize(Config.Current));
         }
         public static void Load()
         {
-            FileInfo fileInfo;
-            if (WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
-            {
-                fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit", "Config.json"));
-            }
-            else
-            {
-                fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit", "Config.json"));
-            }
+            var fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit", "Config.json"));
             if (fileInfo.Exists)
             {
                 var settings = Utilities.JSON.Deserialize<Config>(File.ReadAllText(fileInfo.FullName));

@@ -14,9 +14,28 @@
     </Page.DataContext>
 
     <Grid x:Name="mainGrid">
-        <ScrollViewer x:Name="viewerFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PanningMode="Both">
-            
-        </ScrollViewer>
+        <Grid x:Name="viewerGrid" Visibility="Visible">
+            <Button x:Name="buttonMenu" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Width="25" Cursor="Hand" Click="ViewerMenu_Click" Background="#BFFFFFFF" Panel.ZIndex="2">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="menuSendCtrAltDel"  Header="Send Ctrl+Alt+Del" Click="SendCtrlAltDel_Click"/>
+                        <MenuItem x:Name="menuTransferFile" Header="Transfer File" Click="TransferFile_Click"/>
+                        <MenuItem x:Name="menuRefreshScreen" Header="Refresh Screen" Click="RefreshSCreen_Click"/>
+                        <MenuItem x:Name="menuDisconnect"  Header="Disconnect" Click="Disconnect_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <StackPanel HorizontalAlignment="Center">
+                    <Line Stroke="Black" X1="0" X2="15" StrokeThickness="2"></Line>
+                    <Separator Foreground="Transparent" Background="Transparent"></Separator>
+                    <Line Stroke="Black" X1="0" X2="15" StrokeThickness="2"></Line>
+                    <Separator Foreground="Transparent" Background="Transparent"></Separator>
+                    <Line Stroke="Black" X1="0" X2="15" StrokeThickness="2"></Line>
+                </StackPanel>
+            </Button>
+            <ScrollViewer x:Name="viewerFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PanningMode="Both" >
+
+            </ScrollViewer>
+        </Grid>
         <Grid x:Name="controlsFrame">
             <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center" Width="200">
                 <TextBlock FontSize="19" TextAlignment="Center" FontWeight="Bold" Margin="0,0,0,20"><Run Text="Connect to a session."/></TextBlock>

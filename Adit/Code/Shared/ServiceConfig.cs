@@ -57,7 +57,7 @@ namespace Adit.Code.Shared
                 proc.Kill();
             }
 
-            var programDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Adit"));
+            var programDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit"));
             var clientProgramPath = Path.Combine(programDir.FullName, Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location));
             while (File.Exists(clientProgramPath))
             {

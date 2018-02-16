@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Adit_Service
 {
@@ -13,6 +14,7 @@ namespace Adit_Service
         private static byte[] receiveBuffer;
         public static TcpClient TcpClient { get; set; }
         public static ServiceSocketMessages SocketMessageHandler { get; set; }
+        public static Timer HeartbeatTimer { get; set; } = new Timer();
         private static int bufferSize = 9999999;
         public static bool IsConnected
         {
@@ -23,19 +25,73 @@ namespace Adit_Service
         }
         public static string SessionID { get; set; }
 
-        public static async Task Start()
+        public static void Connect()
         {
-            throw new NotImplementedException();
+            if (IsConnected)
+            {
+                return;
+            }
+            TcpClient = new TcpClient();
+            try
+            {
+                TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
+                TcpClient.Client.ReceiveBufferSize = bufferSize;
+                TcpClient.Client.SendBufferSize = bufferSize;
+                if (receiveBuffer == null)
+                {
+                    receiveBuffer = new byte[bufferSize];
+                }
+                socketArgs = new SocketAsyncEventArgs();
+                socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
+                socketArgs.Completed += ReceiveFromServerCompleted;
+            }
+            catch
+            {
+                WaitToRetryConnection();
+                return;
+            }
+            SocketMessageHandler = new ServiceSocketMessages(TcpClient.Client);
+            WaitForServerMessage();
+            SocketMessageHandler.SendConnectionType(ConnectionTypes.Service);
+            SocketMessageHandler.SendHeartbeat();
         }
 
-        internal static async Task StartInteractive()
+        public static void WaitToRetryConnection()
         {
-            throw new NotImplementedException();
+            var timer = new Timer();
+            timer.AutoReset = false;
+            timer.Interval = 30000;
+            timer.Elapsed += (sender, args) =>
+            {
+                Utilities.WriteToLog("Failed to connect.");
+                Connect();
+            };
+            timer.Start();
         }
 
-        internal static void Connect()
+        private static void WaitForServerMessage()
         {
-            throw new NotImplementedException();
+            if (IsConnected)
+            {
+                var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
+                if (!willFireCallback)
+                {
+                    ReceiveFromServerCompleted(TcpClient.Client, socketArgs);
+                }
+            }
+        }
+
+
+        private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            if (e.SocketError != SocketError.Success)
+            {
+                Utilities.WriteToLog($"Socket closed in AditService: {e.SocketError.ToString()}");
+                SessionID = String.Empty;
+                return;
+            }
+            SocketMessageHandler.ProcessSocketMessage(e);
+            WaitForServerMessage();
         }
     }
 }

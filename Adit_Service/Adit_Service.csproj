@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="AditService.cs" />
     <Compile Include="Capturer.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="ConnectionTypes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -89,7 +89,7 @@ namespace Adit.Code.Viewer
         {
             if (e.SocketError != SocketError.Success)
             {
-                Utilities.WriteToLog($"Socket error in AditClient: {e.SocketError.ToString()}");
+                Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
                 MainWindow.Current.Dispatcher.Invoke(() =>
                 {
                     MainWindow.Current.WindowState = WindowState.Normal;

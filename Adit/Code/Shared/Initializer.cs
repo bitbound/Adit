@@ -25,6 +25,12 @@ namespace Adit.Code.Shared
             else if (args.Contains("-install"))
             {
                 ServiceConfig.InstallService(true);
+                App.Current.Shutdown();
+            }
+            else if (args.Contains("-uninstall"))
+            {
+                ServiceConfig.RemoveService(true);
+                App.Current.Shutdown();
             }
             else if (args.Contains("-upgrade"))
             {

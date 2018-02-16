@@ -33,6 +33,7 @@ namespace Adit.Code.Viewer
             this.SizeChanged += ViewerSurface_SizeChanged;
         }
 
+
         private void ViewerSurface_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             CalculateScaleTransform(maxWidth, maxHeight);

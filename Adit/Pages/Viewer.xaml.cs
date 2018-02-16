@@ -75,12 +75,12 @@ namespace Adit.Pages
             if (AditViewer.IsConnected)
             {
                 controlsFrame.Visibility = Visibility.Collapsed;
-                viewerFrame.Visibility = Visibility.Visible;
+                viewerGrid.Visibility = Visibility.Visible;
             }
             else
             {
                 controlsFrame.Visibility = Visibility.Visible;
-                viewerFrame.Visibility = Visibility.Collapsed;
+                viewerGrid.Visibility = Visibility.Collapsed;
             }
 
         }
@@ -88,6 +88,37 @@ namespace Adit.Pages
         public void RefreshUICall()
         {
             this.Dispatcher.Invoke(() => RefreshUI());
+        }
+
+        private void SendCtrlAltDel_Click(object sender, RoutedEventArgs e)
+        {
+            AditViewer.SocketMessageHandler.SendCtrlAltDel();
+        }
+
+        private void TransferFile_Click(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new Microsoft.Win32.OpenFileDialog();
+            fileDialog.Multiselect = false;
+            fileDialog.ShowDialog();
+            if (File.Exists(fileDialog.FileName))
+            {
+                AditViewer.SocketMessageHandler.SendFileTransfer(fileDialog.FileName);
+            }
+        }
+
+        private void Disconnect_Click(object sender, RoutedEventArgs e)
+        {
+            AditViewer.Disconnect();
+        }
+
+        private void ViewerMenu_Click(object sender, RoutedEventArgs e)
+        {
+            (sender as FrameworkElement).ContextMenu.IsOpen = !(sender as FrameworkElement).ContextMenu.IsOpen;
+        }
+
+        private void RefreshSCreen_Click(object sender, RoutedEventArgs e)
+        {
+            AditViewer.RequestFullscreen = true;
         }
     }
 }

@@ -113,7 +113,7 @@ namespace Adit.Code.Server
             }
             if (e.SocketError != SocketError.Success)
             {
-                Utilities.WriteToLog($"Socket error in AditServer: {e.SocketError.ToString()}");
+                Utilities.WriteToLog($"Socket closed in AditServer: {e.SocketError.ToString()}");
                 HandleClientDisconnect(e);
                 return;
             }

@@ -37,6 +37,9 @@ namespace Adit.Code.Server
                     ConnectionToClient.ConnectionType = ConnectionTypes.Viewer;
                     SendReadyForViewer();
                     break;
+                case "Service":
+                    ConnectionToClient.ConnectionType = ConnectionTypes.Service;
+                    break;
                 default:
                     break;
             }

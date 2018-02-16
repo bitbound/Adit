@@ -20,9 +20,7 @@ namespace Adit_Service
         protected override void OnStart(string[] args)
         {
             base.OnStart(args);
-#pragma warning disable
-            AditService.Start();
-#pragma warning restore
+            AditService.Connect();
         }
         protected override void OnStop()
         {

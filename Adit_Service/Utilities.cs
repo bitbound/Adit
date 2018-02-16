@@ -35,7 +35,7 @@ namespace Adit_Service
         public static void WriteToLog(Exception ex)
         {
             var exception = ex;
-            var path = Path.GetTempPath() + "Adit_Logs.txt";
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
             if (File.Exists(path))
             {
                 var fi = new FileInfo(path);
@@ -62,7 +62,7 @@ namespace Adit_Service
         }
         public static void WriteToLog(string Message)
         {
-            var path = Path.GetTempPath() + "Adit_Logs.txt";
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
             if (File.Exists(path))
             {
                 var fi = new FileInfo(path);
@@ -80,6 +80,24 @@ namespace Adit_Service
                 Message = Message
             };
             File.AppendAllText(path, JSON.Serialize(jsoninfo) + Environment.NewLine);
+        }
+        public static void CleanupFiles()
+        {
+            var di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\AditFiles\");
+            foreach (var file in di.GetFiles())
+            {
+                if (DateTime.Now - file.LastWriteTime > TimeSpan.FromDays(1))
+                {
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteToLog(ex);
+                    }
+                }
+            }
         }
     }
 }

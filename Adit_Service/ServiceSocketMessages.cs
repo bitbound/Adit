@@ -15,10 +15,6 @@ namespace Adit_Service
     class ServiceSocketMessages
     {
         Socket socketOut;
-        int totalHeight = SystemInformation.VirtualScreen.Height;
-        int totalWidth = SystemInformation.VirtualScreen.Width;
-        int offsetX = SystemInformation.VirtualScreen.Left;
-        int offsetY = SystemInformation.VirtualScreen.Top;
         public ServiceSocketMessages(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -58,17 +54,16 @@ namespace Adit_Service
                 ConnectionType = connectionType.ToString()
             });
         }
-
         public void ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
         {
             if (socketArgs.BytesTransferred == 0)
             {
                 return;
             }
-            var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
-            if (Utilities.IsJSONData(trimmedBuffer))
+            try
             {
-                try
+                var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
+                if (Utilities.IsJSONData(trimmedBuffer))
                 {
                     var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
                     var messages = Utilities.SplitJSON(decodedString);
@@ -90,31 +85,36 @@ namespace Adit_Service
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Utilities.WriteToLog(ex);
-                }
-            }
-            else
-            {
-                try
+                else
                 {
                     this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
                         FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
                 }
-                catch
-                {
-
-                }
             }
+            catch (Exception ex)
+            {
+                Utilities.WriteToLog(ex);
+            }
+           
         }
         public void SendHeartbeat()
         {
+            if (!AditService.HeartbeatTimer.Enabled)
+            {
+                AditService.HeartbeatTimer.Elapsed += (sender, args) =>
+                {
+                    SendHeartbeat();
+                };
+                AditService.HeartbeatTimer.Interval = 30000;
+                AditService.HeartbeatTimer.Start();
+            }
             try
             {
                 if (!AditService.IsConnected)
                 {
-                    AditService.Connect();
+                    AditService.HeartbeatTimer.Stop();
+                    AditService.WaitToRetryConnection();
+                    return;
                 }
                 var uptime = new PerformanceCounter("System", "System Up Time", true);
                 uptime.NextValue();
@@ -133,7 +133,6 @@ namespace Adit_Service
                     currentUser = "";
                 }
 
-                // Send notification to server that this connection is for a client service.
                 var request = new
                 {
                     Type = "Heartbeat",
@@ -142,21 +141,7 @@ namespace Adit_Service
                     LastReboot = (DateTime.Now - TimeSpan.FromSeconds(uptime.NextValue()))
                 };
                 SendJSON(request);
-                var di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\InstaTech\");
-                foreach (var file in di.GetFiles())
-                {
-                    if (DateTime.Now - file.LastWriteTime > TimeSpan.FromDays(1))
-                    {
-                        try
-                        {
-                            file.Delete();
-                        }
-                        catch (Exception ex)
-                        {
-                            Utilities.WriteToLog(ex);
-                        }
-                    }
-                }
+                Utilities.CleanupFiles();
             }
             catch (Exception ex)
             {

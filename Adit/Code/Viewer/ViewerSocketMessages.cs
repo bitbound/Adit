@@ -123,6 +123,12 @@ namespace Adit.Code.Viewer
                 Y = y
             });
         }
+
+        internal void SendCtrlAltDel()
+        {
+            throw new NotImplementedException();
+        }
+
         private void ReceiveNoScreenActivity(dynamic jsonData)
         {
             SendImageRequest();
@@ -135,6 +141,11 @@ namespace Adit.Code.Viewer
                 Fullscreen = AditViewer.RequestFullscreen
             });
             AditViewer.RequestFullscreen = false;
+        }
+
+        internal void SendFileTransfer(string fileName)
+        {
+            throw new NotImplementedException();
         }
 
         internal void SendMouseRightDown(double x, double y)

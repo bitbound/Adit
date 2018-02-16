@@ -37,9 +37,10 @@ namespace Adit.Code.Shared
 
         public string ViewerHost { get; set; } = "localhost";
         public int ViewerPort { get; set; } = 54765;
-        public bool ViewerScaleToFit { get; set; } = true;
-        public bool MaximizeViewerOnConnect { get; set; } = true;
+        public bool IsViewerScaleToFit { get; set; } = true;
+        public bool IsViewerMaximizedOnConnect { get; set; } = true;
         public bool IsClipboardShared { get; set; } = true;
+        public bool IsFollowCursorEnabled { get; set; } = true;
 
         public enum StartupModes
         {

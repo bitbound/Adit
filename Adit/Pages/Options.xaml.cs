@@ -78,8 +78,8 @@ namespace Adit.Pages
         public void RefreshUI()
         {
             toggleUAC.IsOn = Config.Current.IsUACHandled;
-            toggleMaximizeViewer.IsOn = Config.Current.MaximizeViewerOnConnect;
-            toggleScaleToFitViewer.IsOn = Config.Current.ViewerScaleToFit;
+            toggleMaximizeViewer.IsOn = Config.Current.IsViewerMaximizedOnConnect;
+            toggleScaleToFitViewer.IsOn = Config.Current.IsViewerScaleToFit;
             toggleStartServerAutomatically.IsOn = Config.Current.IsServerAutoStartEnabled;
             toggleServiceInstalled.IsOn = ServiceConfig.IsServiceInstalled;
             toggleServiceRunning.IsOn = ServiceConfig.IsServiceRunning;
@@ -89,11 +89,13 @@ namespace Adit.Pages
             toggleIsViewerVisible.IsOn = Config.Current.IsViewerTabVisible;
             toggleIsOptionsVisible.IsOn = Config.Current.IsOptionsTabVisible;
             toggleChangeServer.IsOn = Config.Current.IsTargetServerConfigurable;
+            toggleScreenFollowsCursors.IsOn = Config.Current.IsFollowCursorEnabled;
+            toggleShareClipboard.IsOn = Config.Current.IsClipboardShared;
         }
 
         private void MaximizeViewer_Click(object sender, MouseButtonEventArgs e)
         {
-            Config.Current.MaximizeViewerOnConnect = !(sender as Controls.ToggleSwitch).IsOn;
+            Config.Current.IsViewerMaximizedOnConnect = !(sender as Controls.ToggleSwitch).IsOn;
             Config.Save();
         }
 
@@ -105,7 +107,7 @@ namespace Adit.Pages
 
         private void ScaleToFitViewer_Click(object sender, MouseButtonEventArgs e)
         {
-            Config.Current.ViewerScaleToFit = !(sender as Controls.ToggleSwitch).IsOn;
+            Config.Current.IsViewerScaleToFit = !(sender as Controls.ToggleSwitch).IsOn;
             Config.Save();
         }
 
@@ -147,6 +149,18 @@ namespace Adit.Pages
         private void CanChangeServer_Click(object sender, MouseButtonEventArgs e)
         {
             Config.Current.IsTargetServerConfigurable = !(sender as Controls.ToggleSwitch).IsOn;
+            Config.Save();
+        }
+
+        private void FollowCursor_Click(object sender, MouseButtonEventArgs e)
+        {
+            Config.Current.IsFollowCursorEnabled = !(sender as Controls.ToggleSwitch).IsOn;
+            Config.Save();
+        }
+
+        private void ShareClipboard_Click(object sender, MouseButtonEventArgs e)
+        {
+            Config.Current.IsClipboardShared = !(sender as Controls.ToggleSwitch).IsOn;
             Config.Save();
         }
     }

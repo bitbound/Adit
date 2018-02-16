@@ -66,6 +66,22 @@
                             </Controls:ToggleSwitch.ToolTip>
                         </Controls:ToggleSwitch>
                     </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Pan to Follow Cursor:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleScreenFollowsCursors" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="FollowCursor_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, and Scale-To-Fit is off, the window will pan when the mouse cursor is at the edge of the screen."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Share Clipboard:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleShareClipboard" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ShareClipboard_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, clipboard contents will be shared between client and viewer."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Unattended Access" Margin="0,10,0,0" Padding="0,10,0,0">

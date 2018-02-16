@@ -65,7 +65,7 @@ namespace Adit.Code.Viewer
                 imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
                 using (var context = drawingSurface.RenderOpen())
                 {
-                    if (Config.Current.ViewerScaleToFit)
+                    if (Config.Current.IsViewerScaleToFit)
                     {
                         context.DrawImage(renderTargetBitmap, new Rect(0, 0, maxWidth, maxHeight));
                     }
@@ -83,7 +83,7 @@ namespace Adit.Code.Viewer
         {
             maxWidth = Math.Max(width, maxWidth);
             maxHeight = Math.Max(height, maxHeight);
-            if (Config.Current.ViewerScaleToFit)
+            if (Config.Current.IsViewerScaleToFit)
             {
                 this.Width = double.NaN;
                 this.Height = double.NaN;

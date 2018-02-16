@@ -106,7 +106,7 @@ namespace Adit.Code.Server
 
         private static void ReceiveFromClientCompleted(object sender, SocketAsyncEventArgs e)
         {
-            if ((e.UserToken as ClientConnection).Socket.Connected == false)
+            if ((e.UserToken as ClientConnection).Socket.Connected == false || e.BytesTransferred == 0)
             {
                 HandleClientDisconnect(e);
                 return;

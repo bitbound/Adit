@@ -94,7 +94,7 @@ namespace Adit.Code.Viewer
 
         private void ReceiveReadyForViewer(dynamic jsonData)
         {
-            if (Config.Current.MaximizeViewerOnConnect)
+            if (Config.Current.IsViewerMaximizedOnConnect)
             {
                 MainWindow.Current.Dispatcher.Invoke(() => 
                 {

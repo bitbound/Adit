@@ -86,5 +86,9 @@ namespace Adit.Pages
             this.Dispatcher.Invoke(() => RefreshUI());
         }
 
+        private void RemoteAdmins_Click(object sender, RoutedEventArgs e)
+        {
+            new Windows.RemoteAdmins().ShowDialog();
+        }
     }
 }

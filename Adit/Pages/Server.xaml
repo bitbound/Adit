@@ -37,6 +37,10 @@
                 <TextBlock Text="Server Port:" FontSize="15"/>
                 <TextBox x:Name="textPort" HorizontalAlignment="Right" Height="25"  Padding="0,3,0,0" TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The port to use for incoming connections." Text="{Binding Current.ServerPort}"/>
             </Grid>
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
+                <TextBlock Text="Remote Admins:" FontSize="15"/>
+                <Button HorizontalAlignment="Right" Height="25" Content="Configure" Padding="0,3,0,0" Width="100" Margin="10,0,0,0" ToolTip="Issue or revoke remote administrator keys." Style="{DynamicResource PrimaryButton}" Click="RemoteAdmins_Click"/>
+            </Grid>
         </StackPanel>
     </Grid>
 </Page>

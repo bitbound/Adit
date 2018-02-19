@@ -16,7 +16,10 @@
 
     <ScrollViewer>
         <StackPanel Margin="10">
-            <TextBlock Text="Adit Options" FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+            <TextBlock FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left">
+                <Run Text="{Binding Current.ProductName}"></Run>
+                <Run> Options</Run>
+            </TextBlock>
             <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,5"/>
             <GroupBox Header="Server Options"  Margin="0,10,0,0" Padding="0,10,0,0">
                 <Grid>
@@ -43,6 +46,14 @@
                         <Controls:ToggleSwitch x:Name="toggleChangeServer" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="CanChangeServer_Click">
                             <Controls:ToggleSwitch.ToolTip>
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If disabled, the user will not be able to see or change the server to which the client and viewer connnect."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Connect Client Automatically:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleClientAutoConnect" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="ClientAutoConnect_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, the client will automatically connect when the Client tab is selected."/>
                             </Controls:ToggleSwitch.ToolTip>
                         </Controls:ToggleSwitch>
                     </Grid>

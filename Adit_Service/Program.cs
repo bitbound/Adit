@@ -51,7 +51,7 @@ namespace Adit_Service
         {
             try
             {
-                var di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit"));
+                var di = Directory.CreateDirectory(Utilities.ProgramFolder);
                 var installPath = Path.Combine(di.FullName, Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location));
                 var serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Adit_Service");
                 if (serv == null)

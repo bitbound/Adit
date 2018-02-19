@@ -16,7 +16,6 @@ namespace Adit.Code.Server
     {
         private static TcpListener tcpListener;
         private static SocketAsyncEventArgs acceptConnectionArgs;
-        private static int bufferSize = 9999999;
         public static List<ClientConnection> ClientList { get; set; } = new List<ClientConnection>();
         public static List<ClientSession> SessionList { get; set; } = new List<ClientSession>();
         public static bool IsEnabled
@@ -38,8 +37,8 @@ namespace Adit.Code.Server
                 throw new Exception("Server is already running.");
             }
             tcpListener = TcpListener.Create(Config.Current.ServerPort);
-            tcpListener.Server.ReceiveBufferSize = bufferSize;
-            tcpListener.Server.SendBufferSize = bufferSize;
+            tcpListener.Server.ReceiveBufferSize = Config.Current.BufferSize;
+            tcpListener.Server.SendBufferSize = Config.Current.BufferSize;
             try
             {
                 tcpListener.Start();
@@ -72,11 +71,11 @@ namespace Adit.Code.Server
                 ClientList.Add(clientConnection);
 
                 var socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(new byte[bufferSize], 0, bufferSize);
+                socketArgs.SetBuffer(new byte[Config.Current.BufferSize], 0, Config.Current.BufferSize);
                 socketArgs.UserToken = clientConnection;
                 socketArgs.Completed += ReceiveFromClientCompleted;
 
-                Pages.Server.Current.RefreshUICall();
+                Pages.Server.Current?.RefreshUICall();
                 WaitForClientMessage(socketArgs);
                 WaitForClientConnection();
             }

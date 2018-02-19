@@ -91,6 +91,7 @@ namespace Adit.Pages
             toggleChangeServer.IsOn = Config.Current.IsTargetServerConfigurable;
             toggleScreenFollowsCursors.IsOn = Config.Current.IsFollowCursorEnabled;
             toggleShareClipboard.IsOn = Config.Current.IsClipboardShared;
+            toggleClientAutoConnect.IsOn = Config.Current.IsClientAutoConnectEnabled;
         }
 
         private void MaximizeViewer_Click(object sender, MouseButtonEventArgs e)
@@ -101,6 +102,33 @@ namespace Adit.Pages
 
         private void StartServerAutomatically_Click(object sender, MouseButtonEventArgs e)
         {
+            if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+            {
+                MessageBox.Show("Adit must be running as an administrator to change this option.", "Administrator Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            var runKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            if (!(sender as Controls.ToggleSwitch).IsOn == true)
+            {
+                if (runKey.GetValue("Adit") == null)
+                {
+                    runKey.SetValue("Adit", @"""%programdata%\Adit\Adit.exe"" -background", Microsoft.Win32.RegistryValueKind.ExpandString);
+                }
+                try
+                {
+                    Directory.CreateDirectory(Utilities.ProgramFolder);
+                    File.Copy(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Adit.exe"), System.IO.Path.Combine(Utilities.ProgramFolder, "Adit.exe"), true);
+                }
+                catch { }
+            }
+            else
+            {
+                if (runKey.GetValue("Adit") != null)
+                {
+                    runKey.DeleteValue("Adit");
+                }
+            }
+           
             Config.Current.IsServerAutoStartEnabled = !(sender as Controls.ToggleSwitch).IsOn;
             Config.Save();
         }
@@ -161,6 +189,12 @@ namespace Adit.Pages
         private void ShareClipboard_Click(object sender, MouseButtonEventArgs e)
         {
             Config.Current.IsClipboardShared = !(sender as Controls.ToggleSwitch).IsOn;
+            Config.Save();
+        }
+
+        private void ClientAutoConnect_Click(object sender, MouseButtonEventArgs e)
+        {
+            Config.Current.IsClientAutoConnectEnabled = !(sender as Controls.ToggleSwitch).IsOn;
             Config.Save();
         }
     }

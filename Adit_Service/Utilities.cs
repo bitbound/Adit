@@ -12,6 +12,13 @@ namespace Adit_Service
     class Utilities
     {
         public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer();
+        public static string ProgramFolder
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit");
+            }
+        }
 
         public static bool IsJSONData(byte[] bytes)
         {

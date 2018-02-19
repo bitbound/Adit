@@ -13,7 +13,10 @@
     </Page.DataContext>
 
     <StackPanel Margin="10,10,10,10">
-        <TextBlock Text="Adit Client" FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <TextBlock FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Run Text="{Binding Current.ProductName}"></Run>
+            <Run> Client</Run>
+        </TextBlock>
         <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <StackPanel x:Name="stackMain"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,15,0,0" Visibility="Collapsed">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">

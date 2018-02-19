@@ -14,13 +14,13 @@
     </Page.DataContext>
 
     <Grid x:Name="mainGrid">
-        <Grid x:Name="viewerGrid" Visibility="Visible">
+        <Grid x:Name="viewerGrid" Visibility="Collapsed">
             <Button x:Name="buttonMenu" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Width="25" Cursor="Hand" Click="ViewerMenu_Click" Background="#BFFFFFFF" Panel.ZIndex="2">
                 <Button.ContextMenu>
                     <ContextMenu>
                         <MenuItem x:Name="menuSendCtrAltDel"  Header="Send Ctrl+Alt+Del" Click="SendCtrlAltDel_Click"/>
                         <MenuItem x:Name="menuTransferFile" Header="Transfer File" Click="TransferFile_Click"/>
-                        <MenuItem x:Name="menuRefreshScreen" Header="Refresh Screen" Click="RefreshSCreen_Click"/>
+                        <MenuItem x:Name="menuRefreshScreen" Header="Refresh Screen" Click="RefreshScreen_Click"/>
                         <MenuItem x:Name="menuDisconnect"  Header="Disconnect" Click="Disconnect_Click"/>
                     </ContextMenu>
                 </Button.ContextMenu>

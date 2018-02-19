@@ -16,7 +16,10 @@
 
     <Grid Margin="10,10,10,10">
         <StackPanel x:Name="stackMain"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <TextBlock Text="Adit Server" FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <TextBlock FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left">
+                <Run Text="{Binding Current.ProductName}"></Run>
+                <Run> Server</Run>
+            </TextBlock>
             <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Server Status:" FontSize="15"/>

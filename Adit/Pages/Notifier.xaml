@@ -1,17 +1,21 @@
-﻿<Page x:Class="Adit.Pages.Notifier"
+﻿<Page
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Adit.Pages"
-      mc:Ignorable="d" 
+      xmlns:Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.Pages.Notifier"
+      mc:Ignorable="d"
       d:DesignHeight="300" d:DesignWidth="300"
   Title="Notifier" Height="80" Width="275" Loaded="Page_Loaded">
+    <Page.DataContext>
+        <Shared:Config/>
+    </Page.DataContext>
     <Grid HorizontalAlignment="Stretch" Background="LightSteelBlue">
         <StackPanel x:Name="stackContent" Margin="10,5" VerticalAlignment="Top">
-            <TextBlock Text="Adit" FontSize="16" FontWeight="Bold"></TextBlock>
-            <TextBlock Text="Remote access solution." FontSize="10" FontStyle="Italic" Margin="0,0,0,10"></TextBlock>
-            <TextBlock TextWrapping="NoWrap">Your screen is being viewed by your partner.</TextBlock>
+            <TextBlock Text="Adit" FontSize="16" FontWeight="Bold"><Run Text="{Binding Current.ProductName}"/><Run Text=" "/><Run Text="Client"/></TextBlock>
+            <TextBlock Text="Remote access solution." FontSize="10" FontStyle="Italic" Margin="0,0,0,10"/>
+            <TextBlock TextWrapping="NoWrap"><Run Text="Your screen is being viewed by your partner."/></TextBlock>
         </StackPanel>
     </Grid>
 </Page>

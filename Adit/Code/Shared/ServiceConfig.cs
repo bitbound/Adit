@@ -57,29 +57,52 @@ namespace Adit.Code.Shared
                 proc.Kill();
             }
 
-            var programDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit"));
+            var programDir = Directory.CreateDirectory(Utilities.ProgramFolder);
             var clientProgramPath = Path.Combine(programDir.FullName, Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+
+            var count = 0;
             while (File.Exists(clientProgramPath))
             {
                 try
                 {
                     File.Delete(clientProgramPath);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    count++;
+                    if (count > 10)
+                    {
+                        Utilities.WriteToLog(ex);
+                        if (!silent)
+                        {
+                            MessageBox.Show("Service installation failed.", "Install Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        return;
+                    }
                     System.Threading.Thread.Sleep(500);
                 }
             }
             File.Copy(System.Reflection.Assembly.GetExecutingAssembly().Location, clientProgramPath, true);
 
+            count = 0;
             while (File.Exists(Path.Combine(programDir.FullName, "Adit_Service.exe")))
             {
                 try
                 {
                     File.Delete(Path.Combine(programDir.FullName, "Adit_Service.exe"));
                 }
-                catch
+                catch (Exception ex)
                 {
+                    count++;
+                    if (count > 10)
+                    {
+                        Utilities.WriteToLog(ex);
+                        if (!silent)
+                        {
+                            MessageBox.Show("Service installation failed.", "Install Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        return;
+                    }
                     System.Threading.Thread.Sleep(500);
                 }
             }
@@ -147,11 +170,17 @@ namespace Adit.Code.Shared
         }
         public static void StartService()
         {
-
+            var services = System.ServiceProcess.ServiceController.GetServices();
+            var service = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
+            service.Start();
+            Pages.Options.Current.RefreshUI();
         }
         public static void StopService()
         {
-
+            var services = System.ServiceProcess.ServiceController.GetServices();
+            var service = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
+            service.Stop();
+            Pages.Options.Current.RefreshUI();
         }
     }
 }

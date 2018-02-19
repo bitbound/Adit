@@ -14,6 +14,7 @@ namespace Adit_Service
         public static Config Current { get; set; } = new Config();
         public StartupModes StartupMode { get; set; } = StartupModes.Normal;
         public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
+        public int BufferSize { get; set; } = 100000000;
 
 
         public bool IsServerTabVisible { get; set; } = true;
@@ -40,6 +41,7 @@ namespace Adit_Service
         public bool ViewerScaleToFit { get; set; } = true;
         public bool MaximizeViewerOnConnect { get; set; } = true;
 
+
         public enum StartupModes
         {
             Normal,
@@ -55,12 +57,12 @@ namespace Adit_Service
         }
         public static void Save()
         {
-            var di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit"));
+            var di = Directory.CreateDirectory(Utilities.ProgramFolder);
             File.WriteAllText(Path.Combine(di.FullName, "Config.json"), Utilities.JSON.Serialize(Config.Current));
         }
         public static void Load()
         {
-            var fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit", "Config.json"));
+            var fileInfo = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Config.json"));
             if (fileInfo.Exists)
             {
                 var settings = Utilities.JSON.Deserialize<Config>(File.ReadAllText(fileInfo.FullName));

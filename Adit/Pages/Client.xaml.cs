@@ -34,12 +34,14 @@ namespace Adit.Pages
             Initializer.CleanupTempFiles();
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             
-            if (Config.Current.IsClientAutoConnectEnabled)
+            if (Config.Current.IsClientAutoConnectEnabled && !AditClient.IsConnected)
             {
-                // TODO
+                stackConnect.Visibility = Visibility.Collapsed;
+                stackMain.Visibility = Visibility.Visible;
+                await AditClient.Connect();
             }
             RefreshUI();
         }

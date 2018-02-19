@@ -15,7 +15,6 @@ namespace Adit_Service
         public static TcpClient TcpClient { get; set; }
         public static ServiceSocketMessages SocketMessageHandler { get; set; }
         public static Timer HeartbeatTimer { get; set; } = new Timer();
-        private static int bufferSize = 9999999;
         public static bool IsConnected
         {
             get
@@ -35,11 +34,11 @@ namespace Adit_Service
             try
             {
                 TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
-                TcpClient.Client.ReceiveBufferSize = bufferSize;
-                TcpClient.Client.SendBufferSize = bufferSize;
+                TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
+                TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
                 if (receiveBuffer == null)
                 {
-                    receiveBuffer = new byte[bufferSize];
+                    receiveBuffer = new byte[Config.Current.BufferSize];
                 }
                 socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);

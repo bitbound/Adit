@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -15,6 +16,20 @@ namespace Adit.Code.Shared
     class Utilities
     {
         public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer();
+        public static string ProgramFolder
+        {
+            get
+            {
+                if (WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+                {
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit");
+                }
+                else
+                {
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit");
+                }
+            }
+        }
 
         public static string CreateSessionID()
         {

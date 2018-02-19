@@ -14,6 +14,8 @@ namespace Adit.Code.Shared
         public static Config Current { get; set; } = new Config();
         public StartupModes StartupMode { get; set; } = StartupModes.Normal;
         public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
+        public string ProductName { get; set; } = "Adit";
+        public int BufferSize { get; set; } = 100000000;
 
 
         public bool IsServerTabVisible { get; set; } = true;
@@ -57,28 +59,12 @@ namespace Adit.Code.Shared
         }
         public static void Save()
         {
-            DirectoryInfo di;
-            if (WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
-            {
-                di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit"));
-            }
-            else
-            {
-                di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit"));
-            }
+            DirectoryInfo di = Directory.CreateDirectory(Utilities.ProgramFolder);
             File.WriteAllText(Path.Combine(di.FullName, "Config.json"), Utilities.JSON.Serialize(Config.Current));
         }
         public static void Load()
         {
-            FileInfo fileInfo;
-            if (WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
-            {
-                fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit", "Config.json"));
-            }
-            else
-            {
-                fileInfo = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit", "Config.json"));
-            }
+            FileInfo fileInfo = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Config.json"));
             if (fileInfo.Exists)
             {
                 var settings = Utilities.JSON.Deserialize<Config>(File.ReadAllText(fileInfo.FullName));

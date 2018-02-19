@@ -36,7 +36,7 @@ namespace Adit.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Config.Current.IsClientAutoConnectEnabled)
+            if (!Config.Current.IsTargetServerConfigurable)
             {
                 stackServerInfo.Visibility = Visibility.Collapsed;
             }
@@ -104,6 +104,7 @@ namespace Adit.Pages
             {
                 AditViewer.SocketMessageHandler.SendFileTransfer(fileDialog.FileName);
             }
+            Utilities.ShowToolTip(buttonMenu, "File transfer started.");
         }
 
         private void Disconnect_Click(object sender, RoutedEventArgs e)
@@ -116,7 +117,7 @@ namespace Adit.Pages
             (sender as FrameworkElement).ContextMenu.IsOpen = !(sender as FrameworkElement).ContextMenu.IsOpen;
         }
 
-        private void RefreshSCreen_Click(object sender, RoutedEventArgs e)
+        private void RefreshScreen_Click(object sender, RoutedEventArgs e)
         {
             AditViewer.RequestFullscreen = true;
         }

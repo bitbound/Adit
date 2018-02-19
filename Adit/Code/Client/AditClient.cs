@@ -19,7 +19,6 @@ namespace Adit.Code.Client
         private static byte[] receiveBuffer;
         public static TcpClient TcpClient { get; set; }
         public static ClientSocketMessages SocketMessageHandler { get; set; }
-        private static int bufferSize = 9999999;
         public static List<Participant> ParticipantList { get; set; } = new List<Participant>();
         public static bool IsConnected
         {
@@ -43,11 +42,11 @@ namespace Adit.Code.Client
             try
             {
                 await TcpClient.ConnectAsync(Config.Current.ClientHost, Config.Current.ClientPort);
-                TcpClient.Client.ReceiveBufferSize = bufferSize;
-                TcpClient.Client.SendBufferSize = bufferSize;
+                TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
+                TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
                 if (receiveBuffer == null)
                 {
-                    receiveBuffer = new byte[bufferSize];
+                    receiveBuffer = new byte[Config.Current.BufferSize];
                 }
                 socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);

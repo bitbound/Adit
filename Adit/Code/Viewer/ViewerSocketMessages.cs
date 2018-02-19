@@ -3,6 +3,7 @@ using Adit.Controls;
 using Adit.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
@@ -126,7 +127,10 @@ namespace Adit.Code.Viewer
 
         internal void SendCtrlAltDel()
         {
-            throw new NotImplementedException();
+            SendJSON(new
+            {
+                Type = "CtrlAltDel"
+            });
         }
 
         private void ReceiveNoScreenActivity(dynamic jsonData)
@@ -143,9 +147,14 @@ namespace Adit.Code.Viewer
             AditViewer.RequestFullscreen = false;
         }
 
-        internal void SendFileTransfer(string fileName)
+        public void SendFileTransfer(string fileName)
         {
-            throw new NotImplementedException();
+            var base64 = Convert.ToBase64String(File.ReadAllBytes(fileName));
+            SendJSON(new
+            {
+                Type = "FileTransfer",
+                File = base64
+            });
         }
 
         internal void SendMouseRightDown(double x, double y)

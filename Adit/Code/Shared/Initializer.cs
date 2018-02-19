@@ -12,15 +12,17 @@ namespace Adit.Code.Shared
 {
     public static class Initializer
     {
+        public static bool IsFirstLoad { get; set; } = true;
         public static void ProcessCommandLineArgs(string[] args)
         {
-            if (args.Contains("-background"))
+            if (args.Contains("-upgrade"))
+            {
+                // TODO
+                Config.Current.StartupMode = Config.StartupModes.Notifier;
+            }
+            else if (args.Contains("-background"))
             {
                 Config.Current.StartupMode = Config.StartupModes.Background;
-            }
-            else if (args.Contains("-notifier"))
-            {
-                Config.Current.StartupMode = Config.StartupModes.Notifier;
             }
             else if (args.Contains("-install"))
             {
@@ -32,9 +34,9 @@ namespace Adit.Code.Shared
                 ServiceConfig.RemoveService(true);
                 App.Current.Shutdown();
             }
-            else if (args.Contains("-upgrade"))
+            else
             {
-                // TODO
+                Config.Current.StartupMode = Config.StartupModes.Normal;
             }
         }
 

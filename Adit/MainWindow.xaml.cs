@@ -43,13 +43,23 @@ namespace Adit
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Initializer.SetGlobalErrorHandler();
-            Initializer.SetShutdownMode();
-            Config.Load();
-            Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
-            TrayIcon.Create();
+            if (Initializer.IsFirstLoad)
+            {
+                Initializer.SetGlobalErrorHandler();
+                Initializer.SetShutdownMode();
+                Config.Load();
+                Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
+                TrayIcon.Create();
+
+                if (Config.Current.IsServerAutoStartEnabled)
+                {
+                    AditServer.Start();
+                }
+            }
 
             ProcessConfiguration();
+
+            Initializer.IsFirstLoad = false;
         }
 
         private void ProcessConfiguration()
@@ -82,10 +92,6 @@ namespace Adit
             {
                 optionsToggle.Visibility = Visibility.Collapsed;
             }
-            if (Config.Current.IsClientAutoConnectEnabled)
-            {
-                // TODO
-            }
 
             switch (Config.Current.StartupTab)
             {
@@ -116,7 +122,10 @@ namespace Adit
                     mainFrame.Navigate(new Notifier());
                     break;
                 case Config.StartupModes.Background:
-                    this.Close();
+                    if (Initializer.IsFirstLoad)
+                    {
+                        this.Close();
+                    }
                     break;
                 default:
                     break;

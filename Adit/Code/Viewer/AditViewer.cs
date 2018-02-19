@@ -20,7 +20,6 @@ namespace Adit.Code.Viewer
 
         public static ViewerSocketMessages SocketMessageHandler { get; set; }
 
-        private static int bufferSize = 9999999;
 
         public static int PartnersConnected { get; set; } = 0;
         public static bool RequestFullscreen { get; set; }
@@ -45,11 +44,11 @@ namespace Adit.Code.Viewer
             {
                 SessionID = sessionID;
                 await TcpClient.ConnectAsync(Config.Current.ViewerHost, Config.Current.ViewerPort);
-                TcpClient.Client.ReceiveBufferSize = bufferSize;
-                TcpClient.Client.SendBufferSize = bufferSize;
+                TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
+                TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
                 if (receiveBuffer == null)
                 {
-                    receiveBuffer = new byte[bufferSize];
+                    receiveBuffer = new byte[Config.Current.BufferSize];
                 }
                 socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);

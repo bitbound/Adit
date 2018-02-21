@@ -9,6 +9,7 @@ namespace Adit.Models
     public enum ConnectionTypes
     {
         Client,
+        ElevatedClient,
         Service,
         Viewer
     }

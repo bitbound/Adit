@@ -17,7 +17,7 @@ namespace Adit.Code.Server
 
         public void AddOrUpdateComputer(ClientConnection connection)
         {
-            var onlineComputer = ComputerList.Find(x => x.ComputerName == connection.ComputerName);
+            var onlineComputer = ComputerList.Find(x =>!string.IsNullOrWhiteSpace(x.ComputerName) && x.ComputerName == connection.ComputerName);
             if (onlineComputer != null)
             {
                 onlineComputer.IsOnline = true;
@@ -30,9 +30,11 @@ namespace Adit.Code.Server
                 };
                 ComputerList.Add(onlineComputer);
             }
+            onlineComputer.ID = connection.ID;
             onlineComputer.SessionID = connection.SessionID;
             onlineComputer.ConnectionType = connection.ConnectionType;
             onlineComputer.IsOnline = true;
+            onlineComputer.CurrentUser = connection.CurrentUser;
             onlineComputer.ComputerName = connection.ComputerName;
             onlineComputer.LastOnline = DateTime.Now;
             onlineComputer.LastReboot = connection.LastReboot;

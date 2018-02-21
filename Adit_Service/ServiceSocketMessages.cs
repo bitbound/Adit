@@ -6,9 +6,11 @@ using System.Linq;
 using System.Management;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Win32_Classes;
 
 namespace Adit_Service
 {
@@ -96,6 +98,26 @@ namespace Adit_Service
                 Utilities.WriteToLog(ex);
             }
            
+        }
+        private void ReceiveRequestForElevatedClient(dynamic jsonData)
+        {
+            Utilities.WriteToLog("Received request for elevated client.");
+            var sessionID = Guid.NewGuid().ToString();
+            var desktopName = User32.GetCurrentDesktop();
+            var procInfo = new ADVAPI32.PROCESS_INFORMATION();
+            var processResult = ADVAPI32.OpenInteractiveProcess(Path.Combine(Utilities.ProgramFolder, "Adit.exe") + $" -upgrade {sessionID}", desktopName, out procInfo);
+            if (processResult == false)
+            {
+                jsonData["Status"] = "failed";
+                SendJSON(jsonData);
+                Utilities.WriteToLog(new Exception("Error opening interactive process.  Error Code: " + Marshal.GetLastWin32Error().ToString()));
+            }
+            else
+            {
+                jsonData["Status"] = "ok";
+                jsonData["ClientSessionID"] = sessionID;
+                SendJSON(jsonData);
+            }
         }
         public void SendHeartbeat()
         {

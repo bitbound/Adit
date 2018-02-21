@@ -57,6 +57,15 @@ namespace Adit.Code.Client
             }
             Pages.Client.Current.RefreshUICall();
         }
+        public void SendConnectionType(ConnectionTypes connectionType, string sessionIDToUse)
+        {
+            SendJSON(new
+            {
+                Type = "ConnectionType",
+                ConnectionType = connectionType.ToString(),
+                SessionID = sessionIDToUse
+            });
+        }
 
         private void ReceiveImageRequest(dynamic jsonData)
         {

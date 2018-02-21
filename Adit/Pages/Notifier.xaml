@@ -13,7 +13,7 @@
     </Page.DataContext>
     <Grid HorizontalAlignment="Stretch" Background="LightSteelBlue">
         <StackPanel x:Name="stackContent" Margin="10,5" VerticalAlignment="Top">
-            <TextBlock Text="Adit" FontSize="16" FontWeight="Bold"><Run Text="{Binding Current.ProductName}"/><Run Text=" "/><Run Text="Client"/></TextBlock>
+            <TextBlock FontSize="16" FontWeight="Bold"><Run Text="{Binding Current.ProductName}"/><Run Text=" "/><Run Text="Client"/></TextBlock>
             <TextBlock Text="Remote access solution." FontSize="10" FontStyle="Italic" Margin="0,0,0,10"/>
             <TextBlock TextWrapping="NoWrap"><Run Text="Your screen is being viewed by your partner."/></TextBlock>
         </StackPanel>

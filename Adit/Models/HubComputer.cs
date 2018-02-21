@@ -16,6 +16,7 @@ namespace Adit.Models
                 return IsOnline ? "Yes" : "No";
             }
         }
+        public string ID { get; set; }
         public string SessionID { get; set; }
         public string ComputerName { get; set; }
         public string CurrentUser { get; set; }

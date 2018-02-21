@@ -41,17 +41,16 @@ namespace Adit
             TrayIcon.Icon?.ShowCustomBalloon(new ClosedToTrayBalloon(), PopupAnimation.Fade, 5000);
             Config.Save();
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (Initializer.IsFirstLoad)
             {
                 Initializer.SetGlobalErrorHandler();
                 Initializer.SetShutdownMode();
                 Config.Load();
-                Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
+                await Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
                 TrayIcon.Create();
-
-                if (Config.Current.IsServerAutoStartEnabled)
+                if (Config.Current.IsServerAutoStartEnabled && Config.Current.StartupMode != Config.StartupModes.Notifier)
                 {
                     AditServer.Start();
                 }

@@ -36,7 +36,7 @@ namespace Adit.Code.Viewer
         {
             if (IsConnected)
             {
-                MessageBox.Show("The client is already connected.", "Already Connected", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("The viewer is already connected.", "Already Connected", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             TcpClient = new TcpClient();
@@ -64,7 +64,6 @@ namespace Adit.Code.Viewer
             WaitForServerMessage();
             SocketMessageHandler.SendConnectionType(ConnectionTypes.Viewer);
         }
-
         private static void WaitForServerMessage()
         {
             if (IsConnected)

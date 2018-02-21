@@ -33,10 +33,24 @@ namespace Adit.Code.Client
 
         public static async Task Connect()
         {
+            if (await InitConnection())
+            {
+                SocketMessageHandler.SendConnectionType(ConnectionTypes.Client);
+            }
+        }
+        public static async Task Connect(string sessionIDToUse)
+        {
+            if (await InitConnection())
+            {
+                SocketMessageHandler.SendConnectionType(ConnectionTypes.ElevatedClient, sessionIDToUse);
+            }
+        }
+        private static async Task<bool> InitConnection()
+        {
             if (IsConnected)
             {
                 MessageBox.Show("The client is already connected.", "Already Connected", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                return false;
             }
             TcpClient = new TcpClient();
             try
@@ -51,18 +65,17 @@ namespace Adit.Code.Client
                 socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
                 socketArgs.Completed += ReceiveFromServerCompleted;
+                SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
+                WaitForServerMessage();
+                return true;
             }
             catch
             {
                 MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 Pages.Client.Current.RefreshUICall();
-                return;
+                return false;
             }
-            SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
-            WaitForServerMessage();
-            SocketMessageHandler.SendConnectionType(ConnectionTypes.Client);
         }
-
         private static void WaitForServerMessage()
         {
             if (IsConnected)
@@ -84,6 +97,10 @@ namespace Adit.Code.Client
                 Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
                 SessionID = String.Empty;
                 Pages.Client.Current.RefreshUICall();
+                if (Config.Current.StartupMode == Config.StartupModes.Notifier)
+                {
+                    App.Current.Shutdown();
+                }
                 return;
             }
             SocketMessageHandler.ProcessSocketMessage(e);

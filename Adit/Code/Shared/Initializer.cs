@@ -13,11 +13,12 @@ namespace Adit.Code.Shared
     public static class Initializer
     {
         public static bool IsFirstLoad { get; set; } = true;
-        public static void ProcessCommandLineArgs(string[] args)
+        public static async Task ProcessCommandLineArgs(string[] args)
         {
             if (args.Contains("-upgrade"))
             {
-                // TODO
+                var index = args.ToList().IndexOf("-upgrade") + 1;
+                await Adit.Code.Client.AditClient.Connect(args[index]);
                 Config.Current.StartupMode = Config.StartupModes.Notifier;
             }
             else if (args.Contains("-background"))

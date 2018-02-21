@@ -36,7 +36,6 @@ namespace Adit.Pages
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            
             if (Config.Current.IsClientAutoConnectEnabled && !AditClient.IsConnected)
             {
                 stackConnect.Visibility = Visibility.Collapsed;

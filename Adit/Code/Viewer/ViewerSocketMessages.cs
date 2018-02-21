@@ -204,6 +204,17 @@ namespace Adit.Code.Viewer
             }
             AditViewer.ParticipantList = participantList;
         }
-
+        private void ReceiveRequestForElevatedClient(dynamic jsonData)
+        {
+            if (jsonData["Status"] == "failed")
+            {
+                MessageBox.Show("Failed to connect to client.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (jsonData["Status"] == "ok")
+            {
+                AditViewer.Disconnect();
+                AditViewer.Connect(jsonData["ClientSessionID"]);
+            }
+        }
     }
 }

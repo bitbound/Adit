@@ -1,6 +1,7 @@
 ﻿using Adit.Code.Client;
 using Adit.Code.Shared;
 using Adit.Code.Viewer;
+using Adit.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +38,7 @@ namespace Adit.Pages
         {
             InitializeComponent();
             Current = this;
-            this.Loaded += async (sender, args) => 
+            this.Loaded += async (sender, args) =>
             {
                 controlsFrame.Visibility = Visibility.Collapsed;
                 await AditViewer.Connect(sessionID.Trim());

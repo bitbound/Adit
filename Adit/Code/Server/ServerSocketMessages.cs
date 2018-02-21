@@ -27,11 +27,17 @@ namespace Adit.Code.Server
             {
                 case "Client":
                     ConnectionToClient.ConnectionType = ConnectionTypes.Client;
-                    // Create ClientSession and add to list.
                     Session = new ClientSession();
                     Session.ConnectedClients.Add(ConnectionToClient);
                     AditServer.SessionList.Add(Session);
                     SendSessionID();
+                    break;
+                case "ElevatedClient":
+                    ConnectionToClient.ConnectionType = ConnectionTypes.ElevatedClient;
+                    Session = new ClientSession();
+                    Session.SessionID = jsonData["SessionID"];
+                    Session.ConnectedClients.Add(ConnectionToClient);
+                    AditServer.SessionList.Add(Session);
                     break;
                 case "Viewer":
                     ConnectionToClient.ConnectionType = ConnectionTypes.Viewer;
@@ -39,6 +45,10 @@ namespace Adit.Code.Server
                     break;
                 case "Service":
                     ConnectionToClient.ConnectionType = ConnectionTypes.Service;
+                    Session = new ClientSession();
+                    Session.SessionID = Guid.NewGuid().ToString();
+                    Session.ConnectedClients.Add(ConnectionToClient);
+                    AditServer.SessionList.Add(Session);
                     break;
                 default:
                     break;
@@ -62,11 +72,44 @@ namespace Adit.Code.Server
                 SendBytes(jsonData);
                 return;
             }
+            if (session.ConnectedClients[0]?.ConnectionType == ConnectionTypes.Service)
+            {
+                SendRequestForElevatedClient(session.ConnectedClients[0]);
+                return;
+            }
             session.ConnectedClients.Add(ConnectionToClient);
             SendParticipantList(session);
             Session = session;
             jsonData["Status"] = "ok";
             SendJSON(jsonData);
+        }
+
+        private void SendRequestForElevatedClient(ClientConnection clientConnection)
+        {
+            var request = new
+            {
+                Type = "RequestForElevatedClient",
+                RequesterID = this.ConnectionToClient.ID
+            };
+            clientConnection.SendJSON(request);
+        }
+        private async void ReceiveRequestForElevatedClient(dynamic jsonData)
+        {
+            if (jsonData["Status"] == "ok")
+            {
+                var startWait = DateTime.Now;
+                while (AditServer.ClientList.Any(x => x.SessionID == jsonData["ClientSessionID"]) == false)
+                {
+                    await Task.Delay(500);
+                    if (DateTime.Now - startWait > TimeSpan.FromSeconds(5))
+                    {
+                        jsonData["Status"] = "failed";
+                        break;
+                    }
+                }
+            }
+            var requester = AditServer.ClientList.Find(x => x.ID == jsonData["RequesterID"]);
+            requester.SendJSON(jsonData);
         }
         public void SendParticipantList(ClientSession session)
         {
@@ -82,8 +125,7 @@ namespace Adit.Code.Server
         private void ReceiveImageRequest(dynamic jsonData)
         {
             jsonData["RequesterID"] = ConnectionToClient.ID;
-            Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client)?.SendJSON(jsonData);
-
+            Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient)?.SendJSON(jsonData);
         }
 
         private void ReceiveHeartbeat(dynamic jsonData)

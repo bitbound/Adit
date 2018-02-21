@@ -122,6 +122,7 @@ namespace Adit.Code.Server
 
         private static void HandleClientDisconnect(SocketAsyncEventArgs socketArgs)
         {
+            // TODO: Disconnect elevated client.
             var connection = socketArgs.UserToken as ClientConnection;
             var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
             if (session != null)

@@ -88,6 +88,7 @@ namespace Adit.Pages
             toggleIsClientVisible.IsOn = Config.Current.IsClientTabVisible;
             toggleIsViewerVisible.IsOn = Config.Current.IsViewerTabVisible;
             toggleIsOptionsVisible.IsOn = Config.Current.IsOptionsTabVisible;
+            toggleIsHugVisible.IsOn = Config.Current.IsHubTabVisible;
             toggleChangeServer.IsOn = Config.Current.IsTargetServerConfigurable;
             toggleScreenFollowsCursors.IsOn = Config.Current.IsFollowCursorEnabled;
             toggleShareClipboard.IsOn = Config.Current.IsClipboardShared;
@@ -173,7 +174,12 @@ namespace Adit.Pages
             MainWindow.Current.optionsToggle.Visibility = Config.Current.IsOptionsTabVisible ? Visibility.Visible : Visibility.Collapsed;
             Config.Save();
         }
-
+        private void IsHubVisible_Click(object sender, MouseButtonEventArgs e)
+        {
+            Config.Current.IsHubTabVisible = !(sender as Controls.ToggleSwitch).IsOn;
+            MainWindow.Current.hubToggle.Visibility = Config.Current.IsOptionsTabVisible ? Visibility.Visible : Visibility.Collapsed;
+            Config.Save();
+        }
         private void CanChangeServer_Click(object sender, MouseButtonEventArgs e)
         {
             Config.Current.IsTargetServerConfigurable = !(sender as Controls.ToggleSwitch).IsOn;

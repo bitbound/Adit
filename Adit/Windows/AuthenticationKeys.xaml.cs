@@ -17,18 +17,13 @@ using System.Windows.Shapes;
 namespace Adit.Windows
 {
     /// <summary>
-    /// Interaction logic for RemoteAdmins.xaml
+    /// Interaction logic for AuthenticationKeys.xaml
     /// </summary>
-    public partial class RemoteAdmins : Window
+    public partial class AuthenticationKeys : Window
     {
-        public RemoteAdmins()
+        public AuthenticationKeys()
         {
             InitializeComponent();
-        }
-
-        private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            Authentication.Current.Save();
         }
 
         private void New_Click(object sender, RoutedEventArgs e)
@@ -39,6 +34,16 @@ namespace Adit.Windows
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             Authentication.Current.Keys.Remove(datagridKeys.SelectedItem as AuthenticationKey);
+        }
+
+        private void DatagridKeys_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            Authentication.Current.Save();
+        }
+
+        private void Window_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Authentication.Current.Save();
         }
     }
 }

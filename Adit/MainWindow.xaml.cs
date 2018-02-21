@@ -178,5 +178,11 @@ namespace Adit
             Config.Save();
         }
 
+        private void Hub_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleButtonClicked(sender as ToggleButton);
+            Config.Current.StartupTab = Config.StartupTabs.Hub;
+            mainFrame.Navigate(new Pages.Hub());
+        }
     }
 }

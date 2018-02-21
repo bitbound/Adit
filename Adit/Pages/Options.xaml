@@ -22,14 +22,16 @@
             </TextBlock>
             <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,5"/>
             <GroupBox Header="Server Options"  Margin="0,10,0,0" Padding="0,10,0,0">
-                <Grid>
-                    <TextBlock><Run Text="Start Server Automatically:"/></TextBlock>
-                    <Controls:ToggleSwitch x:Name="toggleStartServerAutomatically" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="StartServerAutomatically_Click">
-                        <Controls:ToggleSwitch.ToolTip>
-                            <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, the server will start immediately when Adit is opened."/>
-                        </Controls:ToggleSwitch.ToolTip>
-                    </Controls:ToggleSwitch>
-                </Grid>
+                <StackPanel>
+                    <Grid>
+                        <TextBlock><Run Text="Start with Windows:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleStartServerAutomatically" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="StartServerAutomatically_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="If enabled, the server will start automatically when Windows loads."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                </StackPanel>
             </GroupBox>
             <GroupBox Header="Client Options" Margin="0,10,0,0" Padding="0,10,0,0">
                 <StackPanel>
@@ -154,6 +156,14 @@
                         <Controls:ToggleSwitch x:Name="toggleIsOptionsVisible" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="IsOptionsVisible_Click">
                             <Controls:ToggleSwitch.ToolTip>
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Options tab is visible."/>
+                            </Controls:ToggleSwitch.ToolTip>
+                        </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Hub Tab Visible:"/></TextBlock>
+                        <Controls:ToggleSwitch x:Name="toggleIsHugVisible" HorizontalAlignment="Right" PreviewMouseLeftButtonUp="IsHubVisible_Click">
+                            <Controls:ToggleSwitch.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Hub tab is visible."/>
                             </Controls:ToggleSwitch.ToolTip>
                         </Controls:ToggleSwitch>
                     </Grid>

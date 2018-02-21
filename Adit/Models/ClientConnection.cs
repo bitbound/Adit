@@ -15,6 +15,17 @@ namespace Adit.Models
 
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
+        public string SessionID
+        {
+            get
+            {
+                return SocketMessageHandler?.Session?.SessionID;
+            }
+        }
+        public string ComputerName { get; set; }
+        public DateTime? LastReboot { get; set; }
+        public string Alias { get; set; }
+        public string CurrentUser { get; set; }
         public ConnectionTypes ConnectionType { get; set; }
 
         public Socket Socket { get; set; }

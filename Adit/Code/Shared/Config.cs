@@ -12,6 +12,8 @@ namespace Adit.Code.Shared
     public class Config
     {
         public static Config Current { get; set; } = new Config();
+
+
         public StartupModes StartupMode { get; set; } = StartupModes.Normal;
         public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
         public string ProductName { get; set; } = "Adit";
@@ -23,6 +25,7 @@ namespace Adit.Code.Shared
         public bool IsOptionsTabVisible { get; set; } = true;
         public bool IsWelcomeTabVisible { get; set; } = true;
         public bool IsClientTabVisible { get; set; } = true;
+        public bool IsHubTabVisible { get; set; } = true;
         public bool IsTargetServerConfigurable { get; set; } = true;
 
 
@@ -44,6 +47,10 @@ namespace Adit.Code.Shared
         public bool IsClipboardShared { get; set; } = true;
         public bool IsFollowCursorEnabled { get; set; } = true;
 
+        public string HubHost { get; set; } = "localhost";
+        public int HubPort { get; set; } = 54765;
+        public string HubKey { get; set; }
+
         public enum StartupModes
         {
             Normal,
@@ -55,7 +62,8 @@ namespace Adit.Code.Shared
             Welcome,
             Client,
             Server,
-            Viewer
+            Viewer,
+            Hub
         }
         public static void Save()
         {

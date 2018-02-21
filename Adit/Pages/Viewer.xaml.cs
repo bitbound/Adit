@@ -33,7 +33,17 @@ namespace Adit.Pages
             InitializeComponent();
             Current = this;
         }
-
+        public Viewer(string sessionID)
+        {
+            InitializeComponent();
+            Current = this;
+            this.Loaded += async (sender, args) => 
+            {
+                controlsFrame.Visibility = Visibility.Collapsed;
+                await AditViewer.Connect(sessionID.Trim());
+                RefreshUI();
+            };
+        }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (!Config.Current.IsTargetServerConfigurable)

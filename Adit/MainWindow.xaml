@@ -17,6 +17,7 @@
             <ToggleButton x:Name="serverToggle" Height="50" Click="Server_Click" Style="{DynamicResource SideMenuToggle}">Server</ToggleButton>
             <ToggleButton x:Name="clientToggle" Height="50" Click="Client_Click" Style="{DynamicResource SideMenuToggle}">Client</ToggleButton>
             <ToggleButton x:Name="viewerToggle" Height="50"  Click="Viewer_Click" Style="{DynamicResource SideMenuToggle}">Viewer</ToggleButton>
+            <ToggleButton x:Name="hubToggle" Height="50" Click="Hub_Click" Style="{DynamicResource SideMenuToggle}">Hub</ToggleButton>
             <ToggleButton x:Name="optionsToggle" Height="50" Click="Options_Click" Style="{DynamicResource SideMenuToggle}">Options</ToggleButton>
             <ToggleButton x:Name="aboutToggle" Height="50"  Click="About_Click" Style="{DynamicResource SideMenuToggle}">About</ToggleButton>
         </StackPanel>

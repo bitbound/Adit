@@ -86,9 +86,16 @@ namespace Adit.Pages
             this.Dispatcher.Invoke(() => RefreshUI());
         }
 
-        private void RemoteAdmins_Click(object sender, RoutedEventArgs e)
+        private void AuthenticationKeys_Click(object sender, RoutedEventArgs e)
         {
-            new Windows.RemoteAdmins().ShowDialog();
+            var win = new Windows.AuthenticationKeys();
+            win.Owner = MainWindow.Current;
+            win.ShowDialog();
+        }
+
+        private void ConnectedClients_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Current.mainFrame.Navigate(new Pages.Hub());
         }
     }
 }

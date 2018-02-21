@@ -63,7 +63,7 @@ namespace Adit.Code.Shared
 
         internal static void DisplayErrorMessage()
         {
-            System.Windows.MessageBox.Show("There was an error from which Adit couldn't recover.  If the issue persists, please contact the developer.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show("There was an error during the last action.  If the issue persists, please contact support.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         public static List<string> SplitJSON(string inputString)

@@ -8,7 +8,7 @@ namespace Adit.Models
 {
     public class AuthenticationKey
     {
-        public string Key { get; } = Guid.NewGuid().ToString();
+        public string Key { get; set; } = Guid.NewGuid().ToString();
         public string IssuedTo { get; set; }
         public DateTime IssueDate { get; set; } = DateTime.Now;
         public DateTime? LastUsed { get; set; }

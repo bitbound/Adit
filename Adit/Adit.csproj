@@ -88,6 +88,7 @@
     <Compile Include="Code\Client\AditClient.cs" />
     <Compile Include="Code\Client\ClientSocketMessages.cs" />
     <Compile Include="Code\Server\Authentication.cs" />
+    <Compile Include="Code\Server\ComputerHub.cs" />
     <Compile Include="Code\Shared\ServiceConfig.cs" />
     <Compile Include="Code\Viewer\AditViewer.cs" />
     <Compile Include="Code\Viewer\InputHandler.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Models\ClientConnection.cs" />
     <Compile Include="Models\ClientSession.cs" />
     <Compile Include="Models\ConnectionTypes.cs" />
+    <Compile Include="Models\HubComputer.cs" />
     <Compile Include="Models\Participant.cs" />
     <Compile Include="Models\SocketMessageHandler.cs" />
     <Compile Include="Pages\About.xaml.cs">
@@ -112,6 +114,9 @@
     </Compile>
     <Compile Include="Pages\Client.xaml.cs">
       <DependentUpon>Client.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Hub.xaml.cs">
+      <DependentUpon>Hub.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Notifier.xaml.cs">
       <DependentUpon>Notifier.xaml</DependentUpon>
@@ -131,8 +136,8 @@
     <Compile Include="Code\Shared\Config.cs" />
     <Compile Include="Code\Shared\TrayIcon.cs" />
     <Compile Include="Code\Shared\Utilities.cs" />
-    <Compile Include="Windows\RemoteAdmins.xaml.cs">
-      <DependentUpon>RemoteAdmins.xaml</DependentUpon>
+    <Compile Include="Windows\AuthenticationKeys.xaml.cs">
+      <DependentUpon>AuthenticationKeys.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\ClosedToTrayBalloon.xaml">
       <SubType>Designer</SubType>
@@ -168,6 +173,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\Hub.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\Notifier.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -188,7 +197,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\RemoteAdmins.xaml">
+    <Page Include="Windows\AuthenticationKeys.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -85,11 +85,38 @@ namespace Adit.Code.Server
             Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client)?.SendJSON(jsonData);
 
         }
+
+        private void ReceiveHeartbeat(dynamic jsonData)
+        {
+            ConnectionToClient.ComputerName = jsonData["ComputerName"]?.Trim();
+            ConnectionToClient.LastReboot = jsonData["LastReboot"];
+            ConnectionToClient.CurrentUser = jsonData["CurrentUser"];
+            ComputerHub.Current.AddOrUpdateComputer(ConnectionToClient);
+        }
+        private void ReceiveHubDataRequest(dynamic jsonData)
+        {
+            if (Authentication.Current.Keys.Count == 0)
+            {
+                jsonData["Status"] = "Server has no authentication keys.  Create an authentication key on the server first.";
+            }
+            else if (!Authentication.Current.Keys.Any(x=>x.Key == jsonData["Key"]?.Trim()?.ToLower()))
+            {
+                jsonData["Status"] = "Authentication key wasn't found.";
+            }
+            else
+            {
+                jsonData["Status"] = "ok";
+                ComputerHub.Current.Load();
+                ComputerHub.Current.Save();
+                jsonData["ComputerList"] = ComputerHub.Current.ComputerList;
+            }
+            SendJSON(jsonData);
+        }
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             var requesterID = Encoding.UTF8.GetString(bytesReceived.Take(36).ToArray());
             var requester = AditServer.ClientList.Find(x => x.ID == requesterID);
-            requester.SendBytes(bytesReceived.Skip(36).ToArray());
+            requester?.SendBytes(bytesReceived.Skip(36).ToArray());
         }
     }
 }

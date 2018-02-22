@@ -63,6 +63,10 @@ namespace Adit.Code.Viewer
             SocketMessageHandler = new ViewerSocketMessages(TcpClient.Client);
             WaitForServerMessage();
             SocketMessageHandler.SendConnectionType(ConnectionTypes.Viewer);
+            if (Config.Current.IsClipboardShared)
+            {
+                ClipboardManager.Current.BeginWatching(SocketMessageHandler);
+            }
         }
         private static void WaitForServerMessage()
         {
@@ -87,7 +91,7 @@ namespace Adit.Code.Viewer
         {
             if (e.SocketError != SocketError.Success)
             {
-                Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
+                Utilities.WriteToLog($"Socket closed in AditViewer: {e.SocketError.ToString()}");
                 MainWindow.Current.Dispatcher.Invoke(() =>
                 {
                     MainWindow.Current.WindowState = WindowState.Normal;

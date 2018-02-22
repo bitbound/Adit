@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adit.Code.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -119,6 +120,23 @@ namespace Adit.Code.Viewer
                     lastPointerMove = DateTime.Now;
                     var position = e.GetPosition(inputSurface);
                     AditViewer.SocketMessageHandler.SendMouseMove(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
+                }
+                if (!Config.Current.IsViewerScaleToFit && Config.Current.IsFollowCursorEnabled)
+                {
+                    var frame = Pages.Viewer.Current.viewerFrame;
+                    var mousePoint = e.GetPosition(frame);
+                    var x = mousePoint.X - (frame.ActualWidth / 2);
+                    var y = mousePoint.Y - (frame.ActualHeight / 2);
+                    var xPercent = Math.Abs(x) * 2 / frame.ActualWidth;
+                    var yPercent = Math.Abs(y) * 2 / frame.ActualWidth;
+                    if (xPercent > .5)
+                    {
+                        frame.ScrollToHorizontalOffset(frame.HorizontalOffset + (x / Math.Abs(x) * (xPercent - .5) * 2));
+                    }
+                    if (yPercent > .5)
+                    {
+                        frame.ScrollToVerticalOffset(frame.VerticalOffset + (y / Math.Abs(y) * (yPercent - .5) * 2));
+                    }
                 }
             }
         }

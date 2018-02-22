@@ -62,11 +62,17 @@ namespace Adit.Pages
         }
         public void DrawImageCall(Point startDrawingPoint, IEnumerable<byte> imageBytes)
         {
-            this.Dispatcher.Invoke(() =>
+            try
             {
-                DrawingSurface.DrawImage(startDrawingPoint, imageBytes);
-            });          
-            AditViewer.SocketMessageHandler.SendImageRequest();
+                this.Dispatcher.Invoke(() =>
+                {
+                    DrawingSurface.DrawImage(startDrawingPoint, imageBytes);
+                });
+            }
+            finally
+            {
+                AditViewer.SocketMessageHandler.SendImageRequest();
+            }
         }
 
         private async void ButtonConnect_Click(object sender, RoutedEventArgs e)

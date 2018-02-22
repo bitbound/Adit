@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:Adit.Pages"
       xmlns:Code.Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.Pages.Options"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="400"
+      d:DesignHeight="800" d:DesignWidth="400"
       Title="Adit Options" Background="White" Loaded="Page_Loaded">
 
     <Page.DataContext>
@@ -166,6 +166,14 @@
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="Determines if the Hub tab is visible."/>
                             </Controls:ToggleSwitch.ToolTip>
                         </Controls:ToggleSwitch>
+                    </Grid>
+                    <Grid>
+                        <TextBlock><Run Text="Buffer Size:"/></TextBlock>
+                        <TextBox HorizontalAlignment="Right" Width="100" Text="{Binding BufferSize, Mode=TwoWay}" TextAlignment="Right">
+                            <TextBox.ToolTip>
+                                <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="This is the maximum size, in bytes, of data that can be sent and receive.  Increasing this number will allow large files and clipboard payloads to be transferred but will increase RAM usage."></TextBlock>
+                            </TextBox.ToolTip>
+                        </TextBox>
                     </Grid>
                 </StackPanel>
             </GroupBox>

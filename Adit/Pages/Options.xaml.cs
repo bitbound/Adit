@@ -72,7 +72,6 @@ namespace Adit.Pages
             {
                 ServiceConfig.StartService();
             }
-            RefreshUI();
         }
 
         public void RefreshUI()
@@ -94,7 +93,11 @@ namespace Adit.Pages
             toggleShareClipboard.IsOn = Config.Current.IsClipboardShared;
             toggleClientAutoConnect.IsOn = Config.Current.IsClientAutoConnectEnabled;
         }
-
+        // To refresh UI from other threads.
+        public void RefreshUICall()
+        {
+            this.Dispatcher.Invoke(() => RefreshUI());
+        }
         private void MaximizeViewer_Click(object sender, MouseButtonEventArgs e)
         {
             Config.Current.IsViewerMaximizedOnConnect = !(sender as Controls.ToggleSwitch).IsOn;

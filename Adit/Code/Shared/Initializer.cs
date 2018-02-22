@@ -44,10 +44,20 @@ namespace Adit.Code.Shared
         public static void CleanupTempFiles()
         {
             // Clean up temp files from previous file transfers.
-            var di = new DirectoryInfo(Path.GetTempPath() + @"\Adit");
-            if (di.Exists)
+            var di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "AditFiles"));
+            foreach (var file in di.GetFiles())
             {
-                di.Delete(true);
+                if (DateTime.Now - file.LastWriteTime > TimeSpan.FromDays(1))
+                {
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch (Exception ex)
+                    {
+                        Utilities.WriteToLog(ex);
+                    }
+                }
             }
         }
         public static void SetGlobalErrorHandler()

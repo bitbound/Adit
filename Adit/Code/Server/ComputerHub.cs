@@ -2,6 +2,7 @@
 using Adit.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,22 @@ namespace Adit.Code.Server
     {
         public static ComputerHub Current { get; set; } = new ComputerHub();
 
-        public List<HubComputer> ComputerList { get; set; } = new List<HubComputer>();
+        public ObservableCollection<HubComputer> ComputerList { get; set; } = new ObservableCollection<HubComputer>();
+
+        public ComputerHub()
+        {
+            Load();
+            ComputerList.CollectionChanged += ComputerList_CollectionChanged;
+        }
+
+        private void ComputerList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Save();
+        }
 
         public void AddOrUpdateComputer(ClientConnection connection)
         {
-            var onlineComputer = ComputerList.Find(x =>!string.IsNullOrWhiteSpace(x.ComputerName) && x.ComputerName == connection.ComputerName);
+            var onlineComputer = ComputerList.FirstOrDefault(x =>!string.IsNullOrWhiteSpace(x.MACAddress) && x.MACAddress == connection.MACAddress);
             if (onlineComputer != null)
             {
                 onlineComputer.IsOnline = true;
@@ -28,7 +40,10 @@ namespace Adit.Code.Server
                 {
                     IsOnline = true
                 };
-                ComputerList.Add(onlineComputer);
+                MainWindow.Current.Dispatcher.Invoke(() =>
+                {
+                    ComputerList.Add(onlineComputer);
+                });
             }
             onlineComputer.ID = connection.ID;
             onlineComputer.SessionID = connection.SessionID;
@@ -38,8 +53,7 @@ namespace Adit.Code.Server
             onlineComputer.ComputerName = connection.ComputerName;
             onlineComputer.LastOnline = DateTime.Now;
             onlineComputer.LastReboot = connection.LastReboot;
-            onlineComputer.Alias = string.IsNullOrWhiteSpace(connection.Alias) ? onlineComputer.Alias : connection.Alias;
-            Save();
+            onlineComputer.MACAddress = connection.MACAddress;
         }
 
 
@@ -53,15 +67,23 @@ namespace Adit.Code.Server
             {
                 AddOrUpdateComputer(connection);
             }
+            for (var i = ComputerList.Count - 1; i >= 0; i--)
+            {
+                var computer = ComputerList[i];
+                if (!computer.IsOnline && string.IsNullOrWhiteSpace(computer.MACAddress))
+                {
+                    ComputerList.Remove(computer);
+                }
+            }
         }
 
         public void Save()
         {
             var di = Directory.CreateDirectory(Utilities.ProgramFolder);
-            var computerList = ComputerList.Where(x => !string.IsNullOrWhiteSpace(x.ComputerName)).ToList();
+            var computerList = ComputerList.Where(x => !string.IsNullOrWhiteSpace(x.MACAddress)).ToList();
             for (var i = computerList.Count - 1; i >= 0; i--)
             {
-                if (computerList.FindAll(x => x.ComputerName == computerList[i].ComputerName).Count > 1)
+                if (computerList.FindAll(x => x.MACAddress == computerList[i].MACAddress).Count > 1)
                 {
                     computerList.RemoveAt(i);
                 }
@@ -72,11 +94,17 @@ namespace Adit.Code.Server
 
         public void Load()
         {
-            ComputerList.Clear();
             var fi = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Hub.json"));
             if (fi.Exists)
             {
-                ComputerList.AddRange(Utilities.JSON.Deserialize<List<HubComputer>>(File.ReadAllText(fi.FullName)));
+                var savedList = Utilities.JSON.Deserialize<List<HubComputer>>(File.ReadAllText(fi.FullName)).Where(x => !string.IsNullOrWhiteSpace(x.MACAddress));
+                foreach (var computer in savedList)
+                {
+                    if (!ComputerList.Any(x=>x.MACAddress == computer.MACAddress))
+                    {
+                        ComputerList.Add(computer);
+                    }
+                }
             }
             MergeAditServerClientList();
         }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Adit.Windows"
         xmlns:Server="clr-namespace:Adit.Code.Server" x:Class="Adit.Windows.AuthenticationKeys"
         mc:Ignorable="d"
-        Title="Remote Administrators" Height="400" Width="600" Icon="/Adit;component/Assets/icons8-connect-64.ico" WindowStartupLocation="CenterOwner" Unloaded="Window_Unloaded">
+        Title="Remote Administrators" Height="400" Width="600" Icon="/Adit;component/Assets/icons8-connect-64.ico" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <Server:Authentication/>
     </Window.DataContext>

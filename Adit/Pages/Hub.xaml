@@ -15,9 +15,13 @@
 
     <Grid Margin="10">
         <Grid x:Name="connectionsGrid">
-            <TextBlock FontWeight="Bold" FontSize="18" VerticalAlignment="Top"><Run Text="Client Connections"/></TextBlock>
+            <TextBlock FontWeight="Bold" FontSize="18" VerticalAlignment="Top">Client Connections</TextBlock>
+            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" FontStyle="Italic" Margin="0,21,0,0">
+                <Run Text="Current Server: "/>
+                <Run x:Name="viewingServer" Text="Local"/>
+            </TextBlock>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top"><Hyperlink Click="ViewRemoteServer_Click"><Run Text="View Remote Server"/></Hyperlink></TextBlock>
-            <DataGrid x:Name="datagridComputers" ItemsSource="{Binding Current.ComputerList, Mode=TwoWay}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" Margin="0,29,0,30" CellEditEnding="DataDridComputers_CellEditEnding">
+            <DataGrid x:Name="datagridComputers" ItemsSource="{Binding Current.ComputerList, Mode=TwoWay}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" Margin="0,42,0,30" CellEditEnding="DataDridComputers_CellEditEnding">
                 <DataGrid.DataContext>
                     <Server:ComputerHub/>
                 </DataGrid.DataContext>
@@ -27,12 +31,15 @@
                     <DataGridTextColumn Header="Alias" Binding="{Binding Alias, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <DataGridTextColumn Header="Current User" Binding="{Binding CurrentUser, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Connection Type" Binding="{Binding ConnectionType, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Session ID" Binding="{Binding SessionID, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Last Online" Binding="{Binding LastOnline, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Last Reboot" Binding="{Binding LastReboot, Mode=OneWay}"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="60" Height="25" Click="Connect_Click" Content="Connect" Style="{DynamicResource PrimaryButton}"/>
+            <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" FontWeight="Bold" Width="70" Height="25" Click="ConnectToClient_Click" Content="Connect" Style="{DynamicResource PrimaryButton}"/>
+            <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="70" Height="25" Click="DisconnectClient_Click" Content="Disconnect" Style="{DynamicResource PrimaryButton}" Margin="0,0,80,0"/>
+            <Button VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="50" Height="25" Click="Delete_Click" Content="Delete" Style="{DynamicResource PrimaryButton}"/>
         </Grid>
         <StackPanel x:Name="remoteServerConnectStack" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
             <TextBlock Text="Connect to remote server." FontWeight="Bold" FontSize="18" HorizontalAlignment="Center"/>

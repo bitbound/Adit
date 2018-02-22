@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Adit.Code.Shared
 {
     class Utilities
     {
-        public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer();
+        public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
         public static string ProgramFolder
         {
             get
@@ -28,6 +29,13 @@ namespace Adit.Code.Shared
                 {
                     return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit");
                 }
+            }
+        }
+        public static string FileTransferFolder
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "AditFiles");
             }
         }
 
@@ -63,7 +71,10 @@ namespace Adit.Code.Shared
 
         internal static void DisplayErrorMessage()
         {
-            System.Windows.MessageBox.Show("There was an error during the last action.  If the issue persists, please contact support.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (Config.Current.StartupMode != Config.StartupModes.Notifier)
+            {
+                System.Windows.MessageBox.Show("There was an error during the last action.  If the issue persists, please contact support.", "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public static List<string> SplitJSON(string inputString)
@@ -77,6 +88,14 @@ namespace Adit.Code.Shared
             }
             messages.Add(inputString);
             return messages;
+        }
+        public static string GetMACAddress()
+        {
+            return NetworkInterface
+                    .GetAllNetworkInterfaces()
+                    .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                    .Select(nic => nic.GetPhysicalAddress().ToString())
+                    .FirstOrDefault();
         }
         public static void WriteToLog(Exception ex)
         {

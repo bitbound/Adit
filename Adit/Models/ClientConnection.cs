@@ -27,6 +27,7 @@ namespace Adit.Models
         public string Alias { get; set; }
         public string CurrentUser { get; set; }
         public ConnectionTypes ConnectionType { get; set; }
+        public string MACAddress { get; set; }
 
         public Socket Socket { get; set; }
 

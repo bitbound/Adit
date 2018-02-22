@@ -4,6 +4,8 @@ using Adit.Models;
 using Adit.Pages;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
@@ -25,6 +27,8 @@ namespace Adit.Code.Client
         int totalWidth = SystemInformation.VirtualScreen.Width;
         int offsetX = SystemInformation.VirtualScreen.Left;
         int offsetY = SystemInformation.VirtualScreen.Top;
+        long fileTransferSize;
+        string fileTransferName;
         public ClientSocketMessages(Socket socketOut)
             : base(socketOut)
         {
@@ -125,7 +129,27 @@ namespace Adit.Code.Client
 
         private void ReceiveByteArray(byte[] bytesReceived)
         {
-
+            try
+            {
+                if (fileTransferName != null)
+                {
+                    using (var fs = new FileStream(Path.Combine(Utilities.FileTransferFolder, fileTransferName), FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                    {
+                        fs.Position = fs.Length;
+                        fs.Write(bytesReceived, 0, bytesReceived.Length);
+                        if (fs.Length >= fileTransferSize)
+                        {
+                            Process.Start(Utilities.FileTransferFolder);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                fileTransferName = null;
+                fileTransferSize = 0;
+                SendNoScreenActivity();
+            }
         }
         private void ReceiveMouseMove(dynamic jsonData)
         {
@@ -136,7 +160,7 @@ namespace Adit.Code.Client
         {
             MainWindow.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var key in Enum.GetNames(typeof(Key)))
+                foreach (var key in Enum.GetNames(typeof(Key)).Where(x=>x!="None"))
                 {
                     try
                     {
@@ -192,6 +216,44 @@ namespace Adit.Code.Client
                  (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
                  (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
              );
+        }
+        private void ReceiveCtrlAltDel(dynamic jsonData)
+        {
+            if (Process.GetProcessesByName("Adit_Service").Count() > 0)
+            {
+                var request = new
+                {
+                    Type = "SAS",
+                    MAC = Utilities.GetMACAddress()
+                };
+                SendJSON(request);
+            }
+            else
+            {
+                User32.SendSAS(true);
+            }
+        }
+        private void ReceiveFileTransfer(dynamic jsonData)
+        {
+            var targetFile = new FileInfo(Path.Combine(Utilities.FileTransferFolder, jsonData["FileName"]));
+            if (targetFile.Exists)
+            {
+                targetFile.Delete();
+            }
+            fileTransferName = jsonData["FileName"];
+            fileTransferSize = jsonData["FileSize"];
+            SendJSON(jsonData);
+        }
+        private void ReceiveClipboardTransfer(dynamic jsonData)
+        {
+            if (jsonData["Format"] == "FileDrop")
+            {
+                ClipboardManager.Current.SetFiles(jsonData["FileNames"], jsonData["FileContents"]);
+            }
+            else
+            {
+                ClipboardManager.Current.SetData(jsonData["Format"], jsonData["Data"]);
+            }
         }
     }
 }

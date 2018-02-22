@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Diagnostics;
 
 namespace Adit.Code.Client
 {
@@ -67,12 +68,16 @@ namespace Adit.Code.Client
                 socketArgs.Completed += ReceiveFromServerCompleted;
                 SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
+                ClipboardManager.Current.BeginWatching(SocketMessageHandler);
                 return true;
             }
             catch
             {
-                MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                Pages.Client.Current.RefreshUICall();
+                if (Config.Current.StartupMode != Config.StartupModes.Notifier)
+                {
+                    MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Pages.Client.Current.RefreshUICall();
+                }
                 return false;
             }
         }
@@ -95,12 +100,15 @@ namespace Adit.Code.Client
             if (e.SocketError != SocketError.Success)
             {
                 Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
-                SessionID = String.Empty;
-                Pages.Client.Current.RefreshUICall();
                 if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                 {
-                    App.Current.Shutdown();
+                    App.Current.Dispatcher.Invoke(() => {
+                        App.Current.Shutdown();
+                    });
+                    return;
                 }
+                SessionID = String.Empty;
+                Pages.Client.Current.RefreshUICall();
                 return;
             }
             SocketMessageHandler.ProcessSocketMessage(e);

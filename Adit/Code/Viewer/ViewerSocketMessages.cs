@@ -48,6 +48,7 @@ namespace Adit.Code.Viewer
             {
                 MessageBox.Show("The session ID wasn't found.", "Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
                 AditViewer.TcpClient.Close();
+                Pages.Viewer.Current.RefreshUICall();
                 return;
             }
             else if (jsonData["Status"] == "ok")
@@ -149,12 +150,20 @@ namespace Adit.Code.Viewer
 
         public void SendFileTransfer(string fileName)
         {
-            var base64 = Convert.ToBase64String(File.ReadAllBytes(fileName));
+            var fileSize = new FileInfo(fileName).Length;
             SendJSON(new
             {
                 Type = "FileTransfer",
-                File = base64
+                FileSize = fileSize,
+                FileName = Path.GetFileName(fileName),
+                FullPath = fileName
             });
+        }
+
+        private void ReceiveFileTransfer(dynamic jsonData)
+        {
+            SendBytes(File.ReadAllBytes(jsonData["FullPath"]));
+            SendImageRequest();
         }
 
         internal void SendMouseRightDown(double x, double y)
@@ -214,6 +223,19 @@ namespace Adit.Code.Viewer
             {
                 AditViewer.Disconnect();
                 AditViewer.Connect(jsonData["ClientSessionID"]);
+            }
+        }
+
+        private void ReceiveDesktopSwitch(dynamic jsonData)
+        {
+            if (jsonData["Status"] == "ok")
+            {
+                AditViewer.RequestFullscreen = true;
+                SendImageRequest();
+            }
+            else if (jsonData["Status"] == "failed")
+            {
+                MessageBox.Show("The remote screen capture failed due to a desktop switch (i.e. switched to lock screen, UAC screen, etc.).  You may need to disconnect and reconnect.", "Remote Capture Stopped", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }

@@ -54,10 +54,10 @@ namespace Adit.Pages
 
         private void TextFilesTransferred_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            var di = new DirectoryInfo(System.IO.Path.GetTempPath() + @"\Adit");
-            if (di.Exists)
+            var files = Directory.GetFiles(Utilities.FileTransferFolder);
+            if (files.Count() > 0)
             {
-                Process.Start("explorer.exe", di.FullName);
+                Process.Start("explorer.exe", Utilities.FileTransferFolder);
             }
             else
             {
@@ -120,6 +120,7 @@ namespace Adit.Pages
             textHost.Text = Config.Current.ClientHost;
             textPort.Text = Config.Current.ClientPort.ToString();
             textSessionID.Text = AditClient.SessionID;
+            textFilesTransferred.Text = Directory.GetFiles(Utilities.FileTransferFolder).Count().ToString();
 
             if (AditClient.IsConnected)
             {

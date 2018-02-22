@@ -110,6 +110,10 @@ namespace Adit
                     viewerToggle.IsChecked = true;
                     mainFrame.Navigate(new Pages.Viewer());
                     break;
+                case Config.StartupTabs.Hub:
+                    hubToggle.IsChecked = true;
+                    mainFrame.Navigate(new Pages.Hub());
+                    break;
                 default:
                     break;
             }

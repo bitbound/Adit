@@ -52,7 +52,7 @@ namespace Adit.Code.Shared
                 proc.Kill();
             }
 
-            foreach (var proc in Process.GetProcessesByName("Adit_Service").Where(proc => proc.Id != Process.GetCurrentProcess().Id))
+            foreach (var proc in Process.GetProcessesByName("Adit").Where(proc => proc.Id != Process.GetCurrentProcess().Id))
             {
                 proc.Kill();
             }
@@ -127,7 +127,12 @@ namespace Adit.Code.Shared
                 if (!silent)
                 {
                     MessageBox.Show("Service installation successful.", "Install Successful", MessageBoxButton.OK, MessageBoxImage.Information);
-                    Pages.Options.Current.RefreshUI();
+                    var services = System.ServiceProcess.ServiceController.GetServices();
+                    var service = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
+                    Task.Run(() => {
+                        service.WaitForStatus(System.ServiceProcess.ServiceControllerStatus.Running, TimeSpan.FromSeconds(5));
+                        Pages.Options.Current.RefreshUICall();
+                    });
                 }
             }
             else
@@ -163,8 +168,8 @@ namespace Adit.Code.Shared
                 Utilities.WriteToLog(ex);
                 if (!silent)
                 {
-                    Pages.Options.Current.RefreshUI();
                     MessageBox.Show("Service removal failed.  Please try again or contact the developer for support.", "Removal Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Pages.Options.Current.RefreshUI();
                 }
             }
         }
@@ -173,14 +178,22 @@ namespace Adit.Code.Shared
             var services = System.ServiceProcess.ServiceController.GetServices();
             var service = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
             service.Start();
-            Pages.Options.Current.RefreshUI();
+
+            Task.Run(() => {
+                service.WaitForStatus(System.ServiceProcess.ServiceControllerStatus.Running, TimeSpan.FromSeconds(5));
+                Pages.Options.Current.RefreshUICall();
+            });
         }
         public static void StopService()
         {
             var services = System.ServiceProcess.ServiceController.GetServices();
             var service = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
             service.Stop();
-            Pages.Options.Current.RefreshUI();
+
+            Task.Run(() => {
+                service.WaitForStatus(System.ServiceProcess.ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(5));
+                Pages.Options.Current.RefreshUICall();
+            });
         }
     }
 }

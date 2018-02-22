@@ -69,7 +69,7 @@ namespace Adit.Code.Server
             if (session == null)
             {
                 jsonData["Status"] = "notfound";
-                SendBytes(jsonData);
+                SendJSON(jsonData);
                 return;
             }
             if (session.ConnectedClients[0]?.ConnectionType == ConnectionTypes.Service)
@@ -111,6 +111,31 @@ namespace Adit.Code.Server
             var requester = AditServer.ClientList.Find(x => x.ID == jsonData["RequesterID"]);
             requester.SendJSON(jsonData);
         }
+        private async void ReceiveDesktopSwitch(dynamic jsonData)
+        {
+            var startWait = DateTime.Now;
+            while (AditServer.ClientList.Any(x => x.SessionID == jsonData["SessionID"]) == false)
+            {
+                await Task.Delay(500);
+                if (DateTime.Now - startWait > TimeSpan.FromSeconds(5))
+                {
+                    jsonData["Status"] = "failed";
+                    break;
+                }
+            }
+            jsonData["Status"] = "ok";
+            var session = AditServer.SessionList.Find(x => x.SessionID == ConnectionToClient.SessionID);
+            var newSession = AditServer.SessionList.Find(x => x.SessionID == jsonData["SessionID"]);
+
+            while (session.ConnectedClients.Any(x=>x.ConnectionType == ConnectionTypes.Viewer))
+            {
+                var viewer = session.ConnectedClients.FirstOrDefault(x => x.ConnectionType == ConnectionTypes.Viewer);
+                session.ConnectedClients.Remove(viewer);
+                newSession.ConnectedClients.Add(viewer);
+                viewer.SocketMessageHandler.Session = newSession;
+                viewer.SendJSON(jsonData);
+            }
+        }
         public void SendParticipantList(ClientSession session)
         {
             foreach (var connection in session.ConnectedClients)
@@ -127,12 +152,18 @@ namespace Adit.Code.Server
             jsonData["RequesterID"] = ConnectionToClient.ID;
             Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient)?.SendJSON(jsonData);
         }
+        private void ReceiveSAS(dynamic jsonData)
+        {
+            var service = AditServer.ClientList.Find(x => x.ConnectionType == ConnectionTypes.Service && x.MACAddress == jsonData["MAC"]);
+            service.SendJSON(jsonData);
+        }
 
         private void ReceiveHeartbeat(dynamic jsonData)
         {
             ConnectionToClient.ComputerName = jsonData["ComputerName"]?.Trim();
             ConnectionToClient.LastReboot = jsonData["LastReboot"];
             ConnectionToClient.CurrentUser = jsonData["CurrentUser"];
+            ConnectionToClient.MACAddress = jsonData["MACAddress"];
             ComputerHub.Current.AddOrUpdateComputer(ConnectionToClient);
         }
         private void ReceiveHubDataRequest(dynamic jsonData)
@@ -147,18 +178,29 @@ namespace Adit.Code.Server
             }
             else
             {
+                var key = Authentication.Current.Keys.FirstOrDefault(x => x.Key == jsonData["Key"]?.Trim()?.ToLower());
+                key.LastUsed = DateTime.Now;
+                Authentication.Current.Save();
                 jsonData["Status"] = "ok";
                 ComputerHub.Current.Load();
-                ComputerHub.Current.Save();
                 jsonData["ComputerList"] = ComputerHub.Current.ComputerList;
             }
             SendJSON(jsonData);
         }
         private void ReceiveByteArray(byte[] bytesReceived)
         {
-            var requesterID = Encoding.UTF8.GetString(bytesReceived.Take(36).ToArray());
-            var requester = AditServer.ClientList.Find(x => x.ID == requesterID);
-            requester?.SendBytes(bytesReceived.Skip(36).ToArray());
+            if (ConnectionToClient.ConnectionType == ConnectionTypes.Client || ConnectionToClient.ConnectionType == ConnectionTypes.ElevatedClient)
+            {
+                var requesterID = Encoding.UTF8.GetString(bytesReceived.Take(36).ToArray());
+                var requester = AditServer.ClientList.Find(x => x.ID == requesterID);
+                requester?.SendBytes(bytesReceived.Skip(36).ToArray());
+            }
+            else if (ConnectionToClient.ConnectionType == ConnectionTypes.Viewer)
+            {
+                var session = AditServer.SessionList.Find(x => x.SessionID == ConnectionToClient.SessionID);
+                var client = Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
+                client.SendBytes(bytesReceived);
+            }
         }
     }
 }

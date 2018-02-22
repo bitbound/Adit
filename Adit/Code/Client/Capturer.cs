@@ -36,7 +36,8 @@ namespace Adit.Code.Client
         IntPtr hDC;
         IntPtr graphDC;
         User32.CursorInfo ci = new User32.CursorInfo();
-
+        string desktopName;
+        bool desktopSwitchPending;
 
 
         public Capturer()
@@ -48,8 +49,8 @@ namespace Adit.Code.Client
 
         public void CaptureScreen()
         {
+            desktopName = User32.GetCurrentDesktop();
             lastFrame = (Bitmap)currentFrame.Clone();
-
             graphic = Graphics.FromImage(currentFrame);
             hDC = User32.GetWindowDC(hWnd);
             graphDC = graphic.GetHdc();
@@ -62,6 +63,11 @@ namespace Adit.Code.Client
                     graphic.Clear(System.Drawing.Color.White);
                     var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
                     graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
+
+                    if (!desktopSwitchPending)
+                    {
+                        SwitchDesktops();
+                    }
                 }
                 else
                 {
@@ -95,6 +101,39 @@ namespace Adit.Code.Client
                 }
             }
         }
+
+        private void SwitchDesktops()
+        {
+            desktopSwitchPending = true;
+            Utilities.WriteToLog($"Desktop switch initiated to {desktopName}.");
+
+            var procInfo = new ADVAPI32.PROCESS_INFORMATION();
+            var sessionID = Guid.NewGuid().ToString();
+            if (ADVAPI32.OpenInteractiveProcess(Path.Combine(Utilities.ProgramFolder, "Adit.exe") + $" -upgrade {sessionID}", desktopName, out procInfo))
+            {
+                var request = new
+                {
+                    Type = "DesktopSwitch",
+                    SessionID = sessionID
+                };
+                AditClient.SocketMessageHandler.SendJSON(request);
+                return;
+            }
+            else
+            {
+                var error = Marshal.GetLastWin32Error();
+                if (error == 6)
+                {
+                    Utilities.WriteToLog("Connection was dropped due to a Windows session change.");
+                }
+                else
+                {
+                    Utilities.WriteToLog(new Exception("Failed to switch desktops.  Error: " + error.ToString()));
+                }
+                return;
+            }
+        }
+
         public MemoryStream GetFullscreenStream(byte[] metadataToPrepend)
         {
             var ms = new MemoryStream();

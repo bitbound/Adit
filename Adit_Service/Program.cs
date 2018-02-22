@@ -30,16 +30,22 @@ namespace Adit_Service
             }
             else
             {
-#if DEBUG
-                AditService.Connect();
-#else
                 ServiceBase[] ServicesToRun;
                 ServicesToRun = new ServiceBase[]
                 {
                     new WindowsService()
                 };
                 ServiceBase.Run(ServicesToRun);
-#endif
+//#if DEBUG
+//                AditService.Connect();
+//#else
+//                ServiceBase[] ServicesToRun;
+//                ServicesToRun = new ServiceBase[]
+//                {
+//                    new WindowsService()
+//                };
+//                ServiceBase.Run(ServicesToRun);
+//#endif
             }
             while (true)
             {

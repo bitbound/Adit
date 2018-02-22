@@ -33,16 +33,15 @@ namespace Adit.Windows
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            Authentication.Current.Keys.Remove(datagridKeys.SelectedItem as AuthenticationKey);
+            foreach (AuthenticationKey item in datagridKeys.SelectedItems)
+            {
+                Authentication.Current.Keys.Remove(item);
+            }
         }
 
         private void DatagridKeys_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            Authentication.Current.Save();
-        }
-
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
-        {
+            datagridKeys.GetBindingExpression(DataGrid.ItemsSourceProperty).UpdateSource();
             Authentication.Current.Save();
         }
     }

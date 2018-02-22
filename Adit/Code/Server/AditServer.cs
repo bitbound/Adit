@@ -122,7 +122,6 @@ namespace Adit.Code.Server
 
         private static void HandleClientDisconnect(SocketAsyncEventArgs socketArgs)
         {
-            // TODO: Disconnect elevated client.
             var connection = socketArgs.UserToken as ClientConnection;
             var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
             if (session != null)
@@ -132,6 +131,10 @@ namespace Adit.Code.Server
                 {
                     SessionList.Remove(session);
                 }
+                else if (session.ConnectedClients.Count == 1 && session.ConnectedClients[0].ConnectionType == ConnectionTypes.ElevatedClient)
+                {
+                    session.ConnectedClients[0].Socket.Disconnect(false);
+                }
                 else
                 {
                     session.ConnectedClients[0].SocketMessageHandler.SendParticipantList(session);
@@ -140,16 +143,12 @@ namespace Adit.Code.Server
             ClientList.Remove(connection);
             connection.Dispose();
             socketArgs.Dispose();
-            Pages.Server.Current.RefreshUICall();
+            Pages.Server.Current?.RefreshUICall();
         }
 
         public static void Stop()
         {
             tcpListener.Stop();
-            foreach (var client in ClientList)
-            {
-                client.Socket.Close();
-            }
             ClientList.Clear();
             SessionList.Clear();
             tcpListener.Server.Close();

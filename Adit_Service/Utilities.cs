@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -90,7 +91,7 @@ namespace Adit_Service
         }
         public static void CleanupFiles()
         {
-            var di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\AditFiles\");
+            var di = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "AditFiles"));
             foreach (var file in di.GetFiles())
             {
                 if (DateTime.Now - file.LastWriteTime > TimeSpan.FromDays(1))
@@ -105,6 +106,15 @@ namespace Adit_Service
                     }
                 }
             }
+        }
+
+        public static string GetMACAddress()
+        {
+            return NetworkInterface
+                        .GetAllNetworkInterfaces()
+                        .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                        .Select(nic => nic.GetPhysicalAddress().ToString())
+                        .FirstOrDefault();
         }
     }
 }

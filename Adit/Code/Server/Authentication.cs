@@ -38,7 +38,10 @@ namespace Adit.Code.Server
             var fi = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Auth.json"));
             if (fi.Exists)
             {
-                Keys = Utilities.JSON.Deserialize<ObservableCollection<AuthenticationKey>>(File.ReadAllText(fi.FullName));
+                foreach (var key in Utilities.JSON.Deserialize<ObservableCollection<AuthenticationKey>>(File.ReadAllText(fi.FullName)))
+                {
+                    Keys.Add(key);
+                }
             }
         }
     }

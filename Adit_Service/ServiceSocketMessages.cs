@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -101,7 +102,6 @@ namespace Adit_Service
         }
         private void ReceiveRequestForElevatedClient(dynamic jsonData)
         {
-            Utilities.WriteToLog("Received request for elevated client.");
             var sessionID = Guid.NewGuid().ToString();
             var desktopName = User32.GetCurrentDesktop();
             var procInfo = new ADVAPI32.PROCESS_INFORMATION();
@@ -118,6 +118,10 @@ namespace Adit_Service
                 jsonData["ClientSessionID"] = sessionID;
                 SendJSON(jsonData);
             }
+        }
+        private void ReceiveSAS(dynamic jsonData)
+        {
+            User32.SendSAS(false);
         }
         public void SendHeartbeat()
         {
@@ -139,6 +143,7 @@ namespace Adit_Service
                     return;
                 }
                 var uptime = new PerformanceCounter("System", "System Up Time", true);
+                var macAddress = Utilities.GetMACAddress();
                 uptime.NextValue();
                 string currentUser;
                 try
@@ -160,7 +165,8 @@ namespace Adit_Service
                     Type = "Heartbeat",
                     ComputerName = Environment.MachineName,
                     CurrentUser = currentUser,
-                    LastReboot = (DateTime.Now - TimeSpan.FromSeconds(uptime.NextValue()))
+                    LastReboot = (DateTime.Now - TimeSpan.FromSeconds(uptime.NextValue())),
+                    MACAddress = macAddress
                 };
                 SendJSON(request);
                 Utilities.CleanupFiles();

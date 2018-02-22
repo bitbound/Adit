@@ -19,6 +19,7 @@ namespace Adit.Models
         public string ID { get; set; }
         public string SessionID { get; set; }
         public string ComputerName { get; set; }
+        public string MACAddress { get; set; }
         public string CurrentUser { get; set; }
         public string Alias { get; set; }
         public DateTime? LastReboot { get; set; }

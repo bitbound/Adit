@@ -44,17 +44,17 @@ namespace Adit.Code.Shared
             var random = new Random();
             return random.Next(0, 999).ToString().PadLeft(3, '0') + " " + random.Next(0, 999).ToString().PadLeft(3, '0');
         }
-        public async static void ShowToolTip(FrameworkElement placementTarget, string message)
+        public async static void ShowToolTip(FrameworkElement placementTarget, System.Windows.Controls.Primitives.PlacementMode placementMode, string message)
         {
             var tt = new System.Windows.Controls.ToolTip();
             tt.PlacementTarget = placementTarget;
-            tt.Placement = System.Windows.Controls.Primitives.PlacementMode.Right;
-            tt.HorizontalOffset = Math.Round(placementTarget.ActualWidth * .25, 0) * -1;
-            tt.VerticalOffset = Math.Round(placementTarget.ActualHeight * .5, 0);
+            tt.Placement = placementMode;
+            //tt.HorizontalOffset = Math.Round(placementTarget.ActualWidth * .25, 0) * -1;
+            //tt.VerticalOffset = Math.Round(placementTarget.ActualHeight * .5, 0);
             tt.Content = message;
             tt.Foreground = new SolidColorBrush(Colors.SteelBlue);
             tt.IsOpen = true;
-            await Task.Delay(message.Length * 50);
+            await Task.Delay(message.Length * 75);
             tt.BeginAnimation(FrameworkElement.OpacityProperty, new DoubleAnimation(0, TimeSpan.FromSeconds(1)));
             await Task.Delay(1000);
             tt.IsOpen = false;
@@ -100,7 +100,7 @@ namespace Adit.Code.Shared
         public static void WriteToLog(Exception ex)
         {
             var exception = ex;
-            var path = Path.GetTempPath() + "Adit_Logs.txt";
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
             if (File.Exists(path))
             {
                 var fi = new FileInfo(path);
@@ -127,7 +127,7 @@ namespace Adit.Code.Shared
         }
         public static void WriteToLog(string Message)
         {
-            var path = Path.GetTempPath() + "Adit_Logs.txt";
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
             if (File.Exists(path))
             {
                 var fi = new FileInfo(path);

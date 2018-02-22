@@ -169,7 +169,7 @@
                     </Grid>
                     <Grid>
                         <TextBlock><Run Text="Buffer Size:"/></TextBlock>
-                        <TextBox HorizontalAlignment="Right" Width="100" Text="{Binding BufferSize, Mode=TwoWay}" TextAlignment="Right">
+                        <TextBox HorizontalAlignment="Right" Width="100" Text="{Binding Current.BufferSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextAlignment="Right">
                             <TextBox.ToolTip>
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="This is the maximum size, in bytes, of data that can be sent and receive.  Increasing this number will allow large files and clipboard payloads to be transferred but will increase RAM usage."></TextBlock>
                             </TextBox.ToolTip>

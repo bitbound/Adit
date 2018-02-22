@@ -36,7 +36,8 @@ namespace Adit.Models
             SocketMessageHandler = null;
             if (Socket?.Connected == true)
             {
-                Socket.Close();
+                Socket.Shutdown(SocketShutdown.Both);
+                Socket.Disconnect(false);
             }
             if (Socket != null)
             {

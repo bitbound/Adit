@@ -66,6 +66,7 @@ namespace Adit.Pages
             try
             {
                 client = new TcpClient();
+                Utilities.ShowToolTip(this, System.Windows.Controls.Primitives.PlacementMode.Center, "Attempting to connect...");
                 await client.ConnectAsync(Config.Current.HubHost, Config.Current.HubPort);
             }
             catch

@@ -37,8 +37,13 @@
             </ScrollViewer>
         </Grid>
         <Grid x:Name="controlsFrame">
-            <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center" Width="200">
-                <TextBlock FontSize="19" TextAlignment="Center" FontWeight="Bold" Margin="0,0,0,20"><Run Text="Connect to a session."/></TextBlock>
+            <TextBlock FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left">
+                    <Run Text="{Binding Current.ProductName}"></Run>
+                    <Run> Viewer</Run>
+            </TextBlock>
+            <TextBlock Text="Remote access solution." FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,33,0,0"/>
+            <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Top" Width="200" Margin="0,70,0,0">
+                <TextBlock FontSize="16" TextAlignment="Center" FontWeight="Bold" Margin="0,0,0,10"><Run Text="Connect to a session."/></TextBlock>
                 <TextBlock Margin="0,0,0,5"><Run Text="Session ID:"/></TextBlock>
                 <TextBox x:Name="textSessionID" />
                 <StackPanel x:Name="stackServerInfo" Margin="0,10,0,0">

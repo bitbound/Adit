@@ -17,7 +17,7 @@ namespace Adit.Code.Shared
         public StartupModes StartupMode { get; set; } = StartupModes.Normal;
         public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
         public string ProductName { get; set; } = "Adit";
-        public int BufferSize { get; set; } = 10000000;
+        public int BufferSize { get; set; } = 50000000;
 
 
         public bool IsServerTabVisible { get; set; } = true;

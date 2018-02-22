@@ -43,13 +43,17 @@ namespace Adit.Code.Client
         private void ReceiveParticipantList(dynamic jsonData)
         {
             var participantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
-            if (participantList.Count > AditClient.ParticipantList.Count)
+            Utilities.WriteToLog("Received participant list: " + Utilities.JSON.Serialize(participantList));
+            if (Config.Current.StartupMode != Config.StartupModes.Notifier)
             {
-                FlyoutNotification.Show("A partner has connected.");
-            }
-            else if (participantList.Count < AditClient.ParticipantList.Count)
-            {
-                FlyoutNotification.Show("A partner has disconnected.");
+                if (participantList.Count > AditClient.ParticipantList.Count)
+                {
+                    FlyoutNotification.Show("A partner has connected.");
+                }
+                else if (participantList.Count < AditClient.ParticipantList.Count)
+                {
+                    FlyoutNotification.Show("A partner has disconnected.");
+                }
             }
             AditClient.ParticipantList.RemoveAll(x => !participantList.Contains(x.ID));
             foreach (var partner in participantList)
@@ -74,6 +78,10 @@ namespace Adit.Code.Client
         private void ReceiveImageRequest(dynamic jsonData)
         {
             var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
+            if (requester == null)
+            {
+                return;
+            }
             if (requester.CaptureInstance == null)
             {
                 requester.CaptureInstance = new Capturer();
@@ -151,6 +159,16 @@ namespace Adit.Code.Client
                 SendNoScreenActivity();
             }
         }
+
+        public void SendDesktopSwitch()
+        {
+            var request = new
+            {
+                Type = "DesktopSwitch"
+            };
+            SendJSON(request);
+        }
+
         private void ReceiveMouseMove(dynamic jsonData)
         {
             User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX, 

@@ -16,11 +16,9 @@ namespace Adit.Code.Client
 {
     public class AditClient
     {
-        private static SocketAsyncEventArgs socketArgs;
         private static byte[] receiveBuffer;
-        public static TcpClient TcpClient { get; set; }
-        public static ClientSocketMessages SocketMessageHandler { get; set; }
-        public static List<Participant> ParticipantList { get; set; } = new List<Participant>();
+        private static SocketAsyncEventArgs socketArgs;
+        public static bool DesktopSwitchPending { get; set; }
         public static bool IsConnected
         {
             get
@@ -29,9 +27,10 @@ namespace Adit.Code.Client
             }
         }
 
-
+        public static List<Participant> ParticipantList { get; set; } = new List<Participant>();
         public static string SessionID { get; set; }
-
+        public static ClientSocketMessages SocketMessageHandler { get; set; }
+        public static TcpClient TcpClient { get; set; }
         public static async Task Connect()
         {
             if (await InitConnection())
@@ -43,6 +42,7 @@ namespace Adit.Code.Client
         {
             if (await InitConnection())
             {
+                SessionID = sessionIDToUse;
                 SocketMessageHandler.SendConnectionType(ConnectionTypes.ElevatedClient, sessionIDToUse);
             }
         }
@@ -81,6 +81,27 @@ namespace Adit.Code.Client
                 return false;
             }
         }
+        private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            if (e.SocketError != SocketError.Success)
+            {
+                Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
+                if (Config.Current.StartupMode == Config.StartupModes.Notifier)
+                {
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        App.Current.Shutdown();
+                    });
+                    return;
+                }
+                SessionID = String.Empty;
+                Pages.Client.Current.RefreshUICall();
+                return;
+            }
+            SocketMessageHandler.ProcessSocketMessage(e);
+            WaitForServerMessage();
+        }
+
         private static void WaitForServerMessage()
         {
             if (IsConnected)
@@ -92,27 +113,6 @@ namespace Adit.Code.Client
                 }
             }
             Pages.Client.Current.RefreshUICall();
-        }
-
-
-        private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            if (e.SocketError != SocketError.Success)
-            {
-                Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
-                if (Config.Current.StartupMode == Config.StartupModes.Notifier)
-                {
-                    App.Current.Dispatcher.Invoke(() => {
-                        App.Current.Shutdown();
-                    });
-                    return;
-                }
-                SessionID = String.Empty;
-                Pages.Client.Current.RefreshUICall();
-                return;
-            }
-            SocketMessageHandler.ProcessSocketMessage(e);
-            WaitForServerMessage();
         }
     }
 }

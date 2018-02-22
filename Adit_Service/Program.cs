@@ -14,6 +14,7 @@ namespace Adit_Service
     {
         static void Main()
         {
+            Config.Load();
             var args = Environment.GetCommandLineArgs().ToList();
             // If "-interactive" switch present, run service as an interactive console app.
             if (args.Exists(str => str.ToLower() == "-interactive"))
@@ -36,16 +37,6 @@ namespace Adit_Service
                     new WindowsService()
                 };
                 ServiceBase.Run(ServicesToRun);
-//#if DEBUG
-//                AditService.Connect();
-//#else
-//                ServiceBase[] ServicesToRun;
-//                ServicesToRun = new ServiceBase[]
-//                {
-//                    new WindowsService()
-//                };
-//                ServiceBase.Run(ServicesToRun);
-//#endif
             }
             while (true)
             {

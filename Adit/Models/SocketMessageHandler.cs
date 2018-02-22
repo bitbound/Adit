@@ -33,7 +33,8 @@ namespace Adit.Models
                 byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
                 var socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-                socketArgs.Completed += (sender, args) => {
+                socketArgs.Completed += (sender, args) =>
+                {
                     socketArgs.Dispose();
                 };
                 socketOut.SendAsync(socketArgs);
@@ -45,7 +46,8 @@ namespace Adit.Models
             {
                 var socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                socketArgs.Completed += (sender, args) => {
+                socketArgs.Completed += (sender, args) =>
+                {
                     socketArgs.Dispose();
                 };
                 socketOut.SendAsync(socketArgs);
@@ -92,9 +94,9 @@ namespace Adit.Models
                         this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
                             FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
                     }
-                    catch
+                    catch (Exception ex)
                     {
-
+                        Utilities.WriteToLog(ex);
                     }
                 }
             }
@@ -121,14 +123,24 @@ namespace Adit.Models
             }
             else
             {
-                if (this.GetType() == typeof(ServerSocketMessages))
+                try
                 {
-                    var partners = (this as ServerSocketMessages).Session.ConnectedClients.Where(
-                         x => x.ConnectionType != (this as ServerSocketMessages).ConnectionToClient.ConnectionType);
-                    foreach (var partner in partners)
+                    if (this.GetType() == typeof(ServerSocketMessages))
                     {
-                        partner.SendJSON(jsonData);
+                        var partners = (this as ServerSocketMessages)?.Session?.ConnectedClients?.Where(
+                             x => x.ID != (this as ServerSocketMessages).ConnectionToClient.ID);
+                        if (partners != null)
+                        {
+                            foreach (var partner in partners)
+                            {
+                                partner.SendJSON(jsonData);
+                            }
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Utilities.WriteToLog(ex);
                 }
             }
         }

@@ -37,7 +37,6 @@ namespace Adit.Code.Client
         IntPtr graphDC;
         User32.CursorInfo ci = new User32.CursorInfo();
         string desktopName;
-        bool desktopSwitchPending;
 
 
         public Capturer()
@@ -64,7 +63,7 @@ namespace Adit.Code.Client
                     var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
                     graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
 
-                    if (!desktopSwitchPending)
+                    if (!AditClient.DesktopSwitchPending)
                     {
                         SwitchDesktops();
                     }
@@ -74,8 +73,6 @@ namespace Adit.Code.Client
                     graphic.ReleaseHdc(graphDC);
                     User32.ReleaseDC(hWnd, hDC);
                 }
-
-                //graphic.CopyFromScreen(0 + offsetX, 0 + offsetY, 0, 0, new System.Drawing.Size(totalWidth, totalHeight));
 
                 // Get cursor information to draw on the screenshot.
                 ci.cbSize = Marshal.SizeOf(ci);
@@ -87,6 +84,7 @@ namespace Adit.Code.Client
                         graphic.DrawIcon(icon, ci.ptScreenPos.x, ci.ptScreenPos.y);
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -99,24 +97,23 @@ namespace Adit.Code.Client
                 {
                     User32.ReleaseDC(hWnd, hDC);
                 }
+                if (!AditClient.DesktopSwitchPending)
+                {
+                    SwitchDesktops();
+                }
             }
         }
 
         private void SwitchDesktops()
         {
-            desktopSwitchPending = true;
+            AditClient.DesktopSwitchPending = true;
             Utilities.WriteToLog($"Desktop switch initiated to {desktopName}.");
 
             var procInfo = new ADVAPI32.PROCESS_INFORMATION();
             var sessionID = Guid.NewGuid().ToString();
-            if (ADVAPI32.OpenInteractiveProcess(Path.Combine(Utilities.ProgramFolder, "Adit.exe") + $" -upgrade {sessionID}", desktopName, out procInfo))
+            if (ADVAPI32.OpenInteractiveProcess(Path.Combine(Utilities.ProgramFolder, "Adit.exe") + $" -upgrade {AditClient.SessionID}", desktopName, out procInfo))
             {
-                var request = new
-                {
-                    Type = "DesktopSwitch",
-                    SessionID = sessionID
-                };
-                AditClient.SocketMessageHandler.SendJSON(request);
+                AditClient.SocketMessageHandler.SendDesktopSwitch();
                 return;
             }
             else
@@ -124,7 +121,7 @@ namespace Adit.Code.Client
                 var error = Marshal.GetLastWin32Error();
                 if (error == 6)
                 {
-                    Utilities.WriteToLog("Connection was dropped due to a Windows session change.");
+                    Utilities.WriteToLog("Desktop switch failed during a Windows session change.");
                 }
                 else
                 {

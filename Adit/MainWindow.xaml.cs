@@ -49,10 +49,13 @@ namespace Adit
                 Initializer.SetShutdownMode();
                 Config.Load();
                 await Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
-                TrayIcon.Create();
-                if (Config.Current.IsServerAutoStartEnabled && Config.Current.StartupMode != Config.StartupModes.Notifier)
+                if (Config.Current.StartupMode != Config.StartupModes.Notifier)
                 {
-                    AditServer.Start();
+                    TrayIcon.Create();
+                    if (Config.Current.IsServerAutoStartEnabled)
+                    {
+                        AditServer.Start();
+                    }
                 }
             }
 

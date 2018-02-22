@@ -121,7 +121,7 @@ namespace Adit.Pages
             {
                 AditViewer.SocketMessageHandler.SendFileTransfer(fileDialog.FileName);
             }
-            Utilities.ShowToolTip(buttonMenu, "File transfer started.");
+            Utilities.ShowToolTip(buttonMenu, System.Windows.Controls.Primitives.PlacementMode.Bottom, "File transfer started.");
         }
 
         private void Disconnect_Click(object sender, RoutedEventArgs e)

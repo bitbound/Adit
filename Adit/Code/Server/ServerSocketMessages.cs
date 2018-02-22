@@ -34,8 +34,12 @@ namespace Adit.Code.Server
                     break;
                 case "ElevatedClient":
                     ConnectionToClient.ConnectionType = ConnectionTypes.ElevatedClient;
-                    Session = new ClientSession();
-                    Session.SessionID = jsonData["SessionID"];
+                    Session = AditServer.SessionList.Find(x => x.SessionID == jsonData["SessionID"]);
+                    if (Session == null)
+                    {
+                        Session = new ClientSession();
+                        Session.SessionID = jsonData["SessionID"];
+                    }
                     Session.ConnectedClients.Add(ConnectionToClient);
                     AditServer.SessionList.Add(Session);
                     break;
@@ -113,8 +117,11 @@ namespace Adit.Code.Server
         }
         private async void ReceiveDesktopSwitch(dynamic jsonData)
         {
+            var session  = ConnectionToClient.SocketMessageHandler.Session;
             var startWait = DateTime.Now;
-            while (AditServer.ClientList.Any(x => x.SessionID == jsonData["SessionID"]) == false)
+            jsonData["Status"] = "ok";
+
+            while (AditServer.ClientList.Any(x => x.ConnectionType == ConnectionTypes.ElevatedClient && x.ID != ConnectionToClient.ID) == false)
             {
                 await Task.Delay(500);
                 if (DateTime.Now - startWait > TimeSpan.FromSeconds(5))
@@ -123,18 +130,13 @@ namespace Adit.Code.Server
                     break;
                 }
             }
-            jsonData["Status"] = "ok";
-            var session = AditServer.SessionList.Find(x => x.SessionID == ConnectionToClient.SessionID);
-            var newSession = AditServer.SessionList.Find(x => x.SessionID == jsonData["SessionID"]);
-
-            while (session.ConnectedClients.Any(x=>x.ConnectionType == ConnectionTypes.Viewer))
+            SendParticipantList(session);
+            foreach (var client in session.ConnectedClients.ToList())
             {
-                var viewer = session.ConnectedClients.FirstOrDefault(x => x.ConnectionType == ConnectionTypes.Viewer);
-                session.ConnectedClients.Remove(viewer);
-                newSession.ConnectedClients.Add(viewer);
-                viewer.SocketMessageHandler.Session = newSession;
-                viewer.SendJSON(jsonData);
+                client.SendJSON(jsonData);
             }
+            ConnectionToClient.Socket.Shutdown(SocketShutdown.Both);
+            ConnectionToClient.Socket.Disconnect(false);
         }
         public void SendParticipantList(ClientSession session)
         {
@@ -150,7 +152,11 @@ namespace Adit.Code.Server
         private void ReceiveImageRequest(dynamic jsonData)
         {
             jsonData["RequesterID"] = ConnectionToClient.ID;
-            Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient)?.SendJSON(jsonData);
+            var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
+            foreach (var client in clients)
+            {
+                client.SendJSON(jsonData);
+            }
         }
         private void ReceiveSAS(dynamic jsonData)
         {
@@ -182,7 +188,9 @@ namespace Adit.Code.Server
                 key.LastUsed = DateTime.Now;
                 Authentication.Current.Save();
                 jsonData["Status"] = "ok";
-                ComputerHub.Current.Load();
+                MainWindow.Current.Dispatcher.Invoke(() => {
+                    ComputerHub.Current.Load();
+                });
                 jsonData["ComputerList"] = ComputerHub.Current.ComputerList;
             }
             SendJSON(jsonData);

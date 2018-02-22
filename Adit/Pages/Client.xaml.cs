@@ -48,7 +48,7 @@ namespace Adit.Pages
         {
             System.Windows.Clipboard.SetText(textSessionID.Text);
             textSessionID.SelectAll();
-            Utilities.ShowToolTip(textSessionID, "Copied to clipboard!");
+            Utilities.ShowToolTip(textSessionID, System.Windows.Controls.Primitives.PlacementMode.Right, "Copied to clipboard!");
 
         }
 
@@ -61,7 +61,7 @@ namespace Adit.Pages
             }
             else
             {
-                Utilities.ShowToolTip(textFilesTransferred, "No files available.");
+                Utilities.ShowToolTip(textFilesTransferred, System.Windows.Controls.Primitives.PlacementMode.Right, "No files available.");
             }
         }
         private void UpgradeToService(object sender, RoutedEventArgs e)

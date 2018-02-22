@@ -36,7 +36,10 @@ namespace Adit.Code.Shared
                         {
                             ClipboardData = Clipboard.GetDataObject();
                             var jsonData = GetTransferData();
-                            connectionToSendChanges.SendJSON(jsonData);
+                            if (!string.IsNullOrWhiteSpace(jsonData.Format))
+                            {
+                                connectionToSendChanges.SendJSON(jsonData);
+                            }
                         }
                     }
                     catch
@@ -91,7 +94,7 @@ namespace Adit.Code.Shared
                     fileNames.Add(Path.GetFileName(filePath));
                     fileContents.Add(Convert.ToBase64String(File.ReadAllBytes(filePath)));
                 }
-                ClipboardData = new DataObject("FileDrop", filePaths, true);
+                ClipboardData = new DataObject("FileDrop", filePaths.ToArray(), true);
                 Clipboard.SetDataObject(ClipboardData);
                 return new
                 {

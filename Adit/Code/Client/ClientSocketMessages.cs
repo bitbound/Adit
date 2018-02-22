@@ -43,7 +43,6 @@ namespace Adit.Code.Client
         private void ReceiveParticipantList(dynamic jsonData)
         {
             var participantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
-            Utilities.WriteToLog("Received participant list: " + Utilities.JSON.Serialize(participantList));
             if (Config.Current.StartupMode != Config.StartupModes.Notifier)
             {
                 if (participantList.Count > AditClient.ParticipantList.Count)
@@ -77,21 +76,43 @@ namespace Adit.Code.Client
 
         private void ReceiveImageRequest(dynamic jsonData)
         {
-            var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
-            if (requester == null)
-            {
-                return;
-            }
-            if (requester.CaptureInstance == null)
-            {
-                requester.CaptureInstance = new Capturer();
-            }
-            var requesterBytes = Encoding.UTF8.GetBytes(jsonData["RequesterID"]);
+           
             try
             {
+                var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
+                if (requester == null)
+                {
+                    return;
+                }
+                if (requester.CaptureInstance == null)
+                {
+                    requester.CaptureInstance = new Capturer();
+                }
+                var requesterBytes = Encoding.UTF8.GetBytes(jsonData["RequesterID"]);
                 lock (requester.CaptureInstance)
                 {
                     requester.CaptureInstance.CaptureScreen();
+                }
+                if (jsonData["Fullscreen"])
+                {
+                    using (var ms = requester.CaptureInstance.GetFullscreenStream(requesterBytes))
+                    {
+                        SendBytes(ms.ToArray());
+                    }
+                }
+                else
+                {
+                    if (requester.CaptureInstance.IsNewFrameDifferent())
+                    {
+                        using (var ms = requester.CaptureInstance.GetDiffStream(requesterBytes))
+                        {
+                            SendBytes(ms.ToArray());
+                        }
+                    }
+                    else
+                    {
+                        SendNoScreenActivity();
+                    }
                 }
             }
             catch (Exception ex)
@@ -103,28 +124,6 @@ namespace Adit.Code.Client
                     ReceiveImageRequest(jsonData);
                 });
             }
-            if (jsonData["Fullscreen"])
-            {
-                using (var ms = requester.CaptureInstance.GetFullscreenStream(requesterBytes))
-                {
-                    SendBytes(ms.ToArray());
-                }
-            }
-            else
-            {
-                if (requester.CaptureInstance.IsNewFrameDifferent())
-                {
-                    using (var ms = requester.CaptureInstance.GetDiffStream(requesterBytes))
-                    {
-                        SendBytes(ms.ToArray());
-                    }
-                }
-                else
-                {
-                    SendNoScreenActivity();
-                }
-            }
-
         }
 
         private void SendNoScreenActivity()

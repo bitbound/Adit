@@ -201,6 +201,10 @@ namespace Adit.Code.Server
             {
                 var requesterID = Encoding.UTF8.GetString(bytesReceived.Take(36).ToArray());
                 var requester = AditServer.ClientList.Find(x => x.ID == requesterID);
+                if (requester == null)
+                {
+                    Utilities.WriteToLog("Unable to find requester based on ID " + requesterID);
+                }
                 requester?.SendBytes(bytesReceived.Skip(36).ToArray());
             }
             else if (ConnectionToClient.ConnectionType == ConnectionTypes.Viewer)

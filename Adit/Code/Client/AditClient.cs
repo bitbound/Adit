@@ -50,6 +50,11 @@ namespace Adit.Code.Client
         {
             if (IsConnected)
             {
+                if (Config.Current.StartupMode == Config.StartupModes.Notifier)
+                {
+                    App.Current.Shutdown();
+                    return false;
+                }
                 MessageBox.Show("The client is already connected.", "Already Connected", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
@@ -73,11 +78,13 @@ namespace Adit.Code.Client
             }
             catch
             {
-                if (Config.Current.StartupMode != Config.StartupModes.Notifier)
+                if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                 {
-                    MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Pages.Client.Current.RefreshUICall();
+                    App.Current.Shutdown();
+                    return false;
                 }
+                MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                Pages.Client.Current.RefreshUICall();
                 return false;
             }
         }

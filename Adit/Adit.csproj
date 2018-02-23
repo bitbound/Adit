@@ -104,6 +104,7 @@
       <DependentUpon>ToggleSwitch.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AuthenticationKey.cs" />
+    <Compile Include="Models\BinaryTransferType.cs" />
     <Compile Include="Models\ClientConnection.cs" />
     <Compile Include="Models\ClientSession.cs" />
     <Compile Include="Models\ConnectionTypes.cs" />

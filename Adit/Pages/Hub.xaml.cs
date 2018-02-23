@@ -127,6 +127,8 @@ namespace Adit.Pages
                 remoteServerConnectStack.Visibility = Visibility.Collapsed;
                 connectionsGrid.Visibility = Visibility.Visible;
                 datagridComputers.IsReadOnly = true;
+                deleteButton.Visibility = Visibility.Collapsed;
+                disconnectButton.Visibility = Visibility.Collapsed;
             }
             client.Close();
         }
@@ -153,6 +155,11 @@ namespace Adit.Pages
                 AditServer.ClientList.RemoveAll(x => x.ID == computer?.ID);
                 ComputerHub.Current.ComputerList.Remove(computer);
             }
+        }
+
+        private void DatagridComputers_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ConnectToClient_Click(sender, e);
         }
     }
 }

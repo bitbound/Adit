@@ -17,6 +17,7 @@ namespace Adit.Code.Viewer
     public class ViewerSocketMessages : SocketMessageHandler
     {
         Socket socketOut;
+        List<byte> BinaryTransferBuffer { get; set; } = new List<byte>();
         public ViewerSocketMessages(Socket socketOut)
             : base(socketOut)
         {
@@ -41,7 +42,13 @@ namespace Adit.Code.Viewer
                 Y = y
             });
         }
-
+        private void ReceiveBinaryTransferStarting(dynamic jsonData)
+        {
+            ExpectedBinarySize = jsonData["Size"];
+            LastRequesterID = jsonData["Sender"];
+            ReceiveTransferType = Enum.Parse(typeof(BinaryTransferType), jsonData["TransferType"]);
+            AditViewer.NextDrawPoint = new System.Drawing.Point(jsonData["ExtraData"]["X"], jsonData["ExtraData"]["Y"]);
+        }
         private void ReceiveViewerConnectRequest(dynamic jsonData)
         {
             if (jsonData["Status"] == "notfound")
@@ -188,11 +195,34 @@ namespace Adit.Code.Viewer
 
         private void ReceiveByteArray(byte[] bytesReceived)
         {
-            var metadata = bytesReceived.Take(6).ToArray();
-            var xPosition = metadata[0] * 10000 + metadata[1] * 100 + metadata[2];
-            var yPosition = metadata[3] * 10000 + metadata[4] * 100 + metadata[5];
-            var startDrawingPoint = new Point(xPosition, yPosition);
-            Pages.Viewer.Current.DrawImageCall(startDrawingPoint, bytesReceived.Skip(6));
+            if (bytesReceived.Length == ExpectedBinarySize)
+            {
+                Pages.Viewer.Current.DrawImageCall(bytesReceived);
+                BinaryTransferBuffer.Clear();
+                BinaryTransferBuffer.TrimExcess();
+            }
+            else if (bytesReceived.Length > ExpectedBinarySize)
+            {
+                Utilities.WriteToLog("Received bytes exceeded expected size.");
+                BinaryTransferBuffer.Clear();
+                BinaryTransferBuffer.TrimExcess();
+            }
+            else
+            {
+                BinaryTransferBuffer.AddRange(bytesReceived);
+                if (BinaryTransferBuffer.Count == ExpectedBinarySize)
+                {
+                    Pages.Viewer.Current.DrawImageCall(BinaryTransferBuffer.ToArray());
+                    BinaryTransferBuffer.Clear();
+                    BinaryTransferBuffer.TrimExcess();
+                }
+                else if (BinaryTransferBuffer.Count > ExpectedBinarySize)
+                {
+                    Utilities.WriteToLog("Received bytes exceeded expected size.");
+                    BinaryTransferBuffer.Clear();
+                    BinaryTransferBuffer.TrimExcess();
+                }
+            }
         }
 
         private void ReceiveParticipantList(dynamic jsonData)

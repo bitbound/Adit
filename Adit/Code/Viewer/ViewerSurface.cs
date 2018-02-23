@@ -39,7 +39,7 @@ namespace Adit.Code.Viewer
             CalculateScaleTransform(maxWidth, maxHeight);
         }
         
-        public void DrawImage(Point startDrawingPoint, IEnumerable<byte> imageBytes)
+        public void DrawImage(byte[] imageBytes)
         {
             using (var ms = new MemoryStream())
             {
@@ -61,7 +61,7 @@ namespace Adit.Code.Viewer
                 );
                 renderTargetBitmap.Render(drawingSurface);
 
-                translateTransform = new TranslateTransform(startDrawingPoint.X, startDrawingPoint.Y);
+                translateTransform = new TranslateTransform(AditViewer.NextDrawPoint.X, AditViewer.NextDrawPoint.Y);
                 imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
                 using (var context = drawingSurface.RenderOpen())
                 {

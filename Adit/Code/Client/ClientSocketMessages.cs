@@ -29,6 +29,7 @@ namespace Adit.Code.Client
         int offsetY = SystemInformation.VirtualScreen.Top;
         long fileTransferSize;
         string fileTransferName;
+        Tuple<byte[], System.Drawing.Point> captureInfo;
         public ClientSocketMessages(Socket socketOut)
             : base(socketOut)
         {
@@ -88,26 +89,23 @@ namespace Adit.Code.Client
                 {
                     requester.CaptureInstance = new Capturer();
                 }
-                var requesterBytes = Encoding.UTF8.GetBytes(jsonData["RequesterID"]);
                 lock (requester.CaptureInstance)
                 {
                     requester.CaptureInstance.CaptureScreen();
                 }
                 if (jsonData["Fullscreen"])
                 {
-                    using (var ms = requester.CaptureInstance.GetFullscreenStream(requesterBytes))
-                    {
-                        SendBytes(ms.ToArray());
-                    }
+                    captureInfo = requester.CaptureInstance.GetCapture(true);
+                    SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
+                    SendBytes(captureInfo.Item1);
                 }
                 else
                 {
                     if (requester.CaptureInstance.IsNewFrameDifferent())
                     {
-                        using (var ms = requester.CaptureInstance.GetDiffStream(requesterBytes))
-                        {
-                            SendBytes(ms.ToArray());
-                        }
+                        captureInfo = requester.CaptureInstance.GetCapture(false);
+                        SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
+                        SendBytes(captureInfo.Item1);
                     }
                     else
                     {

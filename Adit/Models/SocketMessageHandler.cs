@@ -14,6 +14,9 @@ namespace Adit.Models
     public class SocketMessageHandler
     {
         Socket socketOut;
+        public BinaryTransferType ReceiveTransferType { get; set; }
+        public int ExpectedBinarySize { get; set; }
+        public string LastRequesterID { get; set; }
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -39,6 +42,16 @@ namespace Adit.Models
                 };
                 socketOut.SendAsync(socketArgs);
             }
+        }
+        public void SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
+        {
+            SendJSON(new
+            {
+                Type = "BinaryTransferStarting",
+                TransferType = transferType.ToString(),
+                Size = binaryLength,
+                ExtraData = extraData
+            });
         }
         public void SendBytes(byte[] bytes)
         {
@@ -123,25 +136,30 @@ namespace Adit.Models
             }
             else
             {
-                try
+                PassDataToPartner(jsonData);
+            }
+        }
+
+        private void PassDataToPartner(dynamic jsonData)
+        {
+            try
+            {
+                if (this.GetType() == typeof(ServerSocketMessages))
                 {
-                    if (this.GetType() == typeof(ServerSocketMessages))
+                    var partners = (this as ServerSocketMessages)?.Session?.ConnectedClients?.Where(
+                         x => x.ID != (this as ServerSocketMessages).ConnectionToClient.ID);
+                    if (partners != null)
                     {
-                        var partners = (this as ServerSocketMessages)?.Session?.ConnectedClients?.Where(
-                             x => x.ID != (this as ServerSocketMessages).ConnectionToClient.ID);
-                        if (partners != null)
+                        foreach (var partner in partners)
                         {
-                            foreach (var partner in partners)
-                            {
-                                partner.SendJSON(jsonData);
-                            }
+                            partner.SendJSON(jsonData);
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Utilities.WriteToLog(ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.WriteToLog(ex);
             }
         }
     }

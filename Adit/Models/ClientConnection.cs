@@ -56,6 +56,16 @@ namespace Adit.Models
             };
             Socket.SendAsync(socketArgs);
         }
+        public void SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
+        {
+            SendJSON(new
+            {
+                Type = "BinaryTransferStarting",
+                TransferType = transferType.ToString(),
+                Size = binaryLength,
+                ExtraData = extraData
+            });
+        }
         public void SendBytes(byte[] bytes)
         {
             var socketArgs = new SocketAsyncEventArgs();

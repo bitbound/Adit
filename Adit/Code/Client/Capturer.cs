@@ -18,7 +18,6 @@ namespace Adit.Code.Client
         Bitmap currentFrame;
         Bitmap lastFrame;
         Rectangle boundingBox;
-        byte[] diffData;
         byte[] newImgData;
         byte[] rgbValues1;
         byte[] rgbValues2;
@@ -37,6 +36,7 @@ namespace Adit.Code.Client
         IntPtr graphDC;
         User32.CursorInfo ci = new User32.CursorInfo();
         string desktopName;
+        System.Drawing.Point captureStartPoint;
 
 
         public Capturer()
@@ -130,35 +130,37 @@ namespace Adit.Code.Client
                 return;
             }
         }
-
-        public MemoryStream GetFullscreenStream(byte[] metadataToPrepend)
+        public Tuple<byte[], System.Drawing.Point> GetCapture(bool fullscreen)
         {
-            var ms = new MemoryStream();
-            ms.Write(metadataToPrepend, 0, 36);
-            ms.Write(new byte[] { 0, 0, 0, 0, 0, 0 }, 0, 6);
-            currentFrame.Save(ms, ImageFormat.Png);
-            return ms;
+            if (fullscreen)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    currentFrame.Save(ms, ImageFormat.Png);
+                    return new Tuple<byte[], System.Drawing.Point>(ms.ToArray(), new System.Drawing.Point(0,0));
+                }
+            }
+            else
+            {
+                using (var ms = new MemoryStream())
+                {
+                    using (var croppedFrame = currentFrame.Clone(boundingBox, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                    {
+                        croppedFrame.Save(ms, ImageFormat.Png);
+                        return new Tuple<byte[], System.Drawing.Point>(ms.ToArray(), captureStartPoint);
+                    }
+                }
+            }
+            
         }
+
         public bool IsNewFrameDifferent()
         {
-            diffData = GetDiffData();
-            return diffData != null;
+            return GetDiffData();
         }
 
-        public MemoryStream GetDiffStream(byte[] metadataToPrepend)
-        {
-            var ms = new MemoryStream();
-            using (var croppedFrame = currentFrame.Clone(boundingBox, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-            {
-                // Add x,y coordinates of top-left of image so receiver knows where to draw it.
-                ms.Write(metadataToPrepend, 0, 36);
-                ms.Write(diffData, 0, 6);
-                croppedFrame.Save(ms, ImageFormat.Png);
-            }
-            return ms;
-        }
 
-        private byte[] GetDiffData()
+        private bool GetDiffData()
         {
             if (currentFrame.Height != lastFrame.Height || currentFrame.Width != lastFrame.Width)
             {
@@ -189,7 +191,7 @@ namespace Adit.Code.Client
                 }
                 catch
                 {
-                    return null;
+                    return false;
                 }
             }
             try
@@ -205,7 +207,7 @@ namespace Adit.Code.Client
                 }
                 catch
                 {
-                    return null;
+                    return false;
                 }
             }
             // Get the address of the first line.
@@ -260,26 +262,21 @@ namespace Adit.Code.Client
                 right = Math.Min(right + 20, totalWidth);
                 bottom = Math.Min(bottom + 20, totalHeight);
 
-                // Byte array that indicates top left coordinates of the image.
-                newImgData = new byte[6];
-                newImgData[0] = (byte)(left % 1000000 / 10000);
-                newImgData[1] = (byte)(left % 10000 / 100);
-                newImgData[2] = (byte)(left % 100);
-                newImgData[3] = (byte)(top % 1000000 / 10000);
-                newImgData[4] = (byte)(top % 10000 / 100);
-                newImgData[5] = (byte)(top % 100);
+                // Point that indicates top left coordinates of the image.
+                captureStartPoint = new System.Drawing.Point(left, top);
 
 
                 boundingBox = new System.Drawing.Rectangle(left, top, right - left, bottom - top);
                 currentFrame.UnlockBits(bd1);
                 lastFrame.UnlockBits(bd2);
-                return newImgData;
+
+                return true;
             }
             else
             {
                 currentFrame.UnlockBits(bd1);
                 lastFrame.UnlockBits(bd2);
-                return null;
+                return false;
             }
         }
     }

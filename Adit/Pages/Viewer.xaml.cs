@@ -60,13 +60,13 @@ namespace Adit.Pages
                 AditViewer.RequestFullscreen = true;
             }
         }
-        public void DrawImageCall(Point startDrawingPoint, IEnumerable<byte> imageBytes)
+        public void DrawImageCall(byte[] imageBytes)
         {
             try
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    DrawingSurface.DrawImage(startDrawingPoint, imageBytes);
+                    DrawingSurface.DrawImage(imageBytes);
                 });
             }
             finally

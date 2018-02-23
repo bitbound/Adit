@@ -155,6 +155,7 @@ namespace Adit.Code.Server
             var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
             foreach (var client in clients)
             {
+                client.SocketMessageHandler.LastRequesterID = ConnectionToClient.ID;
                 client.SendJSON(jsonData);
             }
         }
@@ -195,17 +196,33 @@ namespace Adit.Code.Server
             }
             SendJSON(jsonData);
         }
+        private void ReceiveBinaryTransferStarting(dynamic jsonData)
+        {
+            jsonData["Sender"] = ConnectionToClient.ID;
+            if (Enum.Parse(typeof(BinaryTransferType), jsonData["TransferType"]) == BinaryTransferType.ScreenCapture)
+            {
+                foreach (var viewer in Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Viewer))
+                {
+                    viewer.SendJSON(jsonData);
+                }
+            }
+        }
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             if (ConnectionToClient.ConnectionType == ConnectionTypes.Client || ConnectionToClient.ConnectionType == ConnectionTypes.ElevatedClient)
             {
-                var requesterID = Encoding.UTF8.GetString(bytesReceived.Take(36).ToArray());
-                var requester = AditServer.ClientList.Find(x => x.ID == requesterID);
+                if (string.IsNullOrWhiteSpace(LastRequesterID))
+                {
+                    Utilities.WriteToLog("Requester ID is blank.");
+                    return;
+                }
+                var requester = AditServer.ClientList.Find(x => x.ID == LastRequesterID);
                 if (requester == null)
                 {
-                    Utilities.WriteToLog("Unable to find requester based on ID " + requesterID);
+                    Utilities.WriteToLog($"Requester not found based on ID {LastRequesterID}.");
+                    return;
                 }
-                requester?.SendBytes(bytesReceived.Skip(36).ToArray());
+                requester.SendBytes(bytesReceived);
             }
             else if (ConnectionToClient.ConnectionType == ConnectionTypes.Viewer)
             {

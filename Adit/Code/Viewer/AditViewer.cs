@@ -2,6 +2,7 @@
 using Adit.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -31,6 +32,8 @@ namespace Adit.Code.Viewer
                 return TcpClient?.Client?.Connected == true;
             }
         }
+
+        public static System.Drawing.Point NextDrawPoint { get; internal set; }
 
         public static async Task Connect(string sessionID)
         {

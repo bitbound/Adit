@@ -29,6 +29,7 @@ namespace Adit.Code.Server
                 return tcpListener?.Server?.IsBound == true;
             }
         }
+        public static bool IsSSLCertificateAvailable { get; set; }
 
         public static void Start()
         {

@@ -64,39 +64,6 @@ namespace Adit.Pages
                 Utilities.ShowToolTip(textFilesTransferred, System.Windows.Controls.Primitives.PlacementMode.Right, "No files available.");
             }
         }
-        private void UpgradeToService(object sender, RoutedEventArgs e)
-        {
-            //var services = System.ServiceProcess.ServiceController.GetServices();
-            //var aditService = services.ToList().Find(sc => sc.ServiceName == "Adit_Service");
-            //if (aditService != null)
-            //{
-            //    System.Windows.MessageBox.Show("The Adit Service is already installed.  Please connect via Unattended Mode from the remote control.", "Service Already Installed", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //    return;
-            //}
-            //if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
-            //{
-            //    System.Windows.MessageBox.Show("The client must be running as an administrator (i.e. elevated) in order to upgrade to a service.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //    return;
-            //}
-            //try
-            //{
-            //    File.WriteAllBytes(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Adit_Service.exe"), Properties.Resources.Adit_Service);
-            //}
-            //catch
-            //{
-            //    System.Windows.MessageBox.Show("Failed to unpack the service into the temp directory.  Try clearing the temp directory.", "Write Failure", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    return;
-            //}
-            //var psi = new ProcessStartInfo(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Adit_Service.exe"), "-install -once");
-            //psi.WindowStyle = ProcessWindowStyle.Hidden;
-            //Process.Start(psi);
-            //AditClient.Send(new
-            //{
-            //    Type = "ConnectUpgrade",
-            //    ComputerName = Environment.MachineName
-            //});
-        }
-
       
         private async void ConnectButtonClicked(object sender, RoutedEventArgs e)
         {

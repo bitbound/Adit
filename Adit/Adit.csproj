@@ -141,6 +141,9 @@
     <Compile Include="Windows\AuthenticationKeys.xaml.cs">
       <DependentUpon>AuthenticationKeys.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SSL.xaml.cs">
+      <DependentUpon>SSL.xaml</DependentUpon>
+    </Compile>
     <Page Include="Controls\ClosedToTrayBalloon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -200,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\AuthenticationKeys.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SSL.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

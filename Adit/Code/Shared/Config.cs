@@ -50,6 +50,7 @@ namespace Adit.Code.Shared
         public string HubHost { get; set; } = "localhost";
         public int HubPort { get; set; } = 54765;
         public string HubKey { get; set; }
+        public bool IsEncryptionEnabled { get; set; } = true;
 
         public enum StartupModes
         {

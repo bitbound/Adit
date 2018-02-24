@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Adit.Models
 {
-    public class ClientConnection : IDisposable
+    public class ClientConnection
     {
         public ServerSocketMessages SocketMessageHandler { get; set; }
 
@@ -31,7 +31,7 @@ namespace Adit.Models
 
         public Socket Socket { get; set; }
 
-        public void Dispose()
+        public void Close()
         {
             SocketMessageHandler = null;
             if (Socket?.Connected == true)

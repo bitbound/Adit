@@ -18,7 +18,6 @@ namespace Adit.Code.Client
         Bitmap currentFrame;
         Bitmap lastFrame;
         Rectangle boundingBox;
-        byte[] newImgData;
         byte[] rgbValues1;
         byte[] rgbValues2;
         BitmapData bd1;

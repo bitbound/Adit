@@ -29,7 +29,6 @@ namespace Adit.Code.Server
                 return tcpListener?.Server?.IsBound == true;
             }
         }
-        public static bool IsSSLCertificateAvailable { get; set; }
 
         public static void Start()
         {
@@ -142,7 +141,7 @@ namespace Adit.Code.Server
                 }
             }
             ClientList.Remove(connection);
-            connection.Dispose();
+            connection.Close();
             socketArgs.Dispose();
             Pages.Server.Current?.RefreshUICall();
         }

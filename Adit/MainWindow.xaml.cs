@@ -19,7 +19,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Linq;
 using Adit.Code.Server;
 
 namespace Adit
@@ -34,7 +33,6 @@ namespace Adit
         {
             InitializeComponent();
             Current = this;
-
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

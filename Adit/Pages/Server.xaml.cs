@@ -69,7 +69,7 @@ namespace Adit.Pages
         private void RefreshUI()
         {
             toggleServerStatus.IsOn = AditServer.IsEnabled;
-            toggleSSL.IsOn = Config.Current.IsEncryptionEnabled && AditServer.IsSSLCertificateAvailable;
+            toggleSSL.IsOn = Config.Current.IsEncryptionEnabled;
             textHost.Text = Config.Current.ServerHost;
             textPort.Text = Config.Current.ServerPort.ToString();
             buttonConnectedClients.Content = AditServer.ClientCount.ToString();
@@ -95,7 +95,7 @@ namespace Adit.Pages
         private void ToggleSSL_Click(object sender, MouseButtonEventArgs e)
         {
             Config.Current.IsEncryptionEnabled = !toggleSSL.IsOn;
-            if (Config.Current.IsEncryptionEnabled && !AditServer.IsSSLCertificateAvailable)
+            if (Config.Current.IsEncryptionEnabled)
             {
                 var win = new Windows.SSL();
                 win.Owner = MainWindow.Current;

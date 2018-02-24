@@ -27,6 +27,7 @@ namespace Adit.Code.Shared
         public bool IsClientTabVisible { get; set; } = true;
         public bool IsHubTabVisible { get; set; } = true;
         public bool IsTargetServerConfigurable { get; set; } = true;
+        public bool IsEncryptionEnabled { get; set; } = true;
 
 
         public string ServerHost { get; set; } = "localhost";
@@ -50,7 +51,7 @@ namespace Adit.Code.Shared
         public string HubHost { get; set; } = "localhost";
         public int HubPort { get; set; } = 54765;
         public string HubKey { get; set; }
-        public bool IsEncryptionEnabled { get; set; } = true;
+       
 
         public enum StartupModes
         {

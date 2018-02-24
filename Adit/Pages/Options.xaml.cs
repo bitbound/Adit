@@ -76,7 +76,6 @@ namespace Adit.Pages
 
         public void RefreshUI()
         {
-            toggleUAC.IsOn = Config.Current.IsUACHandled;
             toggleMaximizeViewer.IsOn = Config.Current.IsViewerMaximizedOnConnect;
             toggleScaleToFitViewer.IsOn = Config.Current.IsViewerScaleToFit;
             toggleStartServerAutomatically.IsOn = Config.Current.IsServerAutoStartEnabled;

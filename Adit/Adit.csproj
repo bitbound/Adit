@@ -90,6 +90,7 @@
     <Compile Include="Code\Server\Authentication.cs" />
     <Compile Include="Code\Server\ComputerHub.cs" />
     <Compile Include="Code\Shared\ClipboardManager.cs" />
+    <Compile Include="Code\Shared\Encryption.cs" />
     <Compile Include="Code\Shared\ServiceConfig.cs" />
     <Compile Include="Code\Viewer\AditViewer.cs" />
     <Compile Include="Code\Viewer\InputHandler.cs" />

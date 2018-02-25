@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,8 +26,6 @@ namespace Adit.Code.Shared
             {
                 ClipboardWatcher.Stop();
             }
-            ClipboardData = Clipboard.GetDataObject();
-            Clipboard.SetDataObject(ClipboardData);
             ClipboardWatcher = new System.Timers.Timer(500);
             ClipboardWatcher.Elapsed += (sender, args) => 
             {

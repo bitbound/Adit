@@ -62,55 +62,55 @@ namespace Adit.Code.Viewer
             }
         }
 
-        private async void InputSurface_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void InputSurface_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
                 e.Handled = true;
-                await AditViewer.SocketMessageHandler.SendMouseWheel(e.Delta);
+                AditViewer.SocketMessageHandler.SendMouseWheel(e.Delta);
             }
         }
 
-        private async void InputSurface_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
                 e.Handled = true;
                 var position = e.GetPosition(inputSurface);
-                await AditViewer.SocketMessageHandler.SendMouseLeftDown(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
+                AditViewer.SocketMessageHandler.SendMouseLeftDown(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
             }
         }
 
-        private async void InputSurface_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
                 e.Handled = true;
                 var position = e.GetPosition(inputSurface);
-                await AditViewer.SocketMessageHandler.SendMouseLeftUp(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
+                AditViewer.SocketMessageHandler.SendMouseLeftUp(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
             }
         }
-        private async void InputSurface_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
                 e.Handled = true;
                 var position = e.GetPosition(inputSurface);
-                await AditViewer.SocketMessageHandler.SendMouseRightDown(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
+                AditViewer.SocketMessageHandler.SendMouseRightDown(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
             }
         }
-        private async void InputSurface_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void InputSurface_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
                 e.Handled = true;
                 var position = e.GetPosition(inputSurface);
-                await AditViewer.SocketMessageHandler.SendMouseRightUp(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
+                AditViewer.SocketMessageHandler.SendMouseRightUp(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
             }
         }
 
 
-        private async void InputSurface_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        private void InputSurface_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (inputSurface.IsVisible)
             {
@@ -119,7 +119,7 @@ namespace Adit.Code.Viewer
                 {
                     lastPointerMove = DateTime.Now;
                     var position = e.GetPosition(inputSurface);
-                    await AditViewer.SocketMessageHandler.SendMouseMove(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
+                    AditViewer.SocketMessageHandler.SendMouseMove(position.X / inputSurface.ActualWidth, position.Y / inputSurface.ActualHeight);
                 }
                 if (!Config.Current.IsViewerScaleToFit && Config.Current.IsFollowCursorEnabled)
                 {

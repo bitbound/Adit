@@ -38,11 +38,12 @@ namespace Adit.Code.Shared
                 }
             }
         }
-        public async Task<byte[]> DecryptBytes(byte[] bytes, bool appendToPartial)
+        public async Task<byte[]> DecryptBytes(byte[] bytes)
         {
             try
             {
-                var iv = bytes.Take(16).ToArray();
+                PartialDecryptionBuffer = PartialDecryptionBuffer.Concat(bytes).ToArray();
+                var iv = PartialDecryptionBuffer.Take(16).ToArray();
                 using (var aes = Aes.Create())
                 {
                     aes.Key = Key;
@@ -51,11 +52,11 @@ namespace Adit.Code.Shared
                     byte[] buffer;
                     using (var decryptor = aes.CreateDecryptor(Key, iv))
                     {
-                        using (var ms = new MemoryStream(bytes.Skip(16).ToArray()))
+                        using (var ms = new MemoryStream(PartialDecryptionBuffer.Skip(16).ToArray()))
                         {
                             using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                             {
-                                buffer = new byte[bytes.Skip(16).Count()];
+                                buffer = new byte[PartialDecryptionBuffer.Skip(16).Count()];
                                 bytesRead = await cs.ReadAsync(buffer, 0, buffer.Length);
                             }
                             PartialDecryptionBuffer = new byte[0];
@@ -66,10 +67,6 @@ namespace Adit.Code.Shared
             }
             catch
             {
-                if (appendToPartial)
-                {
-                    PartialDecryptionBuffer = PartialDecryptionBuffer.Concat(bytes).ToArray();
-                }
                 return null;
             }
         }

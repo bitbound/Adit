@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adit_Service", "Adit_Servic
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Adit_Installer", "Adit_Installer\Adit_Installer.vdproj", "{FFBB73AF-0963-472A-9346-A435E89D2F4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encryption_API", "Encryption_API\Encryption_API.csproj", "{C677EAEC-5E0A-4478-BD89-8A6C7524A756}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Encryption_API", "Encryption_API\Encryption_API.csproj", "{C677EAEC-5E0A-4478-BD89-8A6C7524A756}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

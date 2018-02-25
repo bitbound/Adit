@@ -31,11 +31,11 @@
             </Grid>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Server Host:" FontSize="15"/>
-                <TextBox x:Name="textHost" HorizontalAlignment="Right" Height="25"  Padding="0,3,0,0"  TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The host clients will use to connect to this server." Text="{Binding Current.ServerHost, Mode=TwoWay}"/>
+                <TextBox x:Name="textHost" HorizontalAlignment="Right" Height="25"  Padding="0,3,0,0"  TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The host clients will use to connect to this server." Text="{Binding Current.ServerHost, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
             </Grid>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Server Port:" FontSize="15"/>
-                <TextBox x:Name="textPort" HorizontalAlignment="Right" Height="25"  Padding="0,3,0,0" TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The port to use for incoming connections." Text="{Binding Current.ServerPort}"/>
+                <TextBox x:Name="textPort" HorizontalAlignment="Right" Height="25"  Padding="0,3,0,0" TextAlignment="Center" Width="100" Margin="10,0,0,0" ToolTip="The port to use for incoming connections." Text="{Binding Current.ServerPort, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
             </Grid>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
                 <TextBlock Text="Remote Admins:" FontSize="15"/>

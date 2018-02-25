@@ -60,7 +60,7 @@ namespace Adit.Pages
                 AditViewer.RequestFullscreen = true;
             }
         }
-        public async Task DrawImageCall(byte[] imageBytes)
+        public void DrawImageCall(byte[] imageBytes)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Adit.Pages
             }
             finally
             {
-                await AditViewer.SocketMessageHandler.SendImageRequest();
+                AditViewer.SocketMessageHandler.SendImageRequest();
             }
         }
 
@@ -107,19 +107,19 @@ namespace Adit.Pages
             this.Dispatcher.Invoke(() => RefreshUI());
         }
 
-        private async void SendCtrlAltDel_Click(object sender, RoutedEventArgs e)
+        private void SendCtrlAltDel_Click(object sender, RoutedEventArgs e)
         {
-            await AditViewer.SocketMessageHandler.SendCtrlAltDel();
+            AditViewer.SocketMessageHandler.SendCtrlAltDel();
         }
 
-        private async void TransferFile_Click(object sender, RoutedEventArgs e)
+        private void TransferFile_Click(object sender, RoutedEventArgs e)
         {
             var fileDialog = new Microsoft.Win32.OpenFileDialog();
             fileDialog.Multiselect = false;
             fileDialog.ShowDialog();
             if (File.Exists(fileDialog.FileName))
             {
-                await AditViewer.SocketMessageHandler.SendFileTransfer(fileDialog.FileName);
+                AditViewer.SocketMessageHandler.SendFileTransfer(fileDialog.FileName);
             }
             Utilities.ShowToolTip(buttonMenu, System.Windows.Controls.Primitives.PlacementMode.Bottom, "File transfer started.");
         }

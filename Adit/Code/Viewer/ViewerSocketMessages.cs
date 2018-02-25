@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
@@ -24,18 +26,18 @@ namespace Adit.Code.Viewer
             this.socketOut = socketOut;
         }
 
-        public async Task SendViewerConnectRequest()
+        public void SendViewerConnectRequest()
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "ViewerConnectRequest",
                 SessionID = AditViewer.SessionID
             });
         }
 
-        public async Task SendMouseMove(double x, double y)
+        public void SendMouseMove(double x, double y)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "MouseMove",
                 X = x,
@@ -49,7 +51,7 @@ namespace Adit.Code.Viewer
             ReceiveTransferType = Enum.Parse(typeof(BinaryTransferType), jsonData["TransferType"]);
             AditViewer.NextDrawPoint = new System.Drawing.Point(jsonData["ExtraData"]["X"], jsonData["ExtraData"]["Y"]);
         }
-        private async void ReceiveViewerConnectRequest(dynamic jsonData)
+        private void ReceiveViewerConnectRequest(dynamic jsonData)
         {
             if (jsonData["Status"] == "notfound")
             {
@@ -62,10 +64,10 @@ namespace Adit.Code.Viewer
             {
                 AditViewer.RequestFullscreen = true;
                 Pages.Viewer.Current.RefreshUICall();
-                await SendImageRequest();
+                SendImageRequest();
             }
         }
-        private async void ReceiveEncryptionStatus(dynamic jsonData)
+        private void ReceiveEncryptionStatus(dynamic jsonData)
         {
             try
             {
@@ -73,21 +75,23 @@ namespace Adit.Code.Viewer
                 {
                     using (var httpClient = new System.Net.Http.HttpClient())
                     {
-                        var response = await httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
-                        var content = await response.Content.ReadAsStringAsync();
-                        if (string.IsNullOrWhiteSpace(content))
+                        Task<HttpResponseMessage> response = httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
+                        response.Wait();
+                        var content = response.Result.Content.ReadAsStringAsync();
+                        content.Wait();
+                        if (string.IsNullOrWhiteSpace(content.Result))
                         {
                             throw new Exception("Response from API was empty.");
                         }
                         Encryption = new Encryption();
-                        Encryption.Key = Convert.FromBase64String(content);
+                        Encryption.Key = Convert.FromBase64String(content.Result);
                     }
                 }
                 else if (jsonData["Status"] == "Failed")
                 {
                     throw new Exception("Server failed to start encrypted connection.");
                 }
-                await SendConnectionType(ConnectionTypes.Viewer);
+                SendConnectionType(ConnectionTypes.Viewer);
             }
             catch (Exception ex)
             {
@@ -99,42 +103,42 @@ namespace Adit.Code.Viewer
             }
         }
 
-        public async Task SendKeyDown(Key key)
+        public void SendKeyDown(Key key)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "KeyDown",
                 Key = key.ToString()
             });
         }
 
-        public async Task SendKeyUp(Key key)
+        public void SendKeyUp(Key key)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "KeyUp",
                 Key = key.ToString()
             });
         }
 
-        public async Task SendClearAllKeys()
+        public void SendClearAllKeys()
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "ClearAllKeys"
             });
         }
 
-        public async Task SendMouseWheel(int delta)
+        public void SendMouseWheel(int delta)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "MouseWheel",
                 Delta = delta
             });
         }
 
-        private async void ReceiveReadyForViewer(dynamic jsonData)
+        private void ReceiveReadyForViewer(dynamic jsonData)
         {
             if (Config.Current.IsViewerMaximizedOnConnect)
             {
@@ -143,12 +147,12 @@ namespace Adit.Code.Viewer
                     MainWindow.Current.WindowState = WindowState.Maximized;
                 });
             }
-            await SendViewerConnectRequest();
+            SendViewerConnectRequest();
         }
 
-        public async Task SendMouseLeftDown(double x, double y)
+        public void SendMouseLeftDown(double x, double y)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "MouseLeftDown",
                 X = x,
@@ -156,9 +160,9 @@ namespace Adit.Code.Viewer
             });
         }
 
-        public async Task SendMouseLeftUp(double x, double y)
+        public void SendMouseLeftUp(double x, double y)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "MouseLeftUp",
                 X = x,
@@ -166,21 +170,21 @@ namespace Adit.Code.Viewer
             });
         }
 
-        public async Task SendCtrlAltDel()
+        public void SendCtrlAltDel()
         {
-            await SendJSON(new
+             SendJSON(new
             {
                 Type = "CtrlAltDel"
             });
         }
 
-        private async void ReceiveNoScreenActivity(dynamic jsonData)
+        private void ReceiveNoScreenActivity(dynamic jsonData)
         {
-            await SendImageRequest();
+            SendImageRequest();
         }
-        public async Task SendImageRequest()
+        public void SendImageRequest()
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "ImageRequest",
                 Fullscreen = AditViewer.RequestFullscreen
@@ -188,10 +192,10 @@ namespace Adit.Code.Viewer
             AditViewer.RequestFullscreen = false;
         }
 
-        public async Task SendFileTransfer(string fileName)
+        public void SendFileTransfer(string fileName)
         {
             var fileSize = new FileInfo(fileName).Length;
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "FileTransfer",
                 FileSize = fileSize,
@@ -200,15 +204,15 @@ namespace Adit.Code.Viewer
             });
         }
 
-        private async void ReceiveFileTransfer(dynamic jsonData)
+        private void ReceiveFileTransfer(dynamic jsonData)
         {
             SendBytes(File.ReadAllBytes(jsonData["FullPath"]));
-            await SendImageRequest();
+            SendImageRequest();
         }
 
-        public async Task SendMouseRightDown(double x, double y)
+        public void SendMouseRightDown(double x, double y)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "MouseRightDown",
                 X = x,
@@ -216,9 +220,9 @@ namespace Adit.Code.Viewer
             });
         }
 
-        public async Task SendMouseRightUp(double x, double y)
+        public void SendMouseRightUp(double x, double y)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "MouseRightUp",
                 X = x,
@@ -226,11 +230,11 @@ namespace Adit.Code.Viewer
             });
         }
 
-        private async void ReceiveByteArray(byte[] bytesReceived)
+        private void ReceiveByteArray(byte[] bytesReceived)
         {
             if (bytesReceived.Length == ExpectedBinarySize)
             {
-                await Pages.Viewer.Current.DrawImageCall(bytesReceived);
+                Pages.Viewer.Current.DrawImageCall(bytesReceived);
                 BinaryTransferBuffer.Clear();
                 BinaryTransferBuffer.TrimExcess();
             }
@@ -245,7 +249,7 @@ namespace Adit.Code.Viewer
                 BinaryTransferBuffer.AddRange(bytesReceived);
                 if (BinaryTransferBuffer.Count == ExpectedBinarySize)
                 {
-                    await Pages.Viewer.Current.DrawImageCall(BinaryTransferBuffer.ToArray());
+                    Pages.Viewer.Current.DrawImageCall(BinaryTransferBuffer.ToArray());
                     BinaryTransferBuffer.Clear();
                     BinaryTransferBuffer.TrimExcess();
                 }
@@ -289,12 +293,12 @@ namespace Adit.Code.Viewer
             }
         }
 
-        private async void ReceiveDesktopSwitch(dynamic jsonData)
+        private void ReceiveDesktopSwitch(dynamic jsonData)
         {
             if (jsonData["Status"] == "ok")
             {
                 AditViewer.RequestFullscreen = true;
-                await SendImageRequest();
+                SendImageRequest();
             }
             else if (jsonData["Status"] == "failed")
             {

@@ -29,18 +29,42 @@ namespace Adit.Models
                 return socketOut?.Connected == true;
             }
         }
-        public async Task SendJSON(dynamic jsonData)
+        public void SendJSON(dynamic jsonData)
         {
             if (socketOut.Connected)
             {
                 string jsonRequest = Utilities.JSON.Serialize(jsonData);
                 byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
-                await SendBytes(bytes);
+                SendBytes(bytes);
             }
         }
-        public async Task SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
+        public void SendJSONUnencrypted(dynamic jsonData)
         {
-            await SendJSON(new
+            if (socketOut.Connected)
+            {
+                string jsonRequest = Utilities.JSON.Serialize(jsonData);
+                byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
+                SendBytesUnencrypted(bytes);
+            }
+        }
+        public void SendBytesUnencrypted(byte[] bytes)
+        {
+            if (socketOut.Connected)
+            {
+                Task.Run(() => {
+                    var socketArgs = new SocketAsyncEventArgs();
+                    socketArgs.SetBuffer(bytes, 0, bytes.Length);
+                    socketArgs.Completed += (sender, args) =>
+                    {
+                        socketArgs.Dispose();
+                    };
+                    socketOut.SendAsync(socketArgs);
+                });
+            }
+        }
+        public void SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
+        {
+            SendJSON(new
             {
                 Type = "BinaryTransferStarting",
                 TransferType = transferType.ToString(),
@@ -49,28 +73,30 @@ namespace Adit.Models
             });
         }
 
-        public async Task SendBytes(byte[] bytes)
+        public void SendBytes(byte[] bytes)
         {
             if (socketOut.Connected)
             {
-                byte[] outBuffer = bytes;
-                if (Encryption != null)
-                {
-                    outBuffer = await Encryption.EncryptBytes(bytes);
-                }
-                var socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-                socketArgs.Completed += (sender, args) =>
-                {
-                    socketArgs.Dispose();
-                };
-                socketOut.SendAsync(socketArgs);
+                Task.Run(async () => {
+                    byte[] outBuffer = bytes;
+                    if (Encryption != null)
+                    {
+                        outBuffer = await Encryption.EncryptBytes(bytes);
+                    }
+                    var socketArgs = new SocketAsyncEventArgs();
+                    socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
+                    socketArgs.Completed += (sender, args) =>
+                    {
+                        socketArgs.Dispose();
+                    };
+                    socketOut.SendAsync(socketArgs);
+                });
             }
         }
 
-        public async Task SendConnectionType(ConnectionTypes connectionType)
+        public void SendConnectionType(ConnectionTypes connectionType)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "ConnectionType",
                 ConnectionType = connectionType.ToString()
@@ -78,7 +104,7 @@ namespace Adit.Models
         }
 
 
-        public async Task ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
+        public async void ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
         {
             try
             {
@@ -95,7 +121,7 @@ namespace Adit.Models
                 var receivedBytes = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
                 if (Encryption != null)
                 {
-                    receivedBytes = await Encryption.DecryptBytes(receivedBytes);
+                    receivedBytes = await Encryption.DecryptBytes(receivedBytes, true);
                     if (receivedBytes == null)
                     {
                         return;
@@ -112,15 +138,8 @@ namespace Adit.Models
                 }
                 else
                 {
-                    try
-                    {
-                        this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                     this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
                             FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { receivedBytes });
-                    }
-                    catch (Exception ex)
-                    {
-                        Utilities.WriteToLog(ex);
-                    }
                 }
             }
             catch (Exception ex)

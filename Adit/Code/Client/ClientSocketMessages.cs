@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
@@ -36,9 +37,9 @@ namespace Adit.Code.Client
             this.socketOut = socketOut;
         }
 
-        public async Task SendConnectionType(ConnectionTypes connectionType, string sessionIDToUse)
+        public void SendConnectionType(ConnectionTypes connectionType, string sessionIDToUse)
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "ConnectionType",
                 ConnectionType = connectionType.ToString(),
@@ -46,16 +47,16 @@ namespace Adit.Code.Client
             });
         }
 
-        public async Task SendDesktopSwitch()
+        public void SendDesktopSwitch()
         {
             var request = new
             {
                 Type = "DesktopSwitch"
             };
-            await SendJSON(request);
+            SendJSON(request);
         }
 
-        private async void ReceiveByteArray(byte[] bytesReceived)
+        private void ReceiveByteArray(byte[] bytesReceived)
         {
             try
             {
@@ -76,7 +77,7 @@ namespace Adit.Code.Client
             {
                 fileTransferName = null;
                 fileTransferSize = 0;
-                await SendNoScreenActivity();
+                SendNoScreenActivity();
             }
         }
 
@@ -112,7 +113,7 @@ namespace Adit.Code.Client
             }
         }
 
-        private async void ReceiveCtrlAltDel(dynamic jsonData)
+        private void ReceiveCtrlAltDel(dynamic jsonData)
         {
             if (Process.GetProcessesByName("Adit_Service").Count() > 0)
             {
@@ -121,14 +122,14 @@ namespace Adit.Code.Client
                     Type = "SAS",
                     MAC = Utilities.GetMACAddress()
                 };
-                await SendJSON(request);
+                SendJSON(request);
             }
             else
             {
                 User32.SendSAS(true);
             }
         }
-        private async void ReceiveEncryptionStatus(dynamic jsonData)
+        private void ReceiveEncryptionStatus(dynamic jsonData)
         {
             try
             {
@@ -136,14 +137,16 @@ namespace Adit.Code.Client
                 {
                     using (var httpClient = new System.Net.Http.HttpClient())
                     {
-                        var response = await httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
-                        var content = await response.Content.ReadAsStringAsync();
-                        if (string.IsNullOrWhiteSpace(content))
+                        Task<HttpResponseMessage> response = httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
+                        response.Wait();
+                        var content = response.Result.Content.ReadAsStringAsync();
+                        content.Wait();
+                        if (string.IsNullOrWhiteSpace(content.Result))
                         {
                             throw new Exception("Response from API was empty.");
                         }
                         Encryption = new Encryption();
-                        Encryption.Key = Convert.FromBase64String(content);
+                        Encryption.Key = Convert.FromBase64String(content.Result);
                     }
                 }
                 else if (jsonData["Status"] == "Failed")
@@ -152,11 +155,11 @@ namespace Adit.Code.Client
                 }
                 if (AditClient.ConnectionType == ConnectionTypes.Client)
                 {
-                    await SendConnectionType(ConnectionTypes.Client);
+                    SendConnectionType(ConnectionTypes.Client);
                 }
                 else if (AditClient.ConnectionType == ConnectionTypes.ElevatedClient)
                 {
-                    await SendConnectionType(ConnectionTypes.ElevatedClient, AditClient.SessionID);
+                    SendConnectionType(ConnectionTypes.ElevatedClient, AditClient.SessionID);
                 }
             }
             catch (Exception ex)
@@ -185,7 +188,7 @@ namespace Adit.Code.Client
             SendJSON(jsonData);
         }
 
-        private async void ReceiveImageRequest(dynamic jsonData)
+        private void ReceiveImageRequest(dynamic jsonData)
         {
 
             try
@@ -199,31 +202,31 @@ namespace Adit.Code.Client
                 {
                     requester.CaptureInstance = new Capturer();
                 }
-                await requester.CaptureInstance.CaptureScreen();
+                requester.CaptureInstance.CaptureScreen();
                 if (jsonData["Fullscreen"])
                 {
                     captureInfo = requester.CaptureInstance.GetCapture(true);
-                    await SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
-                    await SendBytes(captureInfo.Item1);
+                    SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
+                    SendBytes(captureInfo.Item1);
                 }
                 else
                 {
                     if (requester.CaptureInstance.IsNewFrameDifferent())
                     {
                         captureInfo = requester.CaptureInstance.GetCapture(false);
-                        await SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
-                        await SendBytes(captureInfo.Item1);
+                        SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
+                        SendBytes(captureInfo.Item1);
                     }
                     else
                     {
-                        await SendNoScreenActivity();
+                        SendNoScreenActivity();
                     }
                 }
             }
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
-                await Task.Run(() =>
+                Task.Run(() =>
                 {
                     System.Threading.Thread.Sleep(100);
                     ReceiveImageRequest(jsonData);
@@ -316,9 +319,9 @@ namespace Adit.Code.Client
             AditClient.SessionID = jsonData["SessionID"];
             Pages.Client.Current.RefreshUICall();
         }
-        private async Task SendNoScreenActivity()
+        private void SendNoScreenActivity()
         {
-            await SendJSON(new
+            SendJSON(new
             {
                 Type = "NoScreenActivity"
             });

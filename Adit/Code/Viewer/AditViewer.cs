@@ -89,7 +89,7 @@ namespace Adit.Code.Viewer
             Pages.Viewer.Current.RefreshUICall();
         }
 
-        private static async void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
+        private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError != SocketError.Success)
             {
@@ -101,7 +101,7 @@ namespace Adit.Code.Viewer
                 Pages.Viewer.Current.RefreshUICall();
                 return;
             }
-            await SocketMessageHandler.ProcessSocketMessage(e);
+            SocketMessageHandler.ProcessSocketMessage(e);
             WaitForServerMessage();
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -13,11 +14,33 @@ namespace Adit_Service
     class Utilities
     {
         public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer();
+        private static char[] AllowedJSONCharacters = new char[] { '{', '}', ':', ',', '[', ']', '"', '.' };
+        public static bool IsAdministrator
+        {
+            get
+            {
+                return WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid);
+            }
+        }
+        public static string DataFolder
+        {
+            get
+            {
+                if (Utilities.IsAdministrator)
+                {
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit");
+                }
+                else
+                {
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit");
+                }
+            }
+        }
         public static string ProgramFolder
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit");
+                return AppDomain.CurrentDomain.BaseDirectory;
             }
         }
 
@@ -30,14 +53,49 @@ namespace Adit_Service
 
         public static List<string> SplitJSON(string inputString)
         {
-            var messages = new List<string>(); ;
-            while (inputString.IndexOf("}{") > -1)
+            var messages = new List<string>();
+            var startObject = 0;
+            var open = 0;
+            var close = 0;
+            var withinString = false;
+            for (var i = 0; i < inputString.Length; i++)
             {
-                var message = inputString.Substring(0, inputString.IndexOf("}{") + 1);
-                messages.Add(message);
-                inputString = inputString.Substring(inputString.IndexOf("}{") + 1);
+                if (!withinString && !AllowedJSONCharacters.Contains(inputString[i]) && !char.IsLetterOrDigit(inputString[i]))
+                {
+                    open = 0;
+                    close = 0;
+                    continue;
+                }
+                if (open > 0 && inputString[i] == '"')
+                {
+                    withinString = !withinString;
+                }
+                if (inputString[i] == '{')
+                {
+                    if (inputString[i + 1] != '"')
+                    {
+                        continue;
+                    }
+                    if (open == 0)
+                    {
+                        startObject = i;
+                    }
+                    open++;
+                }
+                else if (inputString[i] == '}')
+                {
+                    if (open > 0)
+                    {
+                        close++;
+                    }
+                }
+                if (open > 0 && open == close)
+                {
+                    messages.Add(inputString.Substring(startObject, i - startObject + 1));
+                    open = 0;
+                    close = 0;
+                }
             }
-            messages.Add(inputString);
             return messages;
         }
         public static void WriteToLog(Exception ex)

@@ -67,15 +67,18 @@ namespace Adit_Service
             }
             try
             {
-                var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
-                var decodedBuffer = trimmedBuffer;
+                var receivedBytes = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
                 if (Encryption != null)
                 {
-                    decodedBuffer = await Encryption.DecryptBytes(trimmedBuffer);
+                    receivedBytes = await Encryption.DecryptBytes(receivedBytes);
+                    if (receivedBytes == null)
+                    {
+                        return;
+                    }
                 }
-                if (Utilities.IsJSONData(trimmedBuffer))
+                if (Utilities.IsJSONData(receivedBytes))
                 {
-                    var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
+                    var decodedString = Encoding.UTF8.GetString(receivedBytes);
                     var messages = Utilities.SplitJSON(decodedString);
                     foreach (var message in messages)
                     {
@@ -98,7 +101,7 @@ namespace Adit_Service
                 else
                 {
                     this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                        FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
+                        FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { receivedBytes });
                 }
             }
             catch (Exception ex)

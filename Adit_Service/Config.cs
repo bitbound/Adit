@@ -57,7 +57,7 @@ namespace Adit_Service
         }
         public static void Save()
         {
-            var di = Directory.CreateDirectory(Utilities.ProgramFolder);
+            var di = Directory.CreateDirectory(Utilities.DataFolder);
             File.WriteAllText(Path.Combine(di.FullName, "Config.json"), Utilities.JSON.Serialize(Config.Current));
         }
         public static void Load()

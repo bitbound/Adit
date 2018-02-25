@@ -16,6 +16,7 @@ namespace Adit.Code.Shared
 {
     class Utilities
     {
+        private static char[] AllowedJSONCharacters = new char[] { '{', '}', ':', ',', '[', ']', '"', '.' };
         public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
         public static string DataFolder
         {
@@ -86,14 +87,49 @@ namespace Adit.Code.Shared
 
         public static List<string> SplitJSON(string inputString)
         {
-            var messages = new List<string>(); ;
-            while (inputString.IndexOf("}{") > -1)
+            var messages = new List<string>();
+            var startObject = 0;
+            var open = 0;
+            var close = 0;
+            var withinString = false;
+            for (var i = 0; i < inputString.Length; i++)
             {
-                var message = inputString.Substring(0, inputString.IndexOf("}{") + 1);
-                messages.Add(message);
-                inputString = inputString.Substring(inputString.IndexOf("}{") + 1);
+                if (!withinString && !AllowedJSONCharacters.Contains(inputString[i]) && !char.IsLetterOrDigit(inputString[i]))
+                {
+                    open = 0;
+                    close = 0;
+                    continue;
+                }
+                if (open > 0 && inputString[i] == '"')
+                {
+                    withinString = !withinString;
+                }
+                if (inputString[i] == '{')
+                {
+                    if (inputString[i + 1] != '"')
+                    {
+                        continue;
+                    }
+                    if (open == 0)
+                    {
+                        startObject = i;
+                    }
+                    open++;
+                }
+                else if (inputString[i] == '}')
+                {
+                    if (open > 0)
+                    {
+                        close++;
+                    }
+                }
+                if (open > 0 && open == close)
+                {
+                    messages.Add(inputString.Substring(startObject, i - startObject + 1));
+                    open = 0;
+                    close = 0;
+                }
             }
-            messages.Add(inputString);
             return messages;
         }
         public static string GetMACAddress()

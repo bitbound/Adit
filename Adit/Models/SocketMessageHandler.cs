@@ -130,23 +130,31 @@ namespace Adit.Models
         }
         private void ProcessJSONString(string message)
         {
-            var jsonData = Utilities.JSON.Deserialize<dynamic>(message);
-            var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
-            if (methodHandler != null)
+            try
             {
-                try
+                var jsonData = Utilities.JSON.Deserialize<dynamic>(message);
+                var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                    FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
+                if (methodHandler != null)
                 {
-                    methodHandler.Invoke(this, new object[] { jsonData });
+                    try
+                    {
+                        methodHandler.Invoke(this, new object[] { jsonData });
+                    }
+                    catch (Exception ex)
+                    {
+                        Utilities.WriteToLog(ex);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    Utilities.WriteToLog(ex);
+                    PassDataToPartner(jsonData);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                PassDataToPartner(jsonData);
+                Utilities.WriteToLog($"Failed to process JSON: {message}");
+                Utilities.WriteToLog(ex);
             }
         }
 

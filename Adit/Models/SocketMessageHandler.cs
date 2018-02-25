@@ -52,12 +52,9 @@ namespace Adit.Models
             if (socketOut.Connected)
             {
                 Task.Run(() => {
-                    var socketArgs = new SocketAsyncEventArgs();
+                    var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                    socketArgs.Completed += (sender, args) =>
-                    {
-                        socketArgs.Dispose();
-                    };
+                    bytes.CopyTo(socketArgs.Buffer, 0);
                     socketOut.SendAsync(socketArgs);
                 });
             }
@@ -83,12 +80,9 @@ namespace Adit.Models
                     {
                         outBuffer = await Encryption.EncryptBytes(bytes);
                     }
-                    var socketArgs = new SocketAsyncEventArgs();
+                    var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-                    socketArgs.Completed += (sender, args) =>
-                    {
-                        socketArgs.Dispose();
-                    };
+                    outBuffer.CopyTo(socketArgs.Buffer, 0);
                     socketOut.SendAsync(socketArgs);
                 });
             }

@@ -82,6 +82,7 @@ namespace Adit_Service
 
         private static async void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
+            e.Completed -= ReceiveFromServerCompleted;
             if (e.SocketError != SocketError.Success)
             {
                 Utilities.WriteToLog($"Socket closed in AditService: {e.SocketError.ToString()}");

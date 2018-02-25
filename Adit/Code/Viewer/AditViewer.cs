@@ -13,8 +13,6 @@ namespace Adit.Code.Viewer
 {
     public static class AditViewer
     {
-        private static SocketAsyncEventArgs socketArgs;
-        private static byte[] receiveBuffer;
         public static TcpClient TcpClient { get; set; }
 
         public static string SessionID { get; set; }
@@ -49,13 +47,12 @@ namespace Adit.Code.Viewer
                 await TcpClient.ConnectAsync(Config.Current.ViewerHost, Config.Current.ViewerPort);
                 TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
                 TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
-                if (receiveBuffer == null)
+                SocketMessageHandler = new ViewerSocketMessages(TcpClient.Client);
+                WaitForServerMessage();
+                if (Config.Current.IsClipboardShared)
                 {
-                    receiveBuffer = new byte[Config.Current.BufferSize];
+                    ClipboardManager.Current.BeginWatching(SocketMessageHandler);
                 }
-                socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
-                socketArgs.Completed += ReceiveFromServerCompleted;
             }
             catch
             {
@@ -63,17 +60,13 @@ namespace Adit.Code.Viewer
                 Pages.Viewer.Current.RefreshUICall();
                 return;
             }
-            SocketMessageHandler = new ViewerSocketMessages(TcpClient.Client);
-            WaitForServerMessage();
-            if (Config.Current.IsClipboardShared)
-            {
-                ClipboardManager.Current.BeginWatching(SocketMessageHandler);
-            }
         }
         private static void WaitForServerMessage()
         {
             if (IsConnected)
             {
+                var socketArgs = SocketArgsPool.GetReceiveArg();
+                socketArgs.Completed += ReceiveFromServerCompleted;
                 var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
                 if (!willFireCallback)
                 {
@@ -91,6 +84,7 @@ namespace Adit.Code.Viewer
 
         private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
+            e.Completed -= ReceiveFromServerCompleted;
             if (e.SocketError != SocketError.Success)
             {
                 Utilities.WriteToLog($"Socket closed in AditViewer: {e.SocketError.ToString()}");

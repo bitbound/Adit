@@ -137,6 +137,7 @@ namespace Adit.Pages
         private void RefreshScreen_Click(object sender, RoutedEventArgs e)
         {
             AditViewer.RequestFullscreen = true;
+            AditViewer.SocketMessageHandler.SendImageRequest();
         }
     }
 }

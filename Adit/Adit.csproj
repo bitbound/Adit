@@ -88,6 +88,7 @@
     <Compile Include="Code\Shared\ClipboardManager.cs" />
     <Compile Include="Code\Shared\Encryption.cs" />
     <Compile Include="Code\Shared\ServiceConfig.cs" />
+    <Compile Include="Code\Shared\SocketArgsPool.cs" />
     <Compile Include="Code\Viewer\AditViewer.cs" />
     <Compile Include="Code\Viewer\InputHandler.cs" />
     <Compile Include="Code\Viewer\ViewerSocketMessages.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Models\ConnectionTypes.cs" />
     <Compile Include="Models\HubComputer.cs" />
     <Compile Include="Models\Participant.cs" />
+    <Compile Include="Models\SocketArgs.cs" />
     <Compile Include="Models\SocketMessageHandler.cs" />
     <Compile Include="Pages\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>

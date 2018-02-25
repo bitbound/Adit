@@ -16,8 +16,6 @@ namespace Adit.Code.Client
 {
     public class AditClient
     {
-        private static byte[] receiveBuffer;
-        private static SocketAsyncEventArgs socketArgs;
         public static ConnectionTypes ConnectionType { get; set; }
         public static bool DesktopSwitchPending { get; set; }
         public static bool IsConnected
@@ -32,24 +30,24 @@ namespace Adit.Code.Client
         public static string SessionID { get; set; }
         public static ClientSocketMessages SocketMessageHandler { get; set; }
         public static TcpClient TcpClient { get; set; }
-        public static async Task Connect()
+        public static void Connect()
         {
             ConnectionType = ConnectionTypes.Client;
-            if (await InitConnection())
+            if (InitConnection())
             {
                 //SocketMessageHandler.SendConnectionType(ConnectionTypes.Client);
             }
         }
-        public static async Task Connect(string sessionIDToUse)
+        public static void Connect(string sessionIDToUse)
         {
             ConnectionType = ConnectionTypes.ElevatedClient;
-            if (await InitConnection())
+            if (InitConnection())
             {
                 SessionID = sessionIDToUse;
                 //SocketMessageHandler.SendConnectionType(ConnectionTypes.ElevatedClient, sessionIDToUse);
             }
         }
-        private static async Task<bool> InitConnection()
+        private static bool InitConnection()
         {
             if (IsConnected)
             {
@@ -64,16 +62,9 @@ namespace Adit.Code.Client
             TcpClient = new TcpClient();
             try
             {
-                await TcpClient.ConnectAsync(Config.Current.ClientHost, Config.Current.ClientPort);
+                TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
                 TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
                 TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
-                if (receiveBuffer == null)
-                {
-                    receiveBuffer = new byte[Config.Current.BufferSize];
-                }
-                socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
-                socketArgs.Completed += ReceiveFromServerCompleted;
                 SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
                 if (Config.Current.IsClipboardShared)
@@ -96,6 +87,7 @@ namespace Adit.Code.Client
         }
         private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
+            e.Completed -= ReceiveFromServerCompleted;
             if (e.SocketError != SocketError.Success)
             {
                 Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
@@ -119,6 +111,8 @@ namespace Adit.Code.Client
         {
             if (IsConnected)
             {
+                var socketArgs = SocketArgsPool.GetReceiveArg();
+                socketArgs.Completed += ReceiveFromServerCompleted;
                 var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
                 if (!willFireCallback)
                 {

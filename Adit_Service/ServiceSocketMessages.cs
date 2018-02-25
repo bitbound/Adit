@@ -43,12 +43,9 @@ namespace Adit_Service
                     {
                         outBuffer = await Encryption.EncryptBytes(bytes);
                     }
-                    var socketArgs = new SocketAsyncEventArgs();
+                    var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-                    socketArgs.Completed += (sender, args) =>
-                    {
-                        socketArgs.Dispose();
-                    };
+                    outBuffer.CopyTo(socketArgs.Buffer, 0);
                     socketOut.SendAsync(socketArgs);
                 });
             }

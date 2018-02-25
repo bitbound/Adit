@@ -21,7 +21,7 @@ namespace Adit.Code.Server
             this.ConnectionToClient = connection;
         }
 
-        private void ReceiveConnectionType(dynamic jsonData)
+        private async void ReceiveConnectionType(dynamic jsonData)
         {
             switch (jsonData["ConnectionType"])
             {
@@ -30,7 +30,7 @@ namespace Adit.Code.Server
                     Session = new ClientSession();
                     Session.ConnectedClients.Add(ConnectionToClient);
                     AditServer.SessionList.Add(Session);
-                    SendSessionID();
+                    await SendSessionID();
                     break;
                 case "ElevatedClient":
                     ConnectionToClient.ConnectionType = ConnectionTypes.ElevatedClient;
@@ -45,7 +45,7 @@ namespace Adit.Code.Server
                     break;
                 case "Viewer":
                     ConnectionToClient.ConnectionType = ConnectionTypes.Viewer;
-                    SendReadyForViewer();
+                    await SendReadyForViewer();
                     break;
                 case "Service":
                     ConnectionToClient.ConnectionType = ConnectionTypes.Service;
@@ -59,15 +59,15 @@ namespace Adit.Code.Server
             }
         }
 
-        private void SendSessionID()
+        private async Task SendSessionID()
         {
-            SendJSON( new { Type = "SessionID", SessionID = Session.SessionID });
+            await SendJSON( new { Type = "SessionID", SessionID = Session.SessionID });
         }
-        private void SendReadyForViewer()
+        private async Task SendReadyForViewer()
         {
-            SendJSON(new { Type = "ReadyForViewer" });
+            await SendJSON(new { Type = "ReadyForViewer" });
         }
-        private void ReceiveViewerConnectRequest(dynamic jsonData)
+        private async void ReceiveViewerConnectRequest(dynamic jsonData)
         {
             var session = AditServer.SessionList.Find(x => x.SessionID.Replace(" ", "") == jsonData["SessionID"].Replace(" ", ""));
             if (session == null)
@@ -78,24 +78,65 @@ namespace Adit.Code.Server
             }
             if (session.ConnectedClients[0]?.ConnectionType == ConnectionTypes.Service)
             {
-                SendRequestForElevatedClient(session.ConnectedClients[0]);
+                await SendRequestForElevatedClient(session.ConnectedClients[0]);
                 return;
             }
             session.ConnectedClients.Add(ConnectionToClient);
-            SendParticipantList(session);
+            await SendParticipantList(session);
             Session = session;
             jsonData["Status"] = "ok";
-            SendJSON(jsonData);
+            await SendJSON(jsonData);
         }
 
-        private void SendRequestForElevatedClient(ClientConnection clientConnection)
+        public async Task SendEncryptionStatus()
+        {
+            try
+            {
+                if (Config.Current.IsEncryptionEnabled)
+                {
+                    using (var httpClient = new System.Net.Http.HttpClient())
+                    {
+                        var response = await httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys");
+                        var content = await response.Content.ReadAsStringAsync();
+                        var key = Utilities.JSON.Deserialize<string[]>(content);
+                        await SendJSON(new
+                        {
+                            Type = "EncryptionStatus",
+                            Status = "On",
+                            ID = key[0]
+                        });
+                        Encryption = new Encryption();
+                        Encryption.Key = Convert.FromBase64String(key[1]);
+                    }
+                }
+                else
+                {
+                    await SendJSON(new
+                    {
+                        Type = "EncryptionStatus",
+                        Status = "Off"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.WriteToLog(ex);
+                await SendJSON(new
+                {
+                    Type = "EncryptionStatus",
+                    Status = "Failed"
+                });
+            }
+        }
+
+        private async Task SendRequestForElevatedClient(ClientConnection clientConnection)
         {
             var request = new
             {
                 Type = "RequestForElevatedClient",
                 RequesterID = this.ConnectionToClient.ID
             };
-            clientConnection.SendJSON(request);
+            await clientConnection.SendJSON(request);
         }
         private async void ReceiveRequestForElevatedClient(dynamic jsonData)
         {
@@ -130,7 +171,7 @@ namespace Adit.Code.Server
                     break;
                 }
             }
-            SendParticipantList(session);
+            await SendParticipantList(session);
             foreach (var client in session.ConnectedClients.ToList())
             {
                 client.SendJSON(jsonData);
@@ -138,11 +179,11 @@ namespace Adit.Code.Server
             ConnectionToClient.Socket.Shutdown(SocketShutdown.Both);
             ConnectionToClient.Socket.Disconnect(false);
         }
-        public void SendParticipantList(ClientSession session)
+        public async Task SendParticipantList(ClientSession session)
         {
             foreach (var connection in session.ConnectedClients)
             {
-                connection.SendJSON(new
+                await connection.SendJSON(new
                 {
                     Type = "ParticipantList",
                     ParticipantList = session.ConnectedClients.Select(x=>x.ID)
@@ -207,7 +248,7 @@ namespace Adit.Code.Server
                 }
             }
         }
-        private void ReceiveByteArray(byte[] bytesReceived)
+        private async void ReceiveByteArray(byte[] bytesReceived)
         {
             if (ConnectionToClient.ConnectionType == ConnectionTypes.Client || ConnectionToClient.ConnectionType == ConnectionTypes.ElevatedClient)
             {
@@ -222,13 +263,13 @@ namespace Adit.Code.Server
                     Utilities.WriteToLog($"Requester not found based on ID {LastRequesterID}.");
                     return;
                 }
-                requester.SendBytes(bytesReceived);
+                await requester.SendBytes(bytesReceived);
             }
             else if (ConnectionToClient.ConnectionType == ConnectionTypes.Viewer)
             {
                 var session = AditServer.SessionList.Find(x => x.SessionID == ConnectionToClient.SessionID);
                 var client = Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
-                client.SendBytes(bytesReceived);
+                await client.SendBytes(bytesReceived);
             }
         }
     }

@@ -79,7 +79,7 @@ namespace Adit.Code.Server
 
         public void Save()
         {
-            var di = Directory.CreateDirectory(Utilities.ProgramFolder);
+            var di = Directory.CreateDirectory(Utilities.DataFolder);
             var computerList = ComputerList.Where(x => !string.IsNullOrWhiteSpace(x.MACAddress)).ToList();
             for (var i = computerList.Count - 1; i >= 0; i--)
             {
@@ -94,7 +94,7 @@ namespace Adit.Code.Server
 
         public void Load()
         {
-            var fi = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Hub.json"));
+            var fi = new FileInfo(Path.Combine(Utilities.DataFolder, "Hub.json"));
             if (fi.Exists)
             {
                 var savedList = Utilities.JSON.Deserialize<List<HubComputer>>(File.ReadAllText(fi.FullName)).Where(x => !string.IsNullOrWhiteSpace(x.MACAddress));

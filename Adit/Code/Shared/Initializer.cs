@@ -25,16 +25,6 @@ namespace Adit.Code.Shared
             {
                 Config.Current.StartupMode = Config.StartupModes.Background;
             }
-            else if (args.Contains("-install"))
-            {
-                ServiceConfig.InstallService(true);
-                App.Current.Shutdown();
-            }
-            else if (args.Contains("-uninstall"))
-            {
-                ServiceConfig.RemoveService(true);
-                App.Current.Shutdown();
-            }
             else
             {
                 Config.Current.StartupMode = Config.StartupModes.Normal;

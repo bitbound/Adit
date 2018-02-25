@@ -45,20 +45,18 @@ namespace Adit.Models
             }
         }
 
-        public void SendJSON(dynamic jsonData)
+        public async Task SendJSON(dynamic jsonData)
         {
-            string jsonRequest = Utilities.JSON.Serialize(jsonData);
-            var outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
-            var socketArgs = new SocketAsyncEventArgs();
-            socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-            socketArgs.Completed += (sender, args) => {
-                socketArgs.Dispose();
-            };
-            Socket.SendAsync(socketArgs);
+            if (Socket.Connected)
+            {
+                string jsonRequest = Utilities.JSON.Serialize(jsonData);
+                byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
+                await SendBytes(bytes);
+            }
         }
-        public void SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
+        public async Task SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
         {
-            SendJSON(new
+            await SendJSON(new
             {
                 Type = "BinaryTransferStarting",
                 TransferType = transferType.ToString(),
@@ -66,15 +64,21 @@ namespace Adit.Models
                 ExtraData = extraData
             });
         }
-        public void SendBytes(byte[] bytes)
+        public async Task SendBytes(byte[] bytes)
         {
-            var socketArgs = new SocketAsyncEventArgs();
-            socketArgs.SetBuffer(bytes, 0, bytes.Length);
-            socketArgs.Completed += (sender, args) => {
-                socketArgs.Dispose();
-            };
             if (Socket.Connected)
             {
+                byte[] outBuffer = bytes;
+                if (SocketMessageHandler.Encryption != null)
+                {
+                    outBuffer = await SocketMessageHandler.Encryption.EncryptBytes(bytes);
+                }
+                var socketArgs = new SocketAsyncEventArgs();
+                socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
+                socketArgs.Completed += (sender, args) =>
+                {
+                    socketArgs.Dispose();
+                };
                 Socket.SendAsync(socketArgs);
             }
         }

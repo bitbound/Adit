@@ -1,11 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adit", "Adit\Adit.csproj", "{BB71D2AD-ED77-406D-9110-526F0FCC8C0E}"
 	ProjectSection(ProjectDependencies) = postProject
-		{5F8E8F14-DA4E-4C87-96D2-B667D97B58A7} = {5F8E8F14-DA4E-4C87-96D2-B667D97B58A7}
 		{684E6978-7069-41B7-BA83-8236C1EBA086} = {684E6978-7069-41B7-BA83-8236C1EBA086}
 	EndProjectSection
 EndProject
@@ -13,10 +12,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Win32_Classes", "Win32_Clas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adit_Service", "Adit_Service\Adit_Service.csproj", "{5F8E8F14-DA4E-4C87-96D2-B667D97B58A7}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Adit_Installer", "Adit_Installer\Adit_Installer.vdproj", "{FFBB73AF-0963-472A-9346-A435E89D2F4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encryption_API", "Encryption_API\Encryption_API.csproj", "{C677EAEC-5E0A-4478-BD89-8A6C7524A756}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -34,11 +34,22 @@ Global
 		{5F8E8F14-DA4E-4C87-96D2-B667D97B58A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F8E8F14-DA4E-4C87-96D2-B667D97B58A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F8E8F14-DA4E-4C87-96D2-B667D97B58A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFBB73AF-0963-472A-9346-A435E89D2F4D}.Debug|Any CPU.ActiveCfg = Debug
+		{FFBB73AF-0963-472A-9346-A435E89D2F4D}.Debug|Any CPU.Build.0 = Debug
+		{FFBB73AF-0963-472A-9346-A435E89D2F4D}.Release|Any CPU.ActiveCfg = Release
+		{FFBB73AF-0963-472A-9346-A435E89D2F4D}.Release|Any CPU.Build.0 = Release
+		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4BD8CE51-743E-4F5D-BF4D-271E04FE438E}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

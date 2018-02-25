@@ -61,7 +61,7 @@ namespace Adit.Code.Server
                 return ClientList.Count;
             }
         }
-        private static void AcceptClientCompleted(object sender, SocketAsyncEventArgs e)
+        private static async void AcceptClientCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError == SocketError.Success)
             {
@@ -76,8 +76,10 @@ namespace Adit.Code.Server
                 socketArgs.Completed += ReceiveFromClientCompleted;
 
                 Pages.Server.Current?.RefreshUICall();
-                WaitForClientMessage(socketArgs);
+
                 WaitForClientConnection();
+                WaitForClientMessage(socketArgs);
+                await clientConnection.SocketMessageHandler.SendEncryptionStatus();
             }
         }
         private static void WaitForClientConnection()
@@ -103,7 +105,7 @@ namespace Adit.Code.Server
             }
         }
 
-        private static void ReceiveFromClientCompleted(object sender, SocketAsyncEventArgs e)
+        private static async void ReceiveFromClientCompleted(object sender, SocketAsyncEventArgs e)
         {
             if ((e.UserToken as ClientConnection).Socket.Connected == false || e.BytesTransferred == 0)
             {
@@ -116,11 +118,11 @@ namespace Adit.Code.Server
                 HandleClientDisconnect(e);
                 return;
             }
-            (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e);
+            await (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e);
             WaitForClientMessage(e);
         }
 
-        private static void HandleClientDisconnect(SocketAsyncEventArgs socketArgs)
+        private static async void HandleClientDisconnect(SocketAsyncEventArgs socketArgs)
         {
             var connection = socketArgs.UserToken as ClientConnection;
             var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
@@ -137,7 +139,7 @@ namespace Adit.Code.Server
                 }
                 else
                 {
-                    session.ConnectedClients[0].SocketMessageHandler.SendParticipantList(session);
+                    await session.ConnectedClients[0].SocketMessageHandler.SendParticipantList(session);
                 }
             }
             ClientList.Remove(connection);

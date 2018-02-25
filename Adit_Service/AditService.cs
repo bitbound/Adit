@@ -24,7 +24,7 @@ namespace Adit_Service
         }
         public static string SessionID { get; set; }
 
-        public static void Connect()
+        public static async Task Connect()
         {
             if (IsConnected)
             {
@@ -51,8 +51,7 @@ namespace Adit_Service
             }
             SocketMessageHandler = new ServiceSocketMessages(TcpClient.Client);
             WaitForServerMessage();
-            SocketMessageHandler.SendConnectionType(ConnectionTypes.Service);
-            SocketMessageHandler.SendHeartbeat();
+            await SocketMessageHandler.SendHeartbeat();
         }
 
         public static void WaitToRetryConnection()
@@ -60,10 +59,10 @@ namespace Adit_Service
             var timer = new Timer();
             timer.AutoReset = false;
             timer.Interval = 30000;
-            timer.Elapsed += (sender, args) =>
+            timer.Elapsed += async (sender, args) =>
             {
                 Utilities.WriteToLog("Failed to connect.");
-                Connect();
+                await Connect();
             };
             timer.Start();
         }
@@ -81,7 +80,7 @@ namespace Adit_Service
         }
 
 
-        private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
+        private static async void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError != SocketError.Success)
             {
@@ -89,7 +88,7 @@ namespace Adit_Service
                 SessionID = String.Empty;
                 return;
             }
-            SocketMessageHandler.ProcessSocketMessage(e);
+            await SocketMessageHandler.ProcessSocketMessage(e);
             WaitForServerMessage();
         }
     }

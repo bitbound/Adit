@@ -22,42 +22,44 @@ namespace Adit_Service
         {
             this.socketOut = socketOut;
         }
-        public void SendJSON(dynamic jsonData)
+        public Encryption Encryption { get; set; }
+        public async Task SendJSON(dynamic jsonData)
         {
             if (socketOut.Connected)
             {
                 string jsonRequest = Utilities.JSON.Serialize(jsonData);
-                byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
-                var socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-                socketArgs.Completed += (sender, args) => {
-                    socketArgs.Dispose();
-                };
-                socketOut.SendAsync(socketArgs);
+                byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
+                await SendBytes(bytes);
             }
         }
-        public void SendBytes(byte[] bytes)
+        public async Task SendBytes(byte[] bytes)
         {
             if (socketOut.Connected)
             {
+                byte[] outBuffer = bytes;
+                if (Encryption != null)
+                {
+                    outBuffer = await Encryption.EncryptBytes(bytes);
+                }
                 var socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                socketArgs.Completed += (sender, args) => {
+                socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
+                socketArgs.Completed += (sender, args) =>
+                {
                     socketArgs.Dispose();
                 };
                 socketOut.SendAsync(socketArgs);
             }
         }
 
-        public void SendConnectionType(ConnectionTypes connectionType)
+        public async Task SendConnectionType(ConnectionTypes connectionType)
         {
-            SendJSON(new
+            await SendJSON(new
             {
                 Type = "ConnectionType",
                 ConnectionType = connectionType.ToString()
             });
         }
-        public void ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
+        public async Task ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
         {
             if (socketArgs.BytesTransferred == 0)
             {
@@ -66,6 +68,11 @@ namespace Adit_Service
             try
             {
                 var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
+                var decodedBuffer = trimmedBuffer;
+                if (Encryption != null)
+                {
+                    decodedBuffer = await Encryption.DecryptBytes(trimmedBuffer);
+                }
                 if (Utilities.IsJSONData(trimmedBuffer))
                 {
                     var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
@@ -119,17 +126,48 @@ namespace Adit_Service
                 SendJSON(jsonData);
             }
         }
+
+        private async void ReceiveEncryptionStatus(dynamic jsonData)
+        {
+            try
+            {
+                if (jsonData["Status"] == "On")
+                {
+                    using (var httpClient = new System.Net.Http.HttpClient())
+                    {
+                        var response = await httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
+                        var content = await response.Content.ReadAsStringAsync();
+                        if (string.IsNullOrWhiteSpace(content))
+                        {
+                            throw new Exception("Response from API was empty.");
+                        }
+                        Encryption = new Encryption();
+                        Encryption.Key = Convert.FromBase64String(content);
+                    }
+                }
+                else if (jsonData["Status"] == "Failed")
+                {
+                    throw new Exception("Server failed to start encrypted connection.");
+                }
+                await SendConnectionType(ConnectionTypes.Service);
+            }
+            catch (Exception ex)
+            {
+                Utilities.WriteToLog(ex);
+                Environment.Exit(0);
+            }
+        }
         private void ReceiveSAS(dynamic jsonData)
         {
             User32.SendSAS(false);
         }
-        public void SendHeartbeat()
+        public async Task SendHeartbeat()
         {
             if (!AditService.HeartbeatTimer.Enabled)
             {
-                AditService.HeartbeatTimer.Elapsed += (sender, args) =>
+                AditService.HeartbeatTimer.Elapsed += async (sender, args) =>
                 {
-                    SendHeartbeat();
+                    await SendHeartbeat();
                 };
                 AditService.HeartbeatTimer.Interval = 30000;
                 AditService.HeartbeatTimer.Start();
@@ -168,7 +206,7 @@ namespace Adit_Service
                     LastReboot = (DateTime.Now - TimeSpan.FromSeconds(uptime.NextValue())),
                     MACAddress = macAddress
                 };
-                SendJSON(request);
+                await SendJSON(request);
                 Utilities.CleanupFiles();
             }
             catch (Exception ex)

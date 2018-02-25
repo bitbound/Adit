@@ -59,15 +59,5 @@ namespace Adit.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Adit_Service {
-            get {
-                object obj = ResourceManager.GetObject("Adit_Service", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

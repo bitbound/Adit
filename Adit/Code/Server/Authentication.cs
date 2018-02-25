@@ -29,13 +29,13 @@ namespace Adit.Code.Server
 
         public void Save()
         {
-            var di = Directory.CreateDirectory(Utilities.ProgramFolder);
+            var di = Directory.CreateDirectory(Utilities.DataFolder);
             File.WriteAllText(Path.Combine(di.FullName, "Auth.json"), Utilities.JSON.Serialize(Keys));
         }
 
         public void Load()
         {
-            var fi = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Auth.json"));
+            var fi = new FileInfo(Path.Combine(Utilities.DataFolder, "Auth.json"));
             if (fi.Exists)
             {
                 foreach (var key in Utilities.JSON.Deserialize<ObservableCollection<AuthenticationKey>>(File.ReadAllText(fi.FullName)))

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using Win32_Classes;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Adit.Code.Client
 {
@@ -45,7 +46,7 @@ namespace Adit.Code.Client
             hWnd = User32.GetDesktopWindow();
         }
 
-        public void CaptureScreen()
+        public async Task CaptureScreen()
         {
             desktopName = User32.GetCurrentDesktop();
             lastFrame = (Bitmap)currentFrame.Clone();
@@ -64,7 +65,7 @@ namespace Adit.Code.Client
 
                     if (!AditClient.DesktopSwitchPending)
                     {
-                        SwitchDesktops();
+                       await SwitchDesktops();
                     }
                 }
                 else
@@ -98,12 +99,12 @@ namespace Adit.Code.Client
                 }
                 if (!AditClient.DesktopSwitchPending)
                 {
-                    SwitchDesktops();
+                    await SwitchDesktops();
                 }
             }
         }
 
-        private void SwitchDesktops()
+        private async Task SwitchDesktops()
         {
             AditClient.DesktopSwitchPending = true;
             Utilities.WriteToLog($"Desktop switch initiated to {desktopName}.");
@@ -112,7 +113,7 @@ namespace Adit.Code.Client
             var sessionID = Guid.NewGuid().ToString();
             if (ADVAPI32.OpenInteractiveProcess(Path.Combine(Utilities.ProgramFolder, "Adit.exe") + $" -upgrade {AditClient.SessionID}", desktopName, out procInfo))
             {
-                AditClient.SocketMessageHandler.SendDesktopSwitch();
+                await AditClient.SocketMessageHandler.SendDesktopSwitch();
                 return;
             }
             else

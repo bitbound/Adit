@@ -17,6 +17,7 @@ namespace Adit.Models
         public BinaryTransferType ReceiveTransferType { get; set; }
         public int ExpectedBinarySize { get; set; }
         public string LastRequesterID { get; set; }
+        public Encryption Encryption { get; set; }
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -28,12 +29,35 @@ namespace Adit.Models
                 return socketOut?.Connected == true;
             }
         }
-        public void SendJSON(dynamic jsonData)
+        public async Task SendJSON(dynamic jsonData)
         {
             if (socketOut.Connected)
             {
                 string jsonRequest = Utilities.JSON.Serialize(jsonData);
-                byte[] outBuffer = Encoding.UTF8.GetBytes(jsonRequest);
+                byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
+                await SendBytes(bytes);
+            }
+        }
+        public async Task SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
+        {
+            await SendJSON(new
+            {
+                Type = "BinaryTransferStarting",
+                TransferType = transferType.ToString(),
+                Size = binaryLength,
+                ExtraData = extraData
+            });
+        }
+
+        public async Task SendBytes(byte[] bytes)
+        {
+            if (socketOut.Connected)
+            {
+                byte[] outBuffer = bytes;
+                if (Encryption != null)
+                {
+                    outBuffer = await Encryption.EncryptBytes(bytes);
+                }
                 var socketArgs = new SocketAsyncEventArgs();
                 socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
                 socketArgs.Completed += (sender, args) =>
@@ -43,40 +67,18 @@ namespace Adit.Models
                 socketOut.SendAsync(socketArgs);
             }
         }
-        public void SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
-        {
-            SendJSON(new
-            {
-                Type = "BinaryTransferStarting",
-                TransferType = transferType.ToString(),
-                Size = binaryLength,
-                ExtraData = extraData
-            });
-        }
-        public void SendBytes(byte[] bytes)
-        {
-            if (socketOut.Connected)
-            {
-                var socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                socketArgs.Completed += (sender, args) =>
-                {
-                    socketArgs.Dispose();
-                };
-                socketOut.SendAsync(socketArgs);
-            }
-        }
 
-        public void SendConnectionType(ConnectionTypes connectionType)
+        public async Task SendConnectionType(ConnectionTypes connectionType)
         {
-            SendJSON(new
+            await SendJSON(new
             {
                 Type = "ConnectionType",
                 ConnectionType = connectionType.ToString()
             });
         }
 
-        public void ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
+
+        public async Task ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
         {
             try
             {
@@ -90,10 +92,18 @@ namespace Adit.Models
                     }
                     return;
                 }
-                var trimmedBuffer = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
-                var decodedString = Encoding.UTF8.GetString(trimmedBuffer);
-                if (Utilities.IsJSONData(trimmedBuffer))
+                var receivedBytes = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
+                if (Encryption != null)
                 {
+                    receivedBytes = await Encryption.DecryptBytes(receivedBytes);
+                    if (receivedBytes == null)
+                    {
+                        return;
+                    }
+                }
+                if (Utilities.IsJSONData(receivedBytes))
+                {
+                    var decodedString = Encoding.UTF8.GetString(receivedBytes);
                     var messages = Utilities.SplitJSON(decodedString);
                     foreach (var message in messages)
                     {
@@ -105,7 +115,7 @@ namespace Adit.Models
                     try
                     {
                         this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                            FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { trimmedBuffer });
+                            FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { receivedBytes });
                     }
                     catch (Exception ex)
                     {

@@ -22,52 +22,23 @@ namespace Adit.Code.Client
 {
     public class ClientSocketMessages : SocketMessageHandler
     {
+        Tuple<byte[], System.Drawing.Point> captureInfo;
+        string fileTransferName;
+        long fileTransferSize;
+        int offsetX = SystemInformation.VirtualScreen.Left;
+        int offsetY = SystemInformation.VirtualScreen.Top;
         Socket socketOut;
         int totalHeight = SystemInformation.VirtualScreen.Height;
         int totalWidth = SystemInformation.VirtualScreen.Width;
-        int offsetX = SystemInformation.VirtualScreen.Left;
-        int offsetY = SystemInformation.VirtualScreen.Top;
-        long fileTransferSize;
-        string fileTransferName;
-        Tuple<byte[], System.Drawing.Point> captureInfo;
         public ClientSocketMessages(Socket socketOut)
             : base(socketOut)
         {
             this.socketOut = socketOut;
         }
 
-        private void ReceiveSessionID(dynamic jsonData)
+        public async Task SendConnectionType(ConnectionTypes connectionType, string sessionIDToUse)
         {
-            AditClient.SessionID = jsonData["SessionID"];
-            Pages.Client.Current.RefreshUICall();
-        }
-        private void ReceiveParticipantList(dynamic jsonData)
-        {
-            var participantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
-            if (Config.Current.StartupMode != Config.StartupModes.Notifier)
-            {
-                if (participantList.Count > AditClient.ParticipantList.Count)
-                {
-                    FlyoutNotification.Show("A partner has connected.");
-                }
-                else if (participantList.Count < AditClient.ParticipantList.Count)
-                {
-                    FlyoutNotification.Show("A partner has disconnected.");
-                }
-            }
-            AditClient.ParticipantList.RemoveAll(x => !participantList.Contains(x.ID));
-            foreach (var partner in participantList)
-            {
-                if (!AditClient.ParticipantList.Exists(x=>x.ID == partner))
-                {
-                    AditClient.ParticipantList.Add(new Participant() { ID = partner });
-                }
-            }
-            Pages.Client.Current.RefreshUICall();
-        }
-        public void SendConnectionType(ConnectionTypes connectionType, string sessionIDToUse)
-        {
-            SendJSON(new
+            await SendJSON(new
             {
                 Type = "ConnectionType",
                 ConnectionType = connectionType.ToString(),
@@ -75,64 +46,16 @@ namespace Adit.Code.Client
             });
         }
 
-        private void ReceiveImageRequest(dynamic jsonData)
+        public async Task SendDesktopSwitch()
         {
-           
-            try
+            var request = new
             {
-                var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
-                if (requester == null)
-                {
-                    return;
-                }
-                if (requester.CaptureInstance == null)
-                {
-                    requester.CaptureInstance = new Capturer();
-                }
-                lock (requester.CaptureInstance)
-                {
-                    requester.CaptureInstance.CaptureScreen();
-                }
-                if (jsonData["Fullscreen"])
-                {
-                    captureInfo = requester.CaptureInstance.GetCapture(true);
-                    SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
-                    SendBytes(captureInfo.Item1);
-                }
-                else
-                {
-                    if (requester.CaptureInstance.IsNewFrameDifferent())
-                    {
-                        captureInfo = requester.CaptureInstance.GetCapture(false);
-                        SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
-                        SendBytes(captureInfo.Item1);
-                    }
-                    else
-                    {
-                        SendNoScreenActivity();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Utilities.WriteToLog(ex);
-                Task.Run(() =>
-                {
-                    System.Threading.Thread.Sleep(100);
-                    ReceiveImageRequest(jsonData);
-                });
-            }
+                Type = "DesktopSwitch"
+            };
+            await SendJSON(request);
         }
 
-        private void SendNoScreenActivity()
-        {
-            SendJSON(new
-            {
-                Type = "NoScreenActivity"
-            });
-        }
-
-        private void ReceiveByteArray(byte[] bytesReceived)
+        private async void ReceiveByteArray(byte[] bytesReceived)
         {
             try
             {
@@ -153,29 +76,15 @@ namespace Adit.Code.Client
             {
                 fileTransferName = null;
                 fileTransferSize = 0;
-                SendNoScreenActivity();
+                await SendNoScreenActivity();
             }
         }
 
-        public void SendDesktopSwitch()
-        {
-            var request = new
-            {
-                Type = "DesktopSwitch"
-            };
-            SendJSON(request);
-        }
-
-        private void ReceiveMouseMove(dynamic jsonData)
-        {
-            User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX, 
-                                (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY);
-        }
         private void ReceiveClearAllKeys(dynamic jsonData)
         {
             MainWindow.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var key in Enum.GetNames(typeof(Key)).Where(x=>x!="None"))
+                foreach (var key in Enum.GetNames(typeof(Key)).Where(x => x != "None"))
                 {
                     try
                     {
@@ -190,49 +99,20 @@ namespace Adit.Code.Client
             });
 
         }
-        private void ReceiveKeyDown(dynamic jsonData)
+
+        private void ReceiveClipboardTransfer(dynamic jsonData)
         {
-            var key = jsonData["Key"];
-            User32.SendKeyDown((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
+            if (jsonData["Format"] == "FileDrop")
+            {
+                ClipboardManager.Current.SetFiles(jsonData["FileNames"], jsonData["FileContents"]);
+            }
+            else
+            {
+                ClipboardManager.Current.SetData(jsonData["Format"], jsonData["Data"]);
+            }
         }
-        private void ReceiveKeyUp(dynamic jsonData)
-        {
-            var key = jsonData["Key"];
-            User32.SendKeyUp((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
-        }
-        private void ReceiveMouseWheel(dynamic jsonData)
-        {
-            User32.SendMouseWheel(jsonData["Delta"]);
-        }
-        private void ReceiveMouseLeftDown(dynamic jsonData)
-        {
-            User32.SendLeftMouseDown(
-                    (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
-                    (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
-                );
-        }
-        private void ReceiveMouseLeftUp(dynamic jsonData)
-        {
-            User32.SendLeftMouseUp(
-                   (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
-                   (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
-               );
-        }
-        private void ReceiveMouseRightDown(dynamic jsonData)
-        {
-            User32.SendRightMouseDown(
-                  (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
-                  (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
-              );
-        }
-        private void ReceiveMouseRightUp(dynamic jsonData)
-        {
-            User32.SendRightMouseUp(
-                 (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
-                 (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
-             );
-        }
-        private void ReceiveCtrlAltDel(dynamic jsonData)
+
+        private async void ReceiveCtrlAltDel(dynamic jsonData)
         {
             if (Process.GetProcessesByName("Adit_Service").Count() > 0)
             {
@@ -241,13 +121,58 @@ namespace Adit.Code.Client
                     Type = "SAS",
                     MAC = Utilities.GetMACAddress()
                 };
-                SendJSON(request);
+                await SendJSON(request);
             }
             else
             {
                 User32.SendSAS(true);
             }
         }
+        private async void ReceiveEncryptionStatus(dynamic jsonData)
+        {
+            try
+            {
+                if (jsonData["Status"] == "On")
+                {
+                    using (var httpClient = new System.Net.Http.HttpClient())
+                    {
+                        var response = await httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
+                        var content = await response.Content.ReadAsStringAsync();
+                        if (string.IsNullOrWhiteSpace(content))
+                        {
+                            throw new Exception("Response from API was empty.");
+                        }
+                        Encryption = new Encryption();
+                        Encryption.Key = Convert.FromBase64String(content);
+                    }
+                }
+                else if (jsonData["Status"] == "Failed")
+                {
+                    throw new Exception("Server failed to start encrypted connection.");
+                }
+                if (AditClient.ConnectionType == ConnectionTypes.Client)
+                {
+                    await SendConnectionType(ConnectionTypes.Client);
+                }
+                else if (AditClient.ConnectionType == ConnectionTypes.ElevatedClient)
+                {
+                    await SendConnectionType(ConnectionTypes.ElevatedClient, AditClient.SessionID);
+                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.WriteToLog(ex);
+                if (Config.Current.StartupMode != Config.StartupModes.Notifier)
+                {
+                    System.Windows.MessageBox.Show("There was a problem starting an encrypted connection.  If the issue persists, please contact support.", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                MainWindow.Current.Dispatcher.Invoke(() => {
+                    App.Current.Shutdown();
+                });
+            }
+        }
+
+
         private void ReceiveFileTransfer(dynamic jsonData)
         {
             var targetFile = new FileInfo(Path.Combine(Utilities.FileTransferFolder, jsonData["FileName"]));
@@ -259,16 +184,144 @@ namespace Adit.Code.Client
             fileTransferSize = jsonData["FileSize"];
             SendJSON(jsonData);
         }
-        private void ReceiveClipboardTransfer(dynamic jsonData)
+
+        private async void ReceiveImageRequest(dynamic jsonData)
         {
-            if (jsonData["Format"] == "FileDrop")
+
+            try
             {
-                ClipboardManager.Current.SetFiles(jsonData["FileNames"], jsonData["FileContents"]);
+                var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
+                if (requester == null)
+                {
+                    return;
+                }
+                if (requester.CaptureInstance == null)
+                {
+                    requester.CaptureInstance = new Capturer();
+                }
+                await requester.CaptureInstance.CaptureScreen();
+                if (jsonData["Fullscreen"])
+                {
+                    captureInfo = requester.CaptureInstance.GetCapture(true);
+                    await SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
+                    await SendBytes(captureInfo.Item1);
+                }
+                else
+                {
+                    if (requester.CaptureInstance.IsNewFrameDifferent())
+                    {
+                        captureInfo = requester.CaptureInstance.GetCapture(false);
+                        await SendBinaryTransferNotification(BinaryTransferType.ScreenCapture, captureInfo.Item1.Length, captureInfo.Item2);
+                        await SendBytes(captureInfo.Item1);
+                    }
+                    else
+                    {
+                        await SendNoScreenActivity();
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ClipboardManager.Current.SetData(jsonData["Format"], jsonData["Data"]);
+                Utilities.WriteToLog(ex);
+                await Task.Run(() =>
+                {
+                    System.Threading.Thread.Sleep(100);
+                    ReceiveImageRequest(jsonData);
+                });
             }
+        }
+
+        private void ReceiveKeyDown(dynamic jsonData)
+        {
+            var key = jsonData["Key"];
+            User32.SendKeyDown((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
+        }
+
+        private void ReceiveKeyUp(dynamic jsonData)
+        {
+            var key = jsonData["Key"];
+            User32.SendKeyUp((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
+        }
+
+        private void ReceiveMouseLeftDown(dynamic jsonData)
+        {
+            User32.SendLeftMouseDown(
+                    (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
+                    (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
+                );
+        }
+
+        private void ReceiveMouseLeftUp(dynamic jsonData)
+        {
+            User32.SendLeftMouseUp(
+                   (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
+                   (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
+               );
+        }
+
+        private void ReceiveMouseMove(dynamic jsonData)
+        {
+            User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
+                                (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY);
+        }
+
+        private void ReceiveMouseRightDown(dynamic jsonData)
+        {
+            User32.SendRightMouseDown(
+                  (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
+                  (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
+              );
+        }
+
+        private void ReceiveMouseRightUp(dynamic jsonData)
+        {
+            User32.SendRightMouseUp(
+                 (int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
+                 (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY
+             );
+        }
+
+        private void ReceiveMouseWheel(dynamic jsonData)
+        {
+            User32.SendMouseWheel(jsonData["Delta"]);
+        }
+
+        private void ReceiveParticipantList(dynamic jsonData)
+        {
+            var participantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();
+            if (Config.Current.StartupMode != Config.StartupModes.Notifier)
+            {
+                if (participantList.Count > AditClient.ParticipantList.Count)
+                {
+                    FlyoutNotification.Show("A partner has connected.");
+                }
+                else if (participantList.Count < AditClient.ParticipantList.Count)
+                {
+                    FlyoutNotification.Show("A partner has disconnected.");
+                }
+            }
+            AditClient.ParticipantList.RemoveAll(x => !participantList.Contains(x.ID));
+            foreach (var partner in participantList)
+            {
+                if (!AditClient.ParticipantList.Exists(x => x.ID == partner))
+                {
+                    AditClient.ParticipantList.Add(new Participant() { ID = partner });
+                }
+            }
+            Pages.Client.Current.RefreshUICall();
+        }
+
+        private void ReceiveSessionID(dynamic jsonData)
+        {
+            AditClient.SessionID = jsonData["SessionID"];
+            Pages.Client.Current.RefreshUICall();
+        }
+        private async Task SendNoScreenActivity()
+        {
+            await SendJSON(new
+            {
+                Type = "NoScreenActivity"
+            });
         }
     }
 }

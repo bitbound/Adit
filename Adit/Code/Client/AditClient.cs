@@ -18,6 +18,7 @@ namespace Adit.Code.Client
     {
         private static byte[] receiveBuffer;
         private static SocketAsyncEventArgs socketArgs;
+        public static ConnectionTypes ConnectionType { get; set; }
         public static bool DesktopSwitchPending { get; set; }
         public static bool IsConnected
         {
@@ -33,17 +34,19 @@ namespace Adit.Code.Client
         public static TcpClient TcpClient { get; set; }
         public static async Task Connect()
         {
+            ConnectionType = ConnectionTypes.Client;
             if (await InitConnection())
             {
-                SocketMessageHandler.SendConnectionType(ConnectionTypes.Client);
+                //SocketMessageHandler.SendConnectionType(ConnectionTypes.Client);
             }
         }
         public static async Task Connect(string sessionIDToUse)
         {
+            ConnectionType = ConnectionTypes.ElevatedClient;
             if (await InitConnection())
             {
                 SessionID = sessionIDToUse;
-                SocketMessageHandler.SendConnectionType(ConnectionTypes.ElevatedClient, sessionIDToUse);
+                //SocketMessageHandler.SendConnectionType(ConnectionTypes.ElevatedClient, sessionIDToUse);
             }
         }
         private static async Task<bool> InitConnection()
@@ -73,7 +76,10 @@ namespace Adit.Code.Client
                 socketArgs.Completed += ReceiveFromServerCompleted;
                 SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
-                ClipboardManager.Current.BeginWatching(SocketMessageHandler);
+                if (Config.Current.IsClipboardShared)
+                {
+                    ClipboardManager.Current.BeginWatching(SocketMessageHandler);
+                }
                 return true;
             }
             catch
@@ -88,7 +94,7 @@ namespace Adit.Code.Client
                 return false;
             }
         }
-        private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
+        private static async void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError != SocketError.Success)
             {
@@ -105,7 +111,7 @@ namespace Adit.Code.Client
                 Pages.Client.Current.RefreshUICall();
                 return;
             }
-            SocketMessageHandler.ProcessSocketMessage(e);
+            await SocketMessageHandler.ProcessSocketMessage(e);
             WaitForServerMessage();
         }
 

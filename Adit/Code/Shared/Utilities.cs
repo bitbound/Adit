@@ -17,11 +17,11 @@ namespace Adit.Code.Shared
     class Utilities
     {
         public static JavaScriptSerializer JSON { get; } = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
-        public static string ProgramFolder
+        public static string DataFolder
         {
             get
             {
-                if (WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+                if (Utilities.IsAdministrator)
                 {
                     return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Adit");
                 }
@@ -29,6 +29,13 @@ namespace Adit.Code.Shared
                 {
                     return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Adit");
                 }
+            }
+        }
+        public static string ProgramFolder
+        {
+            get
+            {
+                return AppDomain.CurrentDomain.BaseDirectory;
             }
         }
         public static string FileTransferFolder
@@ -96,6 +103,35 @@ namespace Adit.Code.Shared
                     .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                     .Select(nic => nic.GetPhysicalAddress().ToString())
                     .FirstOrDefault();
+        }
+        public static void SetStartupRegistry()
+        {
+            try
+            {
+                var runKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+                if (Config.Current.IsServerAutoStartEnabled == true)
+                {
+                    if (runKey.GetValue("Adit") == null)
+                    {
+                        runKey.SetValue("Adit", $@"""{System.Reflection.Assembly.GetExecutingAssembly().Location}"" -background", Microsoft.Win32.RegistryValueKind.ExpandString);
+                    }
+                }
+                else
+                {
+                    if (runKey.GetValue("Adit") != null)
+                    {
+                        runKey.DeleteValue("Adit");
+                    }
+                }
+            }
+            catch { }
+        }
+        public static bool IsAdministrator
+        {
+            get
+            {
+                return WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid);
+            }
         }
         public static void WriteToLog(Exception ex)
         {

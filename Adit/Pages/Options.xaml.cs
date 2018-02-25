@@ -42,18 +42,18 @@ namespace Adit.Pages
 
         private void ServiceInstalled_Click(object sender, MouseButtonEventArgs e)
         {
-            if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+            if (!Utilities.IsAdministrator)
             {
                 MessageBox.Show("Adit must be running as an administrator (i.e. elevated) in order to configure the service.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (!ServiceConfig.IsServiceInstalled)
             {
-                ServiceConfig.InstallService(false);
+                ServiceConfig.InstallService();
             }
             else
             {
-                ServiceConfig.RemoveService(false);
+                ServiceConfig.RemoveService();
             }
         }
 
@@ -105,35 +105,14 @@ namespace Adit.Pages
 
         private void StartServerAutomatically_Click(object sender, MouseButtonEventArgs e)
         {
-            if (!WindowsIdentity.GetCurrent().Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid))
+            if (!Utilities.IsAdministrator)
             {
                 MessageBox.Show("Adit must be running as an administrator to change this option.", "Administrator Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            var runKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-            if (!(sender as Controls.ToggleSwitch).IsOn == true)
-            {
-                if (runKey.GetValue("Adit") == null)
-                {
-                    runKey.SetValue("Adit", @"""%programdata%\Adit\Adit.exe"" -background", Microsoft.Win32.RegistryValueKind.ExpandString);
-                }
-                try
-                {
-                    Directory.CreateDirectory(Utilities.ProgramFolder);
-                    File.Copy(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Adit.exe"), System.IO.Path.Combine(Utilities.ProgramFolder, "Adit.exe"), true);
-                }
-                catch { }
-            }
-            else
-            {
-                if (runKey.GetValue("Adit") != null)
-                {
-                    runKey.DeleteValue("Adit");
-                }
-            }
-           
             Config.Current.IsServerAutoStartEnabled = !(sender as Controls.ToggleSwitch).IsOn;
             Config.Save();
+            Utilities.SetStartupRegistry();
         }
 
         private void ScaleToFitViewer_Click(object sender, MouseButtonEventArgs e)

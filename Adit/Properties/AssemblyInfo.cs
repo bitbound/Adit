@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Translucency")]
 [assembly: AssemblyProduct("Adit")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright ©  2018 Translucency")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

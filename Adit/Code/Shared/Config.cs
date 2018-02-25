@@ -69,12 +69,12 @@ namespace Adit.Code.Shared
         }
         public static void Save()
         {
-            DirectoryInfo di = Directory.CreateDirectory(Utilities.ProgramFolder);
+            DirectoryInfo di = Directory.CreateDirectory(Utilities.DataFolder);
             File.WriteAllText(Path.Combine(di.FullName, "Config.json"), Utilities.JSON.Serialize(Config.Current));
         }
         public static void Load()
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Config.json"));
+            FileInfo fileInfo = new FileInfo(Path.Combine(Utilities.DataFolder, "Config.json"));
             if (fileInfo.Exists)
             {
                 var settings = Utilities.JSON.Deserialize<Config>(File.ReadAllText(fileInfo.FullName));
@@ -86,6 +86,7 @@ namespace Adit.Code.Shared
                         prop.SetValue(Config.Current, prop.GetValue(settings));
                     }
                 }
+                Utilities.SetStartupRegistry();
             }
         }
     }

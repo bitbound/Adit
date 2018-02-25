@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,14 +32,19 @@ namespace Adit.Pages
                 return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             }
         }
-        private void hyperAditWebsite_Click(object sender, RoutedEventArgs e)
+        private void HyperAditWebsite_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://invis.me");
+            Process.Start("http://invis.me");
         }
 
-        private void hyperIcons8_Click(object sender, RoutedEventArgs e)
+        private void HyperIcons8_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://icons8.com");
+            Process.Start("https://icons8.com");
+        }
+
+        private void NotifyIcon_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("http://www.hardcodet.net/wpf-notifyicon");
         }
     }
 }

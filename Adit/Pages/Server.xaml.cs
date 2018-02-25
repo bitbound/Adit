@@ -69,7 +69,7 @@ namespace Adit.Pages
         private void RefreshUI()
         {
             toggleServerStatus.IsOn = AditServer.IsEnabled;
-            toggleSSL.IsOn = Config.Current.IsEncryptionEnabled;
+            toggleEncryption.IsOn = Config.Current.IsEncryptionEnabled;
             textHost.Text = Config.Current.ServerHost;
             textPort.Text = Config.Current.ServerPort.ToString();
             buttonConnectedClients.Content = AditServer.ClientCount.ToString();
@@ -92,15 +92,10 @@ namespace Adit.Pages
             MainWindow.Current.mainFrame.Navigate(new Pages.Hub());
         }
 
-        private void ToggleSSL_Click(object sender, MouseButtonEventArgs e)
+        private void ToggleEncryption_Click(object sender, MouseButtonEventArgs e)
         {
-            Config.Current.IsEncryptionEnabled = !toggleSSL.IsOn;
-            if (Config.Current.IsEncryptionEnabled)
-            {
-                var win = new Windows.SSL();
-                win.Owner = MainWindow.Current;
-                win.ShowDialog();
-            }
+            Config.Current.IsEncryptionEnabled = !toggleEncryption.IsOn;
+            Config.Save();
         }
     }
 }

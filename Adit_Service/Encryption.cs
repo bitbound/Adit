@@ -9,13 +9,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adit.Code.Shared
+namespace Adit_Service
 {
     public class Encryption
     {
         public byte[] Key { get; set; }
-
-        private byte[] PartialDecryptionBuffer { get; set; } = new byte[0];
 
         public async Task<byte[]> EncryptBytes(byte[] bytes)
         {
@@ -40,34 +38,25 @@ namespace Adit.Code.Shared
         }
         public async Task<byte[]> DecryptBytes(byte[] bytes)
         {
-            try
+            var iv = bytes.Take(16).ToArray();
+            using (var aes = Aes.Create())
             {
-                PartialDecryptionBuffer = PartialDecryptionBuffer.Concat(bytes).ToArray();
-                var iv = PartialDecryptionBuffer.Take(16).ToArray();
-                using (var aes = Aes.Create())
+                aes.Key = Key;
+                aes.IV = iv;
+                int bytesRead;
+                byte[] buffer;
+                using (var decryptor = aes.CreateDecryptor(Key, iv))
                 {
-                    aes.Key = Key;
-                    aes.IV = iv;
-                    int bytesRead;
-                    byte[] buffer;
-                    using (var decryptor = aes.CreateDecryptor(Key, iv))
+                    using (var ms = new MemoryStream(bytes.Skip(16).ToArray()))
                     {
-                        using (var ms = new MemoryStream(PartialDecryptionBuffer.Skip(16).ToArray()))
+                        using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                         {
-                            using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-                            {
-                                buffer = new byte[PartialDecryptionBuffer.Skip(16).Count()];
-                                bytesRead = await cs.ReadAsync(buffer, 0, buffer.Length);
-                            }
-                            PartialDecryptionBuffer = new byte[0];
-                            return buffer.Take(bytesRead).ToArray();
+                            buffer = new byte[bytes.Skip(16).Count()];
+                            bytesRead = await cs.ReadAsync(buffer, 0, buffer.Length);
                         }
+                        return buffer.Take(bytesRead).ToArray();
                     }
                 }
-            }
-            catch
-            {
-                return null;
             }
         }
     }

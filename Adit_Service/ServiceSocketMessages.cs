@@ -70,7 +70,7 @@ namespace Adit_Service
                 var receivedBytes = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
                 if (Encryption != null)
                 {
-                    receivedBytes = await Encryption.DecryptBytes(receivedBytes);
+                    receivedBytes = await Encryption.DecryptBytes(receivedBytes, true);
                     if (receivedBytes == null)
                     {
                         return;

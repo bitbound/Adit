@@ -11,6 +11,7 @@ namespace Adit.Models
         Client,
         ElevatedClient,
         Service,
-        Viewer
+        Viewer,
+        ComputerHub
     }
 }

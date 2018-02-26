@@ -28,10 +28,6 @@ namespace Adit.Code.Shared
                 }
                 else
                 {
-                    for (int i = 0; i < freeArg.Buffer.Length; i++)
-                    {
-                        freeArg.Buffer[i] = 0;
-                    }
                     freeArg.IsInUse = true;
                     return freeArg;
                 }

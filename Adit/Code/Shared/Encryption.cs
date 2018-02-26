@@ -64,8 +64,9 @@ namespace Adit.Code.Shared
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Utilities.WriteToLog(ex);
                 if (appendToPartial)
                 {
                     PartialDecryptionBuffer = PartialDecryptionBuffer.Concat(bytes).ToArray();

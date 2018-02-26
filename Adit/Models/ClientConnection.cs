@@ -54,16 +54,7 @@ namespace Adit.Models
                 SendBytes(bytes);
             }
         }
-        public void SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
-        {
-            SendJSON(new
-            {
-                Type = "BinaryTransferStarting",
-                TransferType = transferType.ToString(),
-                Size = binaryLength,
-                ExtraData = extraData
-            });
-        }
+
         public void SendBytes(byte[] bytes)
         {
             if (Socket.Connected)

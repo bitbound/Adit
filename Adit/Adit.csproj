@@ -83,9 +83,10 @@
     </ApplicationDefinition>
     <Compile Include="Code\Client\AditClient.cs" />
     <Compile Include="Code\Client\ClientSocketMessages.cs" />
+    <Compile Include="Code\ComputerHub\ComputerHubSocketMessages.cs" />
     <Compile Include="Code\Server\Authentication.cs" />
-    <Compile Include="Code\Server\ComputerHub.cs" />
     <Compile Include="Code\Shared\ClipboardManager.cs" />
+    <Compile Include="Code\ComputerHub\ComputerHub.cs" />
     <Compile Include="Code\Shared\Encryption.cs" />
     <Compile Include="Code\Shared\ServiceConfig.cs" />
     <Compile Include="Code\Shared\SocketArgsPool.cs" />
@@ -102,7 +103,6 @@
       <DependentUpon>ToggleSwitch.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AuthenticationKey.cs" />
-    <Compile Include="Models\BinaryTransferType.cs" />
     <Compile Include="Models\ClientConnection.cs" />
     <Compile Include="Models\ClientSession.cs" />
     <Compile Include="Models\ConnectionTypes.cs" />

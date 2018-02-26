@@ -15,6 +15,8 @@ namespace Adit_Service
     {
         public byte[] Key { get; set; }
 
+        private byte[] PartialDecryptionBuffer { get; set; } = new byte[0];
+
         public async Task<byte[]> EncryptBytes(byte[] bytes)
         {
             var iv = new byte[16];
@@ -36,27 +38,40 @@ namespace Adit_Service
                 }
             }
         }
-        public async Task<byte[]> DecryptBytes(byte[] bytes)
+        public async Task<byte[]> DecryptBytes(byte[] bytes, bool appendToPartial)
         {
-            var iv = bytes.Take(16).ToArray();
-            using (var aes = Aes.Create())
+            try
             {
-                aes.Key = Key;
-                aes.IV = iv;
-                int bytesRead;
-                byte[] buffer;
-                using (var decryptor = aes.CreateDecryptor(Key, iv))
+                var iv = bytes.Take(16).ToArray();
+                using (var aes = Aes.Create())
                 {
-                    using (var ms = new MemoryStream(bytes.Skip(16).ToArray()))
+                    aes.Key = Key;
+                    aes.IV = iv;
+                    int bytesRead;
+                    byte[] buffer;
+                    using (var decryptor = aes.CreateDecryptor(Key, iv))
                     {
-                        using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                        using (var ms = new MemoryStream(bytes.Skip(16).ToArray()))
                         {
-                            buffer = new byte[bytes.Skip(16).Count()];
-                            bytesRead = await cs.ReadAsync(buffer, 0, buffer.Length);
+                            using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                            {
+                                buffer = new byte[bytes.Skip(16).Count()];
+                                bytesRead = await cs.ReadAsync(buffer, 0, buffer.Length);
+                            }
+                            PartialDecryptionBuffer = new byte[0];
+                            return buffer.Take(bytesRead).ToArray();
                         }
-                        return buffer.Take(bytesRead).ToArray();
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Utilities.WriteToLog(ex);
+                if (appendToPartial)
+                {
+                    PartialDecryptionBuffer = PartialDecryptionBuffer.Concat(bytes).ToArray();
+                }
+                return null;
             }
         }
     }

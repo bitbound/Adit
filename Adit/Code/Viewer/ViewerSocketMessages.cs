@@ -20,6 +20,8 @@ namespace Adit.Code.Viewer
     {
         Socket socketOut;
         List<byte> BinaryTransferBuffer { get; set; } = new List<byte>();
+        System.Timers.Timer ImageRequestTimer { get; set; }
+        DateTime LastDrawRequest { get; set; } = DateTime.Now;
         public ViewerSocketMessages(Socket socketOut)
             : base(socketOut)
         {
@@ -44,13 +46,7 @@ namespace Adit.Code.Viewer
                 Y = y
             });
         }
-        private void ReceiveBinaryTransferStarting(dynamic jsonData)
-        {
-            ExpectedBinarySize = jsonData["Size"];
-            LastRequesterID = jsonData["Sender"];
-            ReceiveTransferType = Enum.Parse(typeof(BinaryTransferType), jsonData["TransferType"]);
-            AditViewer.NextDrawPoint = new System.Drawing.Point(jsonData["ExtraData"]["X"], jsonData["ExtraData"]["Y"]);
-        }
+
         private void ReceiveViewerConnectRequest(dynamic jsonData)
         {
             if (jsonData["Status"] == "notfound")
@@ -65,6 +61,20 @@ namespace Adit.Code.Viewer
                 AditViewer.RequestFullscreen = true;
                 Pages.Viewer.Current.RefreshUICall();
                 SendImageRequest();
+                ImageRequestTimer = new System.Timers.Timer(250);
+                ImageRequestTimer.Elapsed += (sender, args) =>
+                {
+                    if (!AditViewer.IsConnected)
+                    {
+                        ImageRequestTimer.Stop();
+                        return;
+                    }
+                    if (DateTime.Now - LastDrawRequest > TimeSpan.FromMilliseconds(500))
+                    {
+                        SendImageRequest();
+                    }
+                };
+                ImageRequestTimer.Start();
             }
         }
         private void ReceiveEncryptionStatus(dynamic jsonData)
@@ -178,12 +188,9 @@ namespace Adit.Code.Viewer
             });
         }
 
-        private void ReceiveNoScreenActivity(dynamic jsonData)
-        {
-            SendImageRequest();
-        }
         public void SendImageRequest()
         {
+            
             SendJSON(new
             {
                 Type = "ImageRequest",
@@ -207,7 +214,6 @@ namespace Adit.Code.Viewer
         private void ReceiveFileTransfer(dynamic jsonData)
         {
             SendBytes(File.ReadAllBytes(jsonData["FullPath"]));
-            SendImageRequest();
         }
 
         public void SendMouseRightDown(double x, double y)
@@ -232,9 +238,27 @@ namespace Adit.Code.Viewer
 
         private void ReceiveByteArray(byte[] bytesReceived)
         {
+            if (BinaryTransferBuffer.Count == 0)
+            {
+                if (bytesReceived[0] == 0)
+                {
+                    var startDrawingPoint = bytesReceived.Skip(1).Take(6).ToArray();
+                    var xPosition = startDrawingPoint[0] * 10000 + startDrawingPoint[1] * 100 + startDrawingPoint[2];
+                    var yPosition = startDrawingPoint[3] * 10000 + startDrawingPoint[4] * 100 + startDrawingPoint[5];
+                    AditViewer.NextDrawPoint = new System.Drawing.Point(xPosition, yPosition);
+
+                    var expectedSize = bytesReceived.Skip(7).Take(5).ToArray();
+                    ExpectedBinarySize = expectedSize[0] * 100000000
+                        + expectedSize[1] * 1000000
+                        + expectedSize[2] * 10000
+                        + expectedSize[3] * 100
+                        + expectedSize[4];
+                }
+            }
             if (bytesReceived.Length == ExpectedBinarySize)
             {
-                Pages.Viewer.Current.DrawImageCall(bytesReceived);
+                LastDrawRequest = DateTime.Now;
+                Pages.Viewer.Current.DrawImageCall(bytesReceived.Skip(12).ToArray());
                 BinaryTransferBuffer.Clear();
                 BinaryTransferBuffer.TrimExcess();
             }
@@ -249,7 +273,8 @@ namespace Adit.Code.Viewer
                 BinaryTransferBuffer.AddRange(bytesReceived);
                 if (BinaryTransferBuffer.Count == ExpectedBinarySize)
                 {
-                    Pages.Viewer.Current.DrawImageCall(BinaryTransferBuffer.ToArray());
+                    LastDrawRequest = DateTime.Now;
+                    Pages.Viewer.Current.DrawImageCall(BinaryTransferBuffer.Skip(12).ToArray());
                     BinaryTransferBuffer.Clear();
                     BinaryTransferBuffer.TrimExcess();
                 }
@@ -298,7 +323,6 @@ namespace Adit.Code.Viewer
             if (jsonData["Status"] == "ok")
             {
                 AditViewer.RequestFullscreen = true;
-                SendImageRequest();
             }
             else if (jsonData["Status"] == "failed")
             {

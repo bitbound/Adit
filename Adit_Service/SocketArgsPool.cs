@@ -25,10 +25,6 @@ namespace Adit_Service
             }
             else
             {
-                for (int i = 0; i < freeArg.Buffer.Length; i++)
-                {
-                    freeArg.Buffer[i] = 0;
-                }
                 freeArg.IsInUse = true;
                 return freeArg;
             }
@@ -41,7 +37,7 @@ namespace Adit_Service
             {
                 var newArg = new SocketArgs();
                 newArg.IsInUse = true;
-                SocketReceiveArgs.Add(newArg);
+                SocketSendArgs.Add(newArg);
                 return newArg;
             }
             else

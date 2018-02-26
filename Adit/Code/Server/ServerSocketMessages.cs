@@ -55,9 +55,25 @@ namespace Adit.Code.Server
                     Session.ConnectedClients.Add(ConnectionToClient);
                     AditServer.SessionList.Add(Session);
                     break;
+                case "ComputerHub":
+                    ConnectionToClient.ConnectionType = ConnectionTypes.Service;
+                    Session = new ClientSession();
+                    Session.SessionID = Guid.NewGuid().ToString();
+                    Session.ConnectedClients.Add(ConnectionToClient);
+                    AditServer.SessionList.Add(Session);
+                    SendRequestForHubCredentials();
+                    break;
                 default:
                     break;
             }
+        }
+
+        private void SendRequestForHubCredentials()
+        {
+            SendJSON(new
+            {
+                Type = "RequestForHubCredentials"
+            });
         }
 
         private void SendSessionID()
@@ -215,7 +231,7 @@ namespace Adit.Code.Server
             ConnectionToClient.LastReboot = jsonData["LastReboot"];
             ConnectionToClient.CurrentUser = jsonData["CurrentUser"];
             ConnectionToClient.MACAddress = jsonData["MACAddress"];
-            ComputerHub.Current.AddOrUpdateComputer(ConnectionToClient);
+            ComputerHub.Hub.Current.AddOrUpdateComputer(ConnectionToClient);
         }
         private void ReceiveHubDataRequest(dynamic jsonData)
         {
@@ -223,34 +239,24 @@ namespace Adit.Code.Server
             {
                 jsonData["Status"] = "Server has no authentication keys.  Create an authentication key on the server first.";
             }
-            else if (!Authentication.Current.Keys.Any(x=>x.Key == jsonData["Key"]?.Trim()?.ToLower()))
+            else if (!Authentication.Current.Keys.Any(x=>x.Key == jsonData["HubKey"]?.Trim()?.ToLower()))
             {
                 jsonData["Status"] = "Authentication key wasn't found.";
             }
             else
             {
-                var key = Authentication.Current.Keys.FirstOrDefault(x => x.Key == jsonData["Key"]?.Trim()?.ToLower());
+                var key = Authentication.Current.Keys.FirstOrDefault(x => x.Key == jsonData["HubKey"]?.Trim()?.ToLower());
                 key.LastUsed = DateTime.Now;
                 Authentication.Current.Save();
                 jsonData["Status"] = "ok";
                 MainWindow.Current.Dispatcher.Invoke(() => {
-                    ComputerHub.Current.Load();
+                    ComputerHub.Hub.Current.Load();
                 });
-                jsonData["ComputerList"] = ComputerHub.Current.ComputerList;
+                jsonData["ComputerList"] = ComputerHub.Hub.Current.ComputerList.ToList();
             }
             SendJSON(jsonData);
         }
-        private void ReceiveBinaryTransferStarting(dynamic jsonData)
-        {
-            jsonData["Sender"] = ConnectionToClient.ID;
-            if (Enum.Parse(typeof(BinaryTransferType), jsonData["TransferType"]) == BinaryTransferType.ScreenCapture)
-            {
-                foreach (var viewer in Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Viewer))
-                {
-                    viewer.SendJSON(jsonData);
-                }
-            }
-        }
+
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             if (ConnectionToClient.ConnectionType == ConnectionTypes.Client || ConnectionToClient.ConnectionType == ConnectionTypes.ElevatedClient)

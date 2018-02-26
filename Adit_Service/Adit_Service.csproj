@@ -78,7 +78,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)Adit\bin\$(ConfigurationName)\Adit_Service.exe"</PostBuildEvent>
   </PropertyGroup>
 </Project>

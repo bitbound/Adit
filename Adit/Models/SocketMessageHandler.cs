@@ -14,7 +14,6 @@ namespace Adit.Models
     public class SocketMessageHandler
     {
         Socket socketOut;
-        public BinaryTransferType ReceiveTransferType { get; set; }
         public int ExpectedBinarySize { get; set; }
         public string LastRequesterID { get; set; }
         public Encryption Encryption { get; set; }
@@ -58,16 +57,6 @@ namespace Adit.Models
                     socketOut.SendAsync(socketArgs);
                 });
             }
-        }
-        public void SendBinaryTransferNotification(BinaryTransferType transferType, int binaryLength, dynamic extraData)
-        {
-            SendJSON(new
-            {
-                Type = "BinaryTransferStarting",
-                TransferType = transferType.ToString(),
-                Size = binaryLength,
-                ExtraData = extraData
-            });
         }
 
         public void SendBytes(byte[] bytes)

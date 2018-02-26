@@ -10,8 +10,6 @@ namespace Adit_Service
 {
     class AditService
     {
-        private static SocketAsyncEventArgs socketArgs;
-        private static byte[] receiveBuffer;
         public static TcpClient TcpClient { get; set; }
         public static ServiceSocketMessages SocketMessageHandler { get; set; }
         public static Timer HeartbeatTimer { get; set; } = new Timer();
@@ -36,22 +34,16 @@ namespace Adit_Service
                 TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
                 TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
                 TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
-                if (receiveBuffer == null)
-                {
-                    receiveBuffer = new byte[Config.Current.BufferSize];
-                }
-                socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
-                socketArgs.Completed += ReceiveFromServerCompleted;
+                SocketMessageHandler = new ServiceSocketMessages(TcpClient.Client);
+                WaitForServerMessage();
+                SocketMessageHandler.SendHeartbeat();
             }
             catch
             {
                 WaitToRetryConnection();
                 return;
             }
-            SocketMessageHandler = new ServiceSocketMessages(TcpClient.Client);
-            WaitForServerMessage();
-            SocketMessageHandler.SendHeartbeat();
+           
         }
 
         public static void WaitToRetryConnection()
@@ -71,6 +63,8 @@ namespace Adit_Service
         {
             if (IsConnected)
             {
+                var socketArgs = SocketArgsPool.GetReceiveArg();
+                socketArgs.Completed += ReceiveFromServerCompleted;
                 var willFireCallback = TcpClient.Client.ReceiveAsync(socketArgs);
                 if (!willFireCallback)
                 {

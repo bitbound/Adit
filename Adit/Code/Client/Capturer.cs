@@ -130,14 +130,20 @@ namespace Adit.Code.Client
                 return;
             }
         }
-        public Tuple<byte[], System.Drawing.Point> GetCapture(bool fullscreen)
+        public byte[] GetCapture(bool fullscreen)
         {
             if (fullscreen)
             {
                 using (var ms = new MemoryStream())
                 {
                     currentFrame.Save(ms, ImageFormat.Png);
-                    return new Tuple<byte[], System.Drawing.Point>(ms.ToArray(), new System.Drawing.Point(0,0));
+                    var messageHeader = new byte[12];
+                    messageHeader[7] = (byte)((ms.Length + 12) % 10000000000 / 100000000);
+                    messageHeader[8] = (byte)((ms.Length + 12) % 100000000 / 1000000);
+                    messageHeader[9] = (byte)((ms.Length + 12) % 1000000 / 10000);
+                    messageHeader[10] = (byte)((ms.Length + 12) % 10000 / 100);
+                    messageHeader[11] = (byte)((ms.Length + 12) % 100);
+                    return messageHeader.Concat(ms.ToArray()).ToArray();
                 }
             }
             else
@@ -147,7 +153,22 @@ namespace Adit.Code.Client
                     using (var croppedFrame = currentFrame.Clone(boundingBox, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
                     {
                         croppedFrame.Save(ms, ImageFormat.Png);
-                        return new Tuple<byte[], System.Drawing.Point>(ms.ToArray(), captureStartPoint);
+                        // Byte array that indicates top left coordinates of the image.
+                        var messageHeader = new byte[12];
+                        messageHeader[0] = 0;
+                        messageHeader[1] = (byte)(captureStartPoint.X % 1000000 / 10000);
+                        messageHeader[2] = (byte)(captureStartPoint.X % 10000 / 100);
+                        messageHeader[3] = (byte)(captureStartPoint.X % 100);
+                        messageHeader[4] = (byte)(captureStartPoint.Y % 1000000 / 10000);
+                        messageHeader[5] = (byte)(captureStartPoint.Y % 10000 / 100);
+                        messageHeader[6] = (byte)(captureStartPoint.Y % 100);
+                        messageHeader[7] = (byte)((ms.Length + 12) % 10000000000 / 100000000);
+                        messageHeader[8] = (byte)((ms.Length + 12) % 100000000 / 1000000);
+                        messageHeader[9] = (byte)((ms.Length + 12) % 1000000 / 10000);
+                        messageHeader[10] = (byte)((ms.Length + 12) % 10000 / 100);
+                        messageHeader[11] = (byte)((ms.Length + 12) % 100);
+                        
+                        return messageHeader.Concat(ms.ToArray()).ToArray();
                     }
                 }
             }

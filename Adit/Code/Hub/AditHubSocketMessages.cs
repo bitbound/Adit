@@ -9,12 +9,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Adit.Code.ComputerHub
+namespace Adit.Code.Hub
 {
-    public class ComputerHubSocketMessages : SocketMessageHandler
+    public class AditHubSocketMessages : SocketMessageHandler
     {
         Socket socketOut;
-        public ComputerHubSocketMessages(Socket socketOut)
+        public AditHubSocketMessages(Socket socketOut)
             : base(socketOut)
         {
             this.socketOut = socketOut;
@@ -73,16 +73,18 @@ namespace Adit.Code.ComputerHub
 
                 if (jsonData["Status"] != "ok")
                 {
+                    AditHub.Current.Disconnect();
                     MessageBox.Show(jsonData["Status"], "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    Hub.Current.ComputerList.Clear();
+                    AditHub.Current.ComputerList.Clear();
                     var computerList = jsonData["ComputerList"] as object[];
                     foreach (Dictionary<string, object> clientObj in computerList)
                     {
                         var newClient = new HubComputer()
                         {
+                            ID = (string)clientObj["ID"],
                             ComputerName = (string)clientObj["ComputerName"],
                             CurrentUser = (string)clientObj["CurrentUser"],
                             MACAddress = (string)clientObj["MACAddress"],
@@ -93,17 +95,32 @@ namespace Adit.Code.ComputerHub
                             LastOnline = (DateTime?)clientObj["LastOnline"],
                             IsOnline = (bool)clientObj["IsOnline"]
                         };
-                        Hub.Current.ComputerList.Add(newClient);
+                        AditHub.Current.ComputerList.Add(newClient);
                     }
-                    Pages.Hub.Current.datagridComputers.Items.Refresh();
-                    Pages.Hub.Current.remoteServerConnectStack.Visibility = Visibility.Collapsed;
-                    Pages.Hub.Current.connectionsGrid.Visibility = Visibility.Visible;
-                    Pages.Hub.Current.datagridComputers.IsReadOnly = true;
-                    Pages.Hub.Current.deleteButton.Visibility = Visibility.Collapsed;
-                    Pages.Hub.Current.disconnectButton.Visibility = Visibility.Collapsed;
+                    Pages.Hub.Current.RefreshUICall();
                 }
             });
             
+        }
+
+        public void SendHubDisconnectClientRequest(System.Collections.IList clients)
+        {
+            SendJSON(new
+            {
+                Type = "HubDisconnectClientRequest",
+                HubKey = Config.Current.HubKey,
+                Clients = clients.Cast<HubComputer>().Select(x => x.ID)
+            });
+        }
+
+        public void SendHubDeleteClientRequest(System.Collections.IList clients)
+        {
+            SendJSON(new
+            {
+                Type = "HubDeleteClientRequest",
+                HubKey = Config.Current.HubKey,
+                Clients = clients.Cast<HubComputer>().Select(x=>x.ID)
+            });
         }
     }
 }

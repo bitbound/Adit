@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Adit.Code.Hub;
 
 namespace Adit.Code.Server
 {
@@ -56,7 +57,7 @@ namespace Adit.Code.Server
                     AditServer.SessionList.Add(Session);
                     break;
                 case "ComputerHub":
-                    ConnectionToClient.ConnectionType = ConnectionTypes.Service;
+                    ConnectionToClient.ConnectionType = ConnectionTypes.ComputerHub;
                     Session = new ClientSession();
                     Session.SessionID = Guid.NewGuid().ToString();
                     Session.ConnectedClients.Add(ConnectionToClient);
@@ -231,32 +232,75 @@ namespace Adit.Code.Server
             ConnectionToClient.LastReboot = jsonData["LastReboot"];
             ConnectionToClient.CurrentUser = jsonData["CurrentUser"];
             ConnectionToClient.MACAddress = jsonData["MACAddress"];
-            ComputerHub.Hub.Current.AddOrUpdateComputer(ConnectionToClient);
+            Hub.AditHub.Current.AddOrUpdateComputer(ConnectionToClient);
         }
         private void ReceiveHubDataRequest(dynamic jsonData)
         {
             if (Authentication.Current.Keys.Count == 0)
             {
                 jsonData["Status"] = "Server has no authentication keys.  Create an authentication key on the server first.";
+                SendJSON(jsonData);
             }
             else if (!Authentication.Current.Keys.Any(x=>x.Key == jsonData["HubKey"]?.Trim()?.ToLower()))
             {
                 jsonData["Status"] = "Authentication key wasn't found.";
+                SendJSON(jsonData);
             }
             else
             {
-                var key = Authentication.Current.Keys.FirstOrDefault(x => x.Key == jsonData["HubKey"]?.Trim()?.ToLower());
-                key.LastUsed = DateTime.Now;
-                Authentication.Current.Save();
-                jsonData["Status"] = "ok";
-                MainWindow.Current.Dispatcher.Invoke(() => {
-                    ComputerHub.Hub.Current.Load();
-                });
-                jsonData["ComputerList"] = ComputerHub.Hub.Current.ComputerList.ToList();
+                SendHubDataRequest(jsonData["HubKey"]);
             }
-            SendJSON(jsonData);
+        }
+        public void SendHubDataRequest(string hubKey)
+        {
+            var key = Authentication.Current.Keys.FirstOrDefault(x => x.Key == hubKey?.Trim()?.ToLower());
+            key.LastUsed = DateTime.Now;
+            Authentication.Current.Save();
+            MainWindow.Current.Dispatcher.Invoke(() => {
+                Hub.AditHub.Current.Load();
+            });
+            SendJSON(new
+            {
+                Type = "HubDataRequest",
+                Status = "ok",
+                ComputerList = Hub.AditHub.Current.ComputerList.ToList()
+            });
         }
 
+        private void ReceiveHubDisconnectClientRequest(dynamic jsonData)
+        {
+            if (!Authentication.Current.Keys.Any(x => x.Key == jsonData["HubKey"]?.Trim()?.ToLower()))
+            {
+                ConnectionToClient.Close();
+                return;
+            }
+            foreach (var client in jsonData["Clients"])
+            {
+                AditServer.ClientList.Find(x => x.ID == client)?.Close();
+            }
+            SendHubDataRequest(jsonData["HubKey"]);
+        }
+
+        private void ReceiveHubDeleteClientRequest(dynamic jsonData)
+        {
+            if (!Authentication.Current.Keys.Any(x => x.Key == jsonData["HubKey"]?.Trim()?.ToLower()))
+            {
+                ConnectionToClient.Close();
+                return;
+            }
+            MainWindow.Current.Dispatcher.Invoke(() => {
+                foreach (var client in jsonData["Clients"])
+                {
+                    var computer = AditHub.Current.ComputerList.FirstOrDefault(x => x.ID == client);
+                    if (computer != null)
+                    {
+                        AditHub.Current.ComputerList.Remove(computer);
+                    }
+                }
+                SendHubDataRequest(jsonData["HubKey"]);
+            });
+          
+        }
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             if (ConnectionToClient.ConnectionType == ConnectionTypes.Client || ConnectionToClient.ConnectionType == ConnectionTypes.ElevatedClient)

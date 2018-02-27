@@ -19,7 +19,6 @@ namespace Adit.Code.Viewer
     public class ViewerSocketMessages : SocketMessageHandler
     {
         Socket socketOut;
-        List<byte> BinaryTransferBuffer { get; set; } = new List<byte>();
         System.Timers.Timer ImageRequestTimer { get; set; }
         DateTime LastDrawRequest { get; set; } = DateTime.Now;
         public ViewerSocketMessages(Socket socketOut)
@@ -213,7 +212,10 @@ namespace Adit.Code.Viewer
 
         private void ReceiveFileTransfer(dynamic jsonData)
         {
-            SendBytes(File.ReadAllBytes(jsonData["FullPath"]));
+            byte[] fileBytes = File.ReadAllBytes(jsonData["FullPath"]);
+            var messageHeader = new byte[1];
+            messageHeader[0] = 2;
+            SendBytes(messageHeader.Concat(fileBytes).ToArray());
         }
 
         public void SendMouseRightDown(double x, double y)
@@ -238,52 +240,14 @@ namespace Adit.Code.Viewer
 
         private void ReceiveByteArray(byte[] bytesReceived)
         {
-            if (BinaryTransferBuffer.Count == 0)
+            if (bytesReceived[0] == 1)
             {
-                if (bytesReceived[0] == 0)
-                {
-                    var startDrawingPoint = bytesReceived.Skip(1).Take(6).ToArray();
-                    var xPosition = startDrawingPoint[0] * 10000 + startDrawingPoint[1] * 100 + startDrawingPoint[2];
-                    var yPosition = startDrawingPoint[3] * 10000 + startDrawingPoint[4] * 100 + startDrawingPoint[5];
-                    AditViewer.NextDrawPoint = new System.Drawing.Point(xPosition, yPosition);
+                var xPosition = bytesReceived[1] * 10000 + bytesReceived[2] * 100 + bytesReceived[3];
+                var yPosition = bytesReceived[4] * 10000 + bytesReceived[5] * 100 + bytesReceived[6];
+                AditViewer.NextDrawPoint = new System.Drawing.Point(xPosition, yPosition);
 
-                    var expectedSize = bytesReceived.Skip(7).Take(5).ToArray();
-                    ExpectedBinarySize = expectedSize[0] * 100000000
-                        + expectedSize[1] * 1000000
-                        + expectedSize[2] * 10000
-                        + expectedSize[3] * 100
-                        + expectedSize[4];
-                }
-            }
-            if (bytesReceived.Length == ExpectedBinarySize)
-            {
                 LastDrawRequest = DateTime.Now;
-                Pages.Viewer.Current.DrawImageCall(bytesReceived.Skip(12).ToArray());
-                BinaryTransferBuffer.Clear();
-                BinaryTransferBuffer.TrimExcess();
-            }
-            else if (bytesReceived.Length > ExpectedBinarySize)
-            {
-                Utilities.WriteToLog("Received bytes exceeded expected size.");
-                BinaryTransferBuffer.Clear();
-                BinaryTransferBuffer.TrimExcess();
-            }
-            else
-            {
-                BinaryTransferBuffer.AddRange(bytesReceived);
-                if (BinaryTransferBuffer.Count == ExpectedBinarySize)
-                {
-                    LastDrawRequest = DateTime.Now;
-                    Pages.Viewer.Current.DrawImageCall(BinaryTransferBuffer.Skip(12).ToArray());
-                    BinaryTransferBuffer.Clear();
-                    BinaryTransferBuffer.TrimExcess();
-                }
-                else if (BinaryTransferBuffer.Count > ExpectedBinarySize)
-                {
-                    Utilities.WriteToLog("Received bytes exceeded expected size.");
-                    BinaryTransferBuffer.Clear();
-                    BinaryTransferBuffer.TrimExcess();
-                }
+                Pages.Viewer.Current.DrawImageCall(bytesReceived.Skip(7).ToArray());
             }
         }
 

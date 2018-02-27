@@ -59,12 +59,12 @@ namespace Adit.Code.Client
         {
             try
             {
-                if (fileTransferName != null)
+                if (bytesReceived[0] == 2)
                 {
                     using (var fs = new FileStream(Path.Combine(Utilities.FileTransferFolder, fileTransferName), FileMode.OpenOrCreate, FileAccess.ReadWrite))
                     {
                         fs.Position = fs.Length;
-                        fs.Write(bytesReceived, 0, bytesReceived.Length);
+                        fs.Write(bytesReceived.Skip(1).ToArray(), 0, bytesReceived.Skip(1).Count());
                         if (fs.Length >= fileTransferSize)
                         {
                             Process.Start(Utilities.FileTransferFolder);

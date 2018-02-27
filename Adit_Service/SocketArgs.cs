@@ -13,7 +13,10 @@ namespace Adit_Service
         protected override void OnCompleted(SocketAsyncEventArgs e)
         {
             base.OnCompleted(e);
-            this.IsInUse = false;
+            if (this.LastOperation != SocketAsyncOperation.Receive)
+            {
+                this.IsInUse = false;
+            }
         }
     }
 }

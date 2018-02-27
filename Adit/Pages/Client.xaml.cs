@@ -67,6 +67,11 @@ namespace Adit.Pages
       
         private void ConnectButtonClicked(object sender, RoutedEventArgs e)
         {
+            Config.Current.ClientHost = textHost.Text;
+            if (int.TryParse(textPort.Text, out var port))
+            {
+                Config.Current.ClientPort = port;
+            }
             stackConnect.Visibility = Visibility.Collapsed;
             stackMain.Visibility = Visibility.Visible;
             AditClient.Connect();

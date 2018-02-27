@@ -11,12 +11,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Adit.Code.ComputerHub
+namespace Adit.Code.Hub
 {
-    public class Hub
+    public class AditHub
     {
-        public static Hub Current { get; set; } = new Hub();
-        public Hub()
+        public static AditHub Current { get; set; } = new AditHub();
+        public AditHub()
         {
             Load();
             ComputerList.CollectionChanged += ComputerList_CollectionChanged;
@@ -32,7 +32,7 @@ namespace Adit.Code.ComputerHub
             }
         }
 
-        public ComputerHubSocketMessages SocketMessageHandler { get; set; }
+        public AditHubSocketMessages SocketMessageHandler { get; set; }
         public TcpClient TcpClient { get; set; }
         public void AddOrUpdateComputer(ClientConnection connection)
         {
@@ -76,7 +76,7 @@ namespace Adit.Code.ComputerHub
                 await TcpClient.ConnectAsync(Config.Current.HubHost, Config.Current.HubPort);
                 TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
                 TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
-                SocketMessageHandler = new ComputerHubSocketMessages(TcpClient.Client);
+                SocketMessageHandler = new AditHubSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
             }
             catch
@@ -124,6 +124,12 @@ namespace Adit.Code.ComputerHub
             }
         }
 
+        public void Disconnect()
+        {
+            TcpClient.Close();
+            Pages.Hub.Current.RefreshUICall();
+        }
+
         public void Save()
         {
             var di = Directory.CreateDirectory(Utilities.DataFolder);
@@ -146,15 +152,15 @@ namespace Adit.Code.ComputerHub
 
         private void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
-            e.Completed -= ReceiveFromServerCompleted;
             if (e.SocketError != SocketError.Success)
             {
+                e.Completed -= ReceiveFromServerCompleted;
+                (e as SocketArgs).IsInUse = false;
                 Utilities.WriteToLog($"Socket closed in ComputerHub: {e.SocketError.ToString()}");
                 Pages.Hub.Current.RefreshUICall();
                 return;
             }
-            SocketMessageHandler.ProcessSocketMessage(e);
-            WaitForServerMessage();
+            SocketMessageHandler.ProcessSocketArgs(e, ReceiveFromServerCompleted, TcpClient.Client);
         }
 
         private void WaitForServerMessage()

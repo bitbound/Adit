@@ -47,30 +47,17 @@ namespace Adit.Models
 
         public void SendJSON(dynamic jsonData)
         {
-            if (Socket.Connected)
-            {
-                string jsonRequest = Utilities.JSON.Serialize(jsonData);
-                byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
-                SendBytes(bytes);
-            }
+            SocketMessageHandler.SendJSON(jsonData);
         }
 
         public void SendBytes(byte[] bytes)
         {
-            if (Socket.Connected)
-            {
-                Task.Run(async () => {
-                    byte[] outBuffer = bytes;
-                    if (SocketMessageHandler.Encryption != null)
-                    {
-                        outBuffer = await SocketMessageHandler.Encryption.EncryptBytes(bytes);
-                    }
-                    var socketArgs = SocketArgsPool.GetSendArg();
-                    socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-                    outBuffer.CopyTo(socketArgs.Buffer, 0);
-                    Socket.SendAsync(socketArgs);
-                });  
-            }
+            SocketMessageHandler.SendBytes(bytes);
+        }
+
+        public void SendRawBytes(byte[] bytes)
+        {
+            SocketMessageHandler.SendRawBytes(bytes);
         }
     }
 }

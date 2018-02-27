@@ -10,8 +10,8 @@ namespace Adit.Code.Shared
 {
     public static class SocketArgsPool
     {
-        private static List<SocketArgs> SocketReceiveArgs { get; set; } = new List<SocketArgs>();
-        private static List<SocketArgs> SocketSendArgs { get; set; } = new List<SocketArgs>();
+        public static List<SocketArgs> SocketReceiveArgs { get; set; } = new List<SocketArgs>();
+        public static List<SocketArgs> SocketSendArgs { get; set; } = new List<SocketArgs>();
 
         public static SocketArgs GetReceiveArg()
         {
@@ -21,13 +21,20 @@ namespace Adit.Code.Shared
                 if (freeArg == null)
                 {
                     var newArg = new SocketArgs();
-                    newArg.SetBuffer(new byte[Config.Current.BufferSize], 0, Config.Current.BufferSize);
+                    newArg.BufferList = new List<ArraySegment<byte>>()
+                    {
+                        new ArraySegment<byte>(new byte[Config.Current.BufferSize])
+                    };
                     newArg.IsInUse = true;
                     SocketReceiveArgs.Add(newArg);
                     return newArg;
                 }
                 else
                 {
+                    while (freeArg.BufferList.Count > 1)
+                    {
+                        freeArg.BufferList.RemoveAt(1);
+                    }
                     freeArg.IsInUse = true;
                     return freeArg;
                 }

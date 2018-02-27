@@ -82,6 +82,11 @@ namespace Adit.Pages
                 MessageBox.Show("Session ID is required.", "Session ID Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+            Config.Current.ViewerHost = textHost.Text;
+            if (int.TryParse(textPort.Text, out var port))
+            {
+                Config.Current.ViewerPort = port;
+            }
             controlsFrame.Visibility = Visibility.Collapsed;
             await AditViewer.Connect(textSessionID.Text.Trim());
             RefreshUI();

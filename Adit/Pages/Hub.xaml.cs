@@ -1,4 +1,4 @@
-﻿using Adit.Code.ComputerHub;
+﻿using Adit.Code.Hub;
 using Adit.Code.Server;
 using Adit.Code.Shared;
 using Adit.Models;
@@ -30,11 +30,14 @@ namespace Adit.Pages
         {
             InitializeComponent();
             Current = this;
-            Code.ComputerHub.Hub.Current.Load();
             RefreshUI();
-            if (Code.ComputerHub.Hub.Current.IsConnected)
+            if (Code.Hub.AditHub.Current.IsConnected)
             {
-                Code.ComputerHub.Hub.Current.SocketMessageHandler.SendHubDataRequest();
+                Code.Hub.AditHub.Current.SocketMessageHandler.SendHubDataRequest();
+            }
+            else
+            {
+                Code.Hub.AditHub.Current.Load();
             }
         }
         public void RefreshUICall()
@@ -46,18 +49,20 @@ namespace Adit.Pages
         }
         public void RefreshUI()
         {
-            if (Code.ComputerHub.Hub.Current.IsConnected)
+            if (Code.Hub.AditHub.Current.IsConnected)
             {
                 viewingServer.Text = Config.Current.HubHost;
-                deleteButton.Visibility = Visibility.Collapsed;
-                disconnectButton.Visibility = Visibility.Collapsed;
+                hyperDisconnectRemoteServer.Visibility = Visibility.Visible;
+                hyperViewRemoteServer.Visibility = Visibility.Collapsed;
             }
             else
             {
                 viewingServer.Text = "Local";
-                deleteButton.Visibility = Visibility.Visible;
-                disconnectButton.Visibility = Visibility.Visible;
+                hyperDisconnectRemoteServer.Visibility = Visibility.Collapsed;
+                hyperViewRemoteServer.Visibility = Visibility.Visible;
             }
+            remoteServerConnectStack.Visibility = Visibility.Collapsed;
+            connectionsGrid.Visibility = Visibility.Visible;
         }
         private void ConnectToClient_Click(object sender, RoutedEventArgs e)
         {
@@ -84,37 +89,58 @@ namespace Adit.Pages
 
         private async void ConnectToServer_Click(object sender, RoutedEventArgs e)
         {
+            Config.Current.HubHost = textHost.Text;
+            if (int.TryParse(textPort.Text, out var port))
+            {
+                Config.Current.HubPort = port;
+            }
+            Config.Current.HubKey = textKey.Text;
             Utilities.ShowToolTip(this, System.Windows.Controls.Primitives.PlacementMode.Center, "Attempting to connect...");
-            await Code.ComputerHub.Hub.Current.Connect();
-        }
-
-        private void DataDridComputers_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            datagridComputers.GetBindingExpression(DataGrid.ItemsSourceProperty).UpdateSource();
-            Code.ComputerHub.Hub.Current.Save();
+            await Code.Hub.AditHub.Current.Connect();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            for (var i = datagridComputers.SelectedItems.Count - 1; i >= 0; i--)
+            if (Code.Hub.AditHub.Current.IsConnected)
             {
-                Code.ComputerHub.Hub.Current.ComputerList.Remove((HubComputer)datagridComputers.SelectedItems[i]);
+                AditHub.Current.SocketMessageHandler.SendHubDeleteClientRequest(datagridComputers.SelectedItems as System.Collections.IList);
+            }
+            else
+            {
+                for (var i = datagridComputers.SelectedItems.Count - 1; i >= 0; i--)
+                {
+                    Code.Hub.AditHub.Current.ComputerList.Remove((HubComputer)datagridComputers.SelectedItems[i]);
+                }
             }
         }
 
         private void DisconnectClient_Click(object sender, RoutedEventArgs e)
         {
-            for (var i = datagridComputers.SelectedItems.Count - 1; i >= 0; i--)
+            if (Code.Hub.AditHub.Current.IsConnected)
             {
-                var computer = (HubComputer)datagridComputers.SelectedItems[i];
-                AditServer.ClientList.RemoveAll(x => x.ID == computer?.ID);
-                Code.ComputerHub.Hub.Current.ComputerList.Remove(computer);
+                AditHub.Current.SocketMessageHandler.SendHubDisconnectClientRequest(datagridComputers.SelectedItems as System.Collections.IList);
+            }
+            else
+            {
+                for (var i = datagridComputers.SelectedItems.Count - 1; i >= 0; i--)
+                {
+                    var computer = (HubComputer)datagridComputers.SelectedItems[i];
+                    AditServer.ClientList.RemoveAll(x => x.ID == computer?.ID);
+                    Code.Hub.AditHub.Current.ComputerList.Remove(computer);
+                }
             }
         }
 
         private void DatagridComputers_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ConnectToClient_Click(sender, e);
+        }
+
+        private void DisconnectRemoteServer_Click(object sender, RoutedEventArgs e)
+        {
+            AditHub.Current.Disconnect();
+            AditHub.Current.Load();
+            RefreshUI();
         }
     }
 }

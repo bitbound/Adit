@@ -51,29 +51,29 @@ namespace Adit.Code.Client
             desktopName = User32.GetCurrentDesktop();
             lastFrame = (Bitmap)currentFrame.Clone();
             graphic = Graphics.FromImage(currentFrame);
-            hDC = User32.GetWindowDC(hWnd);
-            graphDC = graphic.GetHdc();
+            //hDC = User32.GetWindowDC(hWnd);
+            //graphDC = graphic.GetHdc();
             try
             {
-                var copyResult = GDI32.BitBlt(graphDC, 0, 0, totalWidth, totalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
-                if (!copyResult)
-                {
-                    graphic.ReleaseHdc(graphDC);
-                    graphic.Clear(System.Drawing.Color.White);
-                    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
-                    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
+                //var copyResult = GDI32.BitBlt(graphDC, 0, 0, totalWidth, totalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
+                //if (!copyResult)
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //    graphic.Clear(System.Drawing.Color.White);
+                //    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
+                //    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
 
-                    if (!AditClient.DesktopSwitchPending)
-                    {
-                       SwitchDesktops();
-                    }
-                }
-                else
-                {
-                    graphic.ReleaseHdc(graphDC);
-                    User32.ReleaseDC(hWnd, hDC);
-                }
-
+                //    if (!AditClient.DesktopSwitchPending)
+                //    {
+                //       SwitchDesktops();
+                //    }
+                //}
+                //else
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //    User32.ReleaseDC(hWnd, hDC);
+                //}
+                graphic.CopyFromScreen(0 + offsetX, 0 + offsetY, 0, 0, new System.Drawing.Size(totalWidth, totalHeight));
                 // Get cursor information to draw on the screenshot.
                 ci.cbSize = Marshal.SizeOf(ci);
                 User32.GetCursorInfo(out ci);
@@ -89,14 +89,14 @@ namespace Adit.Code.Client
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
-                if (graphDC != IntPtr.Zero)
-                {
-                    graphic.ReleaseHdc(graphDC);
-                }
-                if (hDC != IntPtr.Zero)
-                {
-                    User32.ReleaseDC(hWnd, hDC);
-                }
+                //if (graphDC != IntPtr.Zero)
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //}
+                //if (hDC != IntPtr.Zero)
+                //{
+                //    User32.ReleaseDC(hWnd, hDC);
+                //}
                 if (!AditClient.DesktopSwitchPending)
                 {
                     SwitchDesktops();
@@ -137,12 +137,8 @@ namespace Adit.Code.Client
                 using (var ms = new MemoryStream())
                 {
                     currentFrame.Save(ms, ImageFormat.Png);
-                    var messageHeader = new byte[12];
-                    messageHeader[7] = (byte)((ms.Length + 12) % 10000000000 / 100000000);
-                    messageHeader[8] = (byte)((ms.Length + 12) % 100000000 / 1000000);
-                    messageHeader[9] = (byte)((ms.Length + 12) % 1000000 / 10000);
-                    messageHeader[10] = (byte)((ms.Length + 12) % 10000 / 100);
-                    messageHeader[11] = (byte)((ms.Length + 12) % 100);
+                    var messageHeader = new byte[7];
+                    messageHeader[0] = 1;
                     return messageHeader.Concat(ms.ToArray()).ToArray();
                 }
             }
@@ -154,20 +150,15 @@ namespace Adit.Code.Client
                     {
                         croppedFrame.Save(ms, ImageFormat.Png);
                         // Byte array that indicates top left coordinates of the image.
-                        var messageHeader = new byte[12];
-                        messageHeader[0] = 0;
+                        var messageHeader = new byte[7];
+                        messageHeader[0] = 1;
                         messageHeader[1] = (byte)(captureStartPoint.X % 1000000 / 10000);
                         messageHeader[2] = (byte)(captureStartPoint.X % 10000 / 100);
                         messageHeader[3] = (byte)(captureStartPoint.X % 100);
                         messageHeader[4] = (byte)(captureStartPoint.Y % 1000000 / 10000);
                         messageHeader[5] = (byte)(captureStartPoint.Y % 10000 / 100);
                         messageHeader[6] = (byte)(captureStartPoint.Y % 100);
-                        messageHeader[7] = (byte)((ms.Length + 12) % 10000000000 / 100000000);
-                        messageHeader[8] = (byte)((ms.Length + 12) % 100000000 / 1000000);
-                        messageHeader[9] = (byte)((ms.Length + 12) % 1000000 / 10000);
-                        messageHeader[10] = (byte)((ms.Length + 12) % 10000 / 100);
-                        messageHeader[11] = (byte)((ms.Length + 12) % 100);
-                        
+
                         return messageHeader.Concat(ms.ToArray()).ToArray();
                     }
                 }

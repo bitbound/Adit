@@ -87,9 +87,10 @@ namespace Adit.Code.Client
         }
         private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
-            e.Completed -= ReceiveFromServerCompleted;
             if (e.SocketError != SocketError.Success)
             {
+                e.Completed -= ReceiveFromServerCompleted;
+                (e as SocketArgs).IsInUse = false;
                 Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
                 if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                 {
@@ -103,8 +104,7 @@ namespace Adit.Code.Client
                 Pages.Client.Current.RefreshUICall();
                 return;
             }
-            SocketMessageHandler.ProcessSocketMessage(e);
-            WaitForServerMessage();
+            SocketMessageHandler.ProcessSocketArgs(e, ReceiveFromServerCompleted, TcpClient.Client);
         }
 
         private static void WaitForServerMessage()

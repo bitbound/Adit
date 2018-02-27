@@ -15,8 +15,6 @@ namespace Adit_Service
     {
         public byte[] Key { get; set; }
 
-        private byte[] PartialDecryptionBuffer { get; set; } = new byte[0];
-
         public async Task<byte[]> EncryptBytes(byte[] bytes)
         {
             var iv = new byte[16];
@@ -38,7 +36,7 @@ namespace Adit_Service
                 }
             }
         }
-        public async Task<byte[]> DecryptBytes(byte[] bytes, bool appendToPartial)
+        public async Task<byte[]> DecryptBytes(byte[] bytes)
         {
             try
             {
@@ -58,7 +56,6 @@ namespace Adit_Service
                                 buffer = new byte[bytes.Skip(16).Count()];
                                 bytesRead = await cs.ReadAsync(buffer, 0, buffer.Length);
                             }
-                            PartialDecryptionBuffer = new byte[0];
                             return buffer.Take(bytesRead).ToArray();
                         }
                     }
@@ -67,10 +64,6 @@ namespace Adit_Service
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
-                if (appendToPartial)
-                {
-                    PartialDecryptionBuffer = PartialDecryptionBuffer.Concat(bytes).ToArray();
-                }
                 return null;
             }
         }

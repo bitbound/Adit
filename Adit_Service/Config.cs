@@ -14,7 +14,7 @@ namespace Adit_Service
         public static Config Current { get; set; } = new Config();
         public StartupModes StartupMode { get; set; } = StartupModes.Normal;
         public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
-        public int BufferSize { get; set; } = 100000000;
+        public int BufferSize { get; set; } = 1000000;
 
 
         public bool IsServerTabVisible { get; set; } = true;

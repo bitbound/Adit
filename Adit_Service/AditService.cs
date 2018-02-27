@@ -74,17 +74,17 @@ namespace Adit_Service
         }
 
 
-        private static async void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
+        private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {
-            e.Completed -= ReceiveFromServerCompleted;
             if (e.SocketError != SocketError.Success)
             {
+                e.Completed -= ReceiveFromServerCompleted;
+                (e as SocketArgs).IsInUse = false;
                 Utilities.WriteToLog($"Socket closed in AditService: {e.SocketError.ToString()}");
                 SessionID = String.Empty;
                 return;
             }
-            await SocketMessageHandler.ProcessSocketMessage(e);
-            WaitForServerMessage();
+            SocketMessageHandler.ProcessSocketArgs(e, ReceiveFromServerCompleted, TcpClient.Client);
         }
     }
 }

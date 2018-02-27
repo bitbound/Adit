@@ -97,20 +97,22 @@ namespace Adit.Code.Server
 
         private static void ReceiveFromClientCompleted(object sender, SocketAsyncEventArgs e)
         {
-            e.Completed -= ReceiveFromClientCompleted;
             if ((e.UserToken as ClientConnection).Socket.Connected == false || e.BytesTransferred == 0)
             {
+                e.Completed -= ReceiveFromClientCompleted;
+                (e as SocketArgs).IsInUse = false;
                 HandleClientDisconnect(e);
                 return;
             }
             if (e.SocketError != SocketError.Success)
             {
+                e.Completed -= ReceiveFromClientCompleted;
+                (e as SocketArgs).IsInUse = false;
                 Utilities.WriteToLog($"Socket closed in AditServer: {e.SocketError.ToString()}");
                 HandleClientDisconnect(e);
                 return;
             }
-            (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketMessage(e);
-            WaitForClientMessage(e.UserToken as ClientConnection);
+            (e.UserToken as ClientConnection).SocketMessageHandler.ProcessSocketArgs(e, ReceiveFromClientCompleted, (e.UserToken as ClientConnection).Socket);
         }
 
         private static void HandleClientDisconnect(SocketAsyncEventArgs socketArgs)

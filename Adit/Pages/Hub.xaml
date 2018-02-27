@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Adit.Pages"
-      xmlns:Server="clr-namespace:Adit.Code.Server" xmlns:Shared="clr-namespace:Adit.Code.Shared" xmlns:ComputerHub="clr-namespace:Adit.Code.ComputerHub" x:Class="Adit.Pages.Hub"
+      xmlns:Server="clr-namespace:Adit.Code.Server" xmlns:Shared="clr-namespace:Adit.Code.Shared" xmlns:ComputerHub="clr-namespace:Adit.Code.Hub" x:Class="Adit.Pages.Hub"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="500"
       Title="Computer Hub" Background="White">
@@ -17,8 +17,12 @@
         <Grid x:Name="connectionsGrid">
             <TextBlock FontWeight="Bold" FontSize="18" VerticalAlignment="Top"><Run Text="Client Connections"/></TextBlock>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" FontStyle="Italic" Margin="0,21,0,0"><Run Text="Current Server: "/><Run Text=" "/><Run x:Name="viewingServer" Text="Local"/></TextBlock>
-            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top"><Hyperlink Click="ViewRemoteServer_Click"><Run Text="View Remote Server"/></Hyperlink></TextBlock>
-            <DataGrid x:Name="datagridComputers" PreviewMouseDoubleClick="DatagridComputers_PreviewMouseDoubleClick" ItemsSource="{Binding Current.ComputerList, Mode=TwoWay}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" Margin="0,42,0,30" CellEditEnding="DataDridComputers_CellEditEnding">
+            <TextBlock x:Name="hyperViewRemoteServer" HorizontalAlignment="Right" VerticalAlignment="Top"><Hyperlink Click="ViewRemoteServer_Click"><Run Text="View Remote Server"/></Hyperlink></TextBlock>
+            <TextBlock x:Name="hyperDisconnectRemoteServer" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed"><Hyperlink Click="DisconnectRemoteServer_Click"><Run Text="Disconnect"/></Hyperlink></TextBlock>
+            <DataGrid x:Name="datagridComputers" PreviewMouseDoubleClick="DatagridComputers_PreviewMouseDoubleClick" ItemsSource="{Binding Current.ComputerList, Mode=TwoWay}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" Margin="0,42,0,30">
+                <DataGrid.DataContext>
+                    <ComputerHub:AditHub/>
+                </DataGrid.DataContext>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Online" Binding="{Binding IsOnline2, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Computer Name" Binding="{Binding ComputerName, Mode=OneWay}"/>
@@ -30,9 +34,6 @@
                     <DataGridTextColumn Header="Last Online" Binding="{Binding LastOnline, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Last Reboot" Binding="{Binding LastReboot, Mode=OneWay}"/>
                 </DataGrid.Columns>
-                <DataGrid.DataContext>
-                    <ComputerHub:Hub/>
-                </DataGrid.DataContext>
             </DataGrid>
             <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" FontWeight="Bold" Width="70" Height="25" Click="ConnectToClient_Click" Content="Connect" Style="{DynamicResource PrimaryButton}"/>
             <Button x:Name="disconnectButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="70" Height="25" Click="DisconnectClient_Click" Content="Disconnect" Style="{DynamicResource PrimaryButton}" Margin="0,0,80,0"/>

@@ -30,7 +30,8 @@ namespace Adit_Service
             {
                 string jsonRequest = Utilities.JSON.Serialize(jsonData);
                 byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
-                SendBytes(bytes);
+                var messageHeader = new byte[1];
+                SendBytes(messageHeader.Concat(bytes).ToArray());
             }
         }
         public void SendBytes(byte[] bytes)
@@ -38,14 +39,14 @@ namespace Adit_Service
             if (socketOut.Connected)
             {
                 Task.Run(async () => {
-                    byte[] outBuffer = bytes;
                     if (Encryption != null)
                     {
-                        outBuffer = await Encryption.EncryptBytes(bytes);
+                        bytes = await Encryption.EncryptBytes(bytes);
                     }
+                    bytes = bytes.Concat(new byte[] { 44, 44, 44 }).ToArray();
                     var socketArgs = SocketArgsPool.GetSendArg();
-                    socketArgs.SetBuffer(outBuffer, 0, outBuffer.Length);
-                    outBuffer.CopyTo(socketArgs.Buffer, 0);
+                    socketArgs.SetBuffer(bytes, 0, bytes.Length);
+                    bytes.CopyTo(socketArgs.Buffer, 0);
                     socketOut.SendAsync(socketArgs);
                 });
             }
@@ -59,56 +60,138 @@ namespace Adit_Service
                 ConnectionType = connectionType.ToString()
             });
         }
-        public async Task ProcessSocketMessage(SocketAsyncEventArgs socketArgs)
+        public void ProcessSocketArgs(SocketAsyncEventArgs socketArgs, EventHandler<SocketAsyncEventArgs> completedHandler, Socket socket)
         {
-            if (socketArgs.BytesTransferred == 0)
-            {
-                return;
-            }
             try
             {
-                var receivedBytes = socketArgs.Buffer.Take(socketArgs.BytesTransferred).ToArray();
-                if (Encryption != null)
+                if (socketArgs.BytesTransferred == 0)
                 {
-                    receivedBytes = await Encryption.DecryptBytes(receivedBytes, true);
-                    if (receivedBytes == null)
-                    {
-                        return;
-                    }
+                    return;
                 }
-                if (Utilities.IsJSONData(receivedBytes))
+
+
+
+                var partialMessages = new string[0];
+
+                if (socketArgs.BufferList[0].Skip(socketArgs.BytesTransferred - 3).Take(3).All(x => x == 44))
                 {
-                    var decodedString = Encoding.UTF8.GetString(receivedBytes);
-                    var messages = Utilities.SplitJSON(decodedString);
-                    foreach (var message in messages)
-                    {
-                        var jsonData = Utilities.JSON.Deserialize<dynamic>(message);
-                        var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                            FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
-                        if (methodHandler != null)
-                        {
-                            try
-                            {
-                                methodHandler.Invoke(this, new object[] { jsonData });
-                            }
-                            catch (Exception ex)
-                            {
-                                Utilities.WriteToLog(ex);
-                            }
-                        }
-                    }
+                    socketArgs.BufferList.Add(
+                        new ArraySegment<byte>(socketArgs.BufferList[0].Take(socketArgs.BytesTransferred - 3).ToArray())
+                    );
                 }
                 else
                 {
-                    this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                        FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { receivedBytes });
+                    var decodedMessageString = Encoding.UTF8.GetString(socketArgs.BufferList[0].Take(socketArgs.BytesTransferred).ToArray());
+                    partialMessages = decodedMessageString.Split(new string[] { ",,," }, StringSplitOptions.RemoveEmptyEntries);
+                    socketArgs.BufferList.Add(
+                        new ArraySegment<byte>(Encoding.UTF8.GetBytes(partialMessages[0]))
+                    );
+                }
+
+
+
+                var totalBytesReceived = new List<byte>();
+                for (var i = 1; i < socketArgs.BufferList.Count; i++)
+                {
+                    totalBytesReceived.AddRange(socketArgs.BufferList[i]);
+                }
+
+
+                ProcessMessage(totalBytesReceived);
+
+                while (socketArgs.BufferList.Count > 1)
+                {
+                    socketArgs.BufferList.RemoveAt(1);
+                }
+
+                if (partialMessages.Length > 0)
+                {
+                    socketArgs.BufferList.Add(new ArraySegment<byte>(Encoding.UTF8.GetBytes(partialMessages.Last())));
+                    if (partialMessages.Length > 2)
+                    {
+                        for (var i = 1; i < partialMessages.Length - 1; i++)
+                        {
+                            ProcessMessage(Encoding.UTF8.GetBytes(partialMessages[i]).ToList());
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
+                while (socketArgs.BufferList.Count > 1)
+                {
+                    socketArgs.BufferList.RemoveAt(1);
+                }
             }
-           
+            finally
+            {
+                if (!socket.ReceiveAsync(socketArgs))
+                {
+                    completedHandler(socket, socketArgs);
+                }
+            }
+
+        }
+
+        private async void ProcessMessage(List<byte> totalBytesReceived)
+        {
+            if (Encryption != null)
+            {
+                var bytesReceivedThisMessage = await Encryption.DecryptBytes(totalBytesReceived.ToArray());
+                if (bytesReceivedThisMessage == null)
+                {
+                    return;
+                }
+            }
+
+            var expectedSize = totalBytesReceived[1] * 100000000
+                  + totalBytesReceived[2] * 1000000
+                  + totalBytesReceived[3] * 10000
+                  + totalBytesReceived[4] * 100
+                  + totalBytesReceived[5];
+
+            if (totalBytesReceived.Count < expectedSize)
+            {
+                return;
+            }
+            else if (totalBytesReceived.Count > expectedSize)
+            {
+                Utilities.WriteToLog("Total bytes received exceeded expected size.");
+            }
+
+            if (Utilities.IsJSONData(totalBytesReceived.Skip(6).ToArray()))
+            {
+                var decodedString = Encoding.UTF8.GetString(totalBytesReceived.Skip(6).ToArray());
+                var messages = Utilities.SplitJSON(decodedString);
+                foreach (var message in messages)
+                {
+                    ProcessJSONString(message);
+                }
+            }
+            else
+            {
+                this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                       FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { totalBytesReceived.ToArray() });
+            }
+        }
+
+        private void ProcessJSONString(string message)
+        {
+            var jsonData = Utilities.JSON.Deserialize<dynamic>(message);
+            var methodHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                FirstOrDefault(mi => mi.Name == "Receive" + jsonData["Type"]);
+            if (methodHandler != null)
+            {
+                try
+                {
+                    methodHandler.Invoke(this, new object[] { jsonData });
+                }
+                catch (Exception ex)
+                {
+                    Utilities.WriteToLog(ex);
+                }
+            }
         }
         private void ReceiveRequestForElevatedClient(dynamic jsonData)
         {

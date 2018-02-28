@@ -33,10 +33,7 @@ namespace Adit.Code.Client
         public static void Connect()
         {
             ConnectionType = ConnectionTypes.Client;
-            if (InitConnection())
-            {
-                //SocketMessageHandler.SendConnectionType(ConnectionTypes.Client);
-            }
+            InitConnection();
         }
         public static void Connect(string sessionIDToUse)
         {
@@ -44,7 +41,6 @@ namespace Adit.Code.Client
             if (InitConnection())
             {
                 SessionID = sessionIDToUse;
-                //SocketMessageHandler.SendConnectionType(ConnectionTypes.ElevatedClient, sessionIDToUse);
             }
         }
         private static bool InitConnection()
@@ -63,8 +59,6 @@ namespace Adit.Code.Client
             try
             {
                 TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
-                TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
-                TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
                 SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
                 if (Config.Current.IsClipboardShared)

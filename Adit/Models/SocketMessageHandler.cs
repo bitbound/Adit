@@ -16,6 +16,7 @@ namespace Adit.Models
         Socket socketOut;
         public string LastRequesterID { get; set; }
         public Encryption Encryption { get; set; }
+        private List<byte> AggregateMessages { get; set; } = new List<byte>();
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -52,7 +53,7 @@ namespace Adit.Models
             if (socketOut.Connected)
             {
                 Task.Run(() => {
-                    bytes = bytes.Concat(new byte[] { 44, 44, 44 }).ToArray();
+                    bytes = bytes.Concat(new byte[] { 88,88,88 }).ToArray();
                     var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(bytes, 0, bytes.Length);
                     bytes.CopyTo(socketArgs.Buffer, 0);
@@ -65,12 +66,12 @@ namespace Adit.Models
         {
             if (socketOut.Connected)
             {
-                Task.Run(async () => {
+                Task.Run(() => {
                     if (Encryption != null)
                     {
-                        bytes = await Encryption.EncryptBytes(bytes);
+                        bytes = Encryption.EncryptBytes(bytes);
                     }
-                    bytes = bytes.Concat(new byte[] { 44, 44, 44 }).ToArray();
+                    bytes = bytes.Concat(new byte[] { 88,88,88 }).ToArray();
                     var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(bytes, 0, bytes.Length);
                     bytes.CopyTo(socketArgs.Buffer, 0);
@@ -115,56 +116,25 @@ namespace Adit.Models
                     return;
                 }
 
-                if (socketArgs.BufferList.Count == 1 && socketArgs.BufferList[0].Skip(socketArgs.BytesTransferred - 3).Take(3).All(x => x == 44))
+                if (AggregateMessages.Count == 0 && socketArgs.Buffer.Skip(socketArgs.BytesTransferred - 3).Take(3).All(x => x == 88))
                 {
-                    ProcessMessage(socketArgs.BufferList[0].Take(socketArgs.BytesTransferred - 3).ToArray());
+                    ProcessMessage(socketArgs.Buffer.Take(socketArgs.BytesTransferred - 3).ToArray());
                     return;
                 }
                 else
                 {
-
-                    List<byte> aggregateMessages = socketArgs.BufferList[0].Take(socketArgs.BytesTransferred).ToList();
-                    if (socketArgs.BufferList.Count > 1)
+                    AggregateMessages.AddRange(socketArgs.Buffer.Take(socketArgs.BytesTransferred));
+                    if (AggregateMessages.Skip(AggregateMessages.Count - 3).Take(3).All(x => x == 88))
                     {
-                        aggregateMessages = socketArgs.BufferList[1].Concat(socketArgs.BufferList[0].Take(socketArgs.BytesTransferred)).ToList();
-                    }
-
-
-                    while (socketArgs.BufferList.Count > 1)
-                    {
-                        socketArgs.BufferList.RemoveAt(1);
-                    }
-
-                    var count = aggregateMessages.Count;
-                    for (var i = 0; i < count; i++)
-                    {
-                        if (aggregateMessages[i] == 44 && aggregateMessages.Count > i + 3)
-                        {
-                            if (aggregateMessages?[i + 1] == 44 && aggregateMessages?[i + 2] == 44)
-                            {
-                                ProcessMessage(aggregateMessages.Take(i).ToArray());
-                                aggregateMessages.RemoveRange(0, i + 3);
-                                i = -1;
-                                count = aggregateMessages.Count;
-                            }
-                        }
-                    }
-
-                    if (aggregateMessages.Count > 0)
-                    {
-                        socketArgs.BufferList.Add(
-                           new ArraySegment<byte>(aggregateMessages.ToArray())
-                       );
+                        ProcessMessage(AggregateMessages.Take(AggregateMessages.Count - 3).ToArray());
+                        AggregateMessages.Clear();
                     }
                 }
             }
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
-                while (socketArgs.BufferList.Count > 1)
-                {
-                    socketArgs.BufferList.RemoveAt(1);
-                }
+                AggregateMessages.Clear();
                 
             }
             finally
@@ -189,7 +159,7 @@ namespace Adit.Models
                 }
             }
 
-            if (Utilities.IsJSONData(messageBytes.Skip(1).ToArray()))
+            if (messageBytes[0] == 0)
             {
                 var decodedString = Encoding.UTF8.GetString(messageBytes.Skip(1).ToArray());
                 var messages = Utilities.SplitJSON(decodedString);

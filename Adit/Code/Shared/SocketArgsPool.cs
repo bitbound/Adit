@@ -21,20 +21,13 @@ namespace Adit.Code.Shared
                 if (freeArg == null)
                 {
                     var newArg = new SocketArgs();
-                    newArg.BufferList = new List<ArraySegment<byte>>()
-                    {
-                        new ArraySegment<byte>(new byte[Config.Current.BufferSize])
-                    };
+                    newArg.SetBuffer(new byte[Config.Current.BufferSize], 0, Config.Current.BufferSize);
                     newArg.IsInUse = true;
                     SocketReceiveArgs.Add(newArg);
                     return newArg;
                 }
                 else
                 {
-                    while (freeArg.BufferList.Count > 1)
-                    {
-                        freeArg.BufferList.RemoveAt(1);
-                    }
                     freeArg.IsInUse = true;
                     return freeArg;
                 }

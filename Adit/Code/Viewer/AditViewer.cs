@@ -45,8 +45,6 @@ namespace Adit.Code.Viewer
             {
                 SessionID = sessionID;
                 await TcpClient.ConnectAsync(Config.Current.ViewerHost, Config.Current.ViewerPort);
-                TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
-                TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
                 SocketMessageHandler = new ViewerSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
                 if (Config.Current.IsClipboardShared)

@@ -71,6 +71,7 @@ namespace Adit.Code.Shared
             {
                 format = "Text";
                 dataString = ClipboardData.GetData("Text") as string;
+                dataString = Convert.ToBase64String(Encoding.UTF8.GetBytes(dataString));
                 ClipboardData = new DataObject("Text", dataString, true);
             }
             else if (formats.Contains("Bitmap"))
@@ -120,6 +121,7 @@ namespace Adit.Code.Shared
             {
                 if (format == "Text")
                 {
+                    data = Encoding.UTF8.GetString(Convert.FromBase64String(data));
                     ClipboardData = new DataObject(format, data, true);
                 }
                 else if (format == "Bitmap")

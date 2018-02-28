@@ -15,7 +15,7 @@ namespace Adit_Service
     {
         public byte[] Key { get; set; }
 
-        public async Task<byte[]> EncryptBytes(byte[] bytes)
+        public byte[] EncryptBytes(byte[] bytes)
         {
             var iv = new byte[16];
             RNGCryptoServiceProvider.Create().GetBytes(iv);
@@ -29,14 +29,14 @@ namespace Adit_Service
                     {
                         using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
                         {
-                            await cs.WriteAsync(bytes, 0, bytes.Length);
+                            cs.Write(bytes, 0, bytes.Length);
                         }
                         return iv.Concat(ms.ToArray()).ToArray();
                     }
                 }
             }
         }
-        public async Task<byte[]> DecryptBytes(byte[] bytes)
+        public byte[] DecryptBytes(byte[] bytes)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Adit_Service
                             using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                             {
                                 buffer = new byte[bytes.Skip(16).Count()];
-                                bytesRead = await cs.ReadAsync(buffer, 0, buffer.Length);
+                                bytesRead = cs.Read(buffer, 0, buffer.Length);
                             }
                             return buffer.Take(bytesRead).ToArray();
                         }

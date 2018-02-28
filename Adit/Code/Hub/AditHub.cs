@@ -74,8 +74,6 @@ namespace Adit.Code.Hub
             try
             {
                 await TcpClient.ConnectAsync(Config.Current.HubHost, Config.Current.HubPort);
-                TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
-                TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
                 SocketMessageHandler = new AditHubSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
             }

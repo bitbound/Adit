@@ -15,7 +15,7 @@ namespace Adit.Code.Shared
     {
         public byte[] Key { get; set; }
 
-        public async Task<byte[]> EncryptBytes(byte[] bytes)
+        public byte[] EncryptBytes(byte[] bytes)
         {
             var iv = new byte[16];
             RNGCryptoServiceProvider.Create().GetBytes(iv);
@@ -29,7 +29,7 @@ namespace Adit.Code.Shared
                     {
                         using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
                         {
-                            await cs.WriteAsync(bytes, 0, bytes.Length);
+                            cs.Write(bytes, 0, bytes.Length);
                         }
                         return iv.Concat(ms.ToArray()).ToArray();
                     }

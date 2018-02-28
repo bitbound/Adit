@@ -32,8 +32,6 @@ namespace Adit_Service
             try
             {
                 TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
-                TcpClient.Client.ReceiveBufferSize = Config.Current.BufferSize;
-                TcpClient.Client.SendBufferSize = Config.Current.BufferSize;
                 SocketMessageHandler = new ServiceSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
                 SocketMessageHandler.SendHeartbeat();

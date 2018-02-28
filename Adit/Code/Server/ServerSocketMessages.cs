@@ -274,9 +274,14 @@ namespace Adit.Code.Server
                 ConnectionToClient.Close();
                 return;
             }
-            foreach (var client in jsonData["Clients"])
+            foreach (var clientID in jsonData["Clients"])
             {
-                AditServer.ClientList.Find(x => x.ID == client)?.Close();
+                var client = AditServer.ClientList.Find(x => x.ID == clientID);
+                if (client != null)
+                {
+                    AditServer.ClientList.Remove(client);
+                    client.Socket.Close();
+                }
             }
             SendHubDataRequest(jsonData["HubKey"]);
         }

@@ -24,6 +24,7 @@ namespace Adit_Service
             this.socketOut = socketOut;
         }
         public Encryption Encryption { get; set; }
+        private List<byte> AggregateMessages { get; set; } = new List<byte>();
         public void SendJSON(dynamic jsonData)
         {
             if (socketOut.Connected)
@@ -38,12 +39,12 @@ namespace Adit_Service
         {
             if (socketOut.Connected)
             {
-                Task.Run(async () => {
+                Task.Run(() => {
                     if (Encryption != null)
                     {
-                        bytes = await Encryption.EncryptBytes(bytes);
+                        bytes = Encryption.EncryptBytes(bytes);
                     }
-                    bytes = bytes.Concat(new byte[] { 44, 44, 44 }).ToArray();
+                    bytes = bytes.Concat(new byte[] { 88, 88, 88 }).ToArray();
                     var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(bytes, 0, bytes.Length);
                     bytes.CopyTo(socketArgs.Buffer, 0);
@@ -70,48 +71,26 @@ namespace Adit_Service
                 }
 
 
-
-                var partialMessages = new string[0];
-
-                if (socketArgs.BufferList[0].Skip(socketArgs.BytesTransferred - 3).Take(3).All(x => x == 44))
+                if (AggregateMessages.Count == 0 && socketArgs.Buffer.Skip(socketArgs.BytesTransferred - 3).Take(3).All(x => x == 88))
                 {
-                    socketArgs.BufferList.Add(
-                        new ArraySegment<byte>(socketArgs.BufferList[0].Take(socketArgs.BytesTransferred - 3).ToArray())
-                    );
+                    ProcessMessage(socketArgs.Buffer.Take(socketArgs.BytesTransferred - 3).ToArray());
+                    return;
                 }
                 else
                 {
-                    var decodedMessageString = Encoding.UTF8.GetString(socketArgs.BufferList[0].Take(socketArgs.BytesTransferred).ToArray());
-                    partialMessages = decodedMessageString.Split(new string[] { ",,," }, StringSplitOptions.RemoveEmptyEntries);
-                    socketArgs.BufferList.Add(
-                        new ArraySegment<byte>(Encoding.UTF8.GetBytes(partialMessages[0]))
-                    );
-                }
 
+                    AggregateMessages.AddRange(socketArgs.Buffer);
 
-
-                var totalBytesReceived = new List<byte>();
-                for (var i = 1; i < socketArgs.BufferList.Count; i++)
-                {
-                    totalBytesReceived.AddRange(socketArgs.BufferList[i]);
-                }
-
-
-                ProcessMessage(totalBytesReceived);
-
-                while (socketArgs.BufferList.Count > 1)
-                {
-                    socketArgs.BufferList.RemoveAt(1);
-                }
-
-                if (partialMessages.Length > 0)
-                {
-                    socketArgs.BufferList.Add(new ArraySegment<byte>(Encoding.UTF8.GetBytes(partialMessages.Last())));
-                    if (partialMessages.Length > 2)
+                    for (var i = 0; i < AggregateMessages.Count(); i++)
                     {
-                        for (var i = 1; i < partialMessages.Length - 1; i++)
+                        if (AggregateMessages[i] == 88 && AggregateMessages.Count > i + 3)
                         {
-                            ProcessMessage(Encoding.UTF8.GetBytes(partialMessages[i]).ToList());
+                            if (AggregateMessages[i + 1] == 88 && AggregateMessages[i + 2] == 88)
+                            {
+                                ProcessMessage(AggregateMessages.Take(i).ToArray());
+                                AggregateMessages.RemoveRange(0, i + 3);
+                                i = -1;
+                            }
                         }
                     }
                 }
@@ -119,10 +98,6 @@ namespace Adit_Service
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
-                while (socketArgs.BufferList.Count > 1)
-                {
-                    socketArgs.BufferList.RemoveAt(1);
-                }
             }
             finally
             {
@@ -134,35 +109,20 @@ namespace Adit_Service
 
         }
 
-        private async void ProcessMessage(List<byte> totalBytesReceived)
+        private void ProcessMessage(byte[] messageBytes)
         {
             if (Encryption != null)
             {
-                var bytesReceivedThisMessage = await Encryption.DecryptBytes(totalBytesReceived.ToArray());
-                if (bytesReceivedThisMessage == null)
+                messageBytes = Encryption.DecryptBytes(messageBytes);
+                if (messageBytes == null)
                 {
                     return;
                 }
             }
 
-            var expectedSize = totalBytesReceived[1] * 100000000
-                  + totalBytesReceived[2] * 1000000
-                  + totalBytesReceived[3] * 10000
-                  + totalBytesReceived[4] * 100
-                  + totalBytesReceived[5];
-
-            if (totalBytesReceived.Count < expectedSize)
+            if (Utilities.IsJSONData(messageBytes.Skip(1).ToArray()))
             {
-                return;
-            }
-            else if (totalBytesReceived.Count > expectedSize)
-            {
-                Utilities.WriteToLog("Total bytes received exceeded expected size.");
-            }
-
-            if (Utilities.IsJSONData(totalBytesReceived.Skip(6).ToArray()))
-            {
-                var decodedString = Encoding.UTF8.GetString(totalBytesReceived.Skip(6).ToArray());
+                var decodedString = Encoding.UTF8.GetString(messageBytes.Skip(1).ToArray());
                 var messages = Utilities.SplitJSON(decodedString);
                 foreach (var message in messages)
                 {
@@ -172,8 +132,9 @@ namespace Adit_Service
             else
             {
                 this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                       FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { totalBytesReceived.ToArray() });
+                       FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { messageBytes.ToArray() });
             }
+            return;
         }
 
         private void ProcessJSONString(string message)

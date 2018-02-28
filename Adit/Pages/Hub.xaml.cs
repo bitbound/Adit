@@ -125,7 +125,12 @@ namespace Adit.Pages
                 for (var i = datagridComputers.SelectedItems.Count - 1; i >= 0; i--)
                 {
                     var computer = (HubComputer)datagridComputers.SelectedItems[i];
-                    AditServer.ClientList.RemoveAll(x => x.ID == computer?.ID);
+                    var client = AditServer.ClientList.Find(x => x.ID == computer?.ID);
+                    if (client != null)
+                    {
+                        AditServer.ClientList.Remove(client);
+                        client.Socket.Close();
+                    }
                     Code.Hub.AditHub.Current.ComputerList.Remove(computer);
                 }
             }

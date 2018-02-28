@@ -54,10 +54,5 @@ namespace Adit.Models
         {
             SocketMessageHandler.SendBytes(bytes);
         }
-
-        public void SendRawBytes(byte[] bytes)
-        {
-            SocketMessageHandler.SendRawBytes(bytes);
-        }
     }
 }

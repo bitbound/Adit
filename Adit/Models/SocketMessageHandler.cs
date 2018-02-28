@@ -17,6 +17,7 @@ namespace Adit.Models
         public string LastRequesterID { get; set; }
         public Encryption Encryption { get; set; }
         private List<byte> AggregateMessages { get; set; } = new List<byte>();
+        private int ExpectedBinarySize { get; set; }
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -53,7 +54,16 @@ namespace Adit.Models
             if (socketOut.Connected)
             {
                 Task.Run(() => {
-                    bytes = bytes.Concat(new byte[] { 88,88,88 }).ToArray();
+                    var messageHeader = new byte[]
+                    {
+                        (byte)(bytes.Length % 10000000000 / 100000000),
+                        (byte)(bytes.Length % 100000000 / 1000000),
+                        (byte)(bytes.Length % 1000000 / 10000),
+                        (byte)(bytes.Length % 10000 / 100),
+                        (byte)(bytes.Length % 100),
+                    };
+
+                    bytes = messageHeader.Concat(bytes).ToArray();
                     var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(bytes, 0, bytes.Length);
                     bytes.CopyTo(socketArgs.Buffer, 0);
@@ -71,19 +81,16 @@ namespace Adit.Models
                     {
                         bytes = Encryption.EncryptBytes(bytes);
                     }
-                    bytes = bytes.Concat(new byte[] { 88,88,88 }).ToArray();
-                    var socketArgs = SocketArgsPool.GetSendArg();
-                    socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                    bytes.CopyTo(socketArgs.Buffer, 0);
-                    socketOut.SendAsync(socketArgs);
-                });
-            }
-        }
-        public void SendRawBytes(byte[] bytes)
-        {
-            if (socketOut.Connected)
-            {
-                Task.Run(() => {
+                    var messageHeader = new byte[]
+                    {
+                        (byte)(bytes.Length % 10000000000 / 100000000),
+                        (byte)(bytes.Length % 100000000 / 1000000),
+                        (byte)(bytes.Length % 1000000 / 10000),
+                        (byte)(bytes.Length % 10000 / 100),
+                        (byte)(bytes.Length % 100),
+                    };
+
+                    bytes = messageHeader.Concat(bytes).ToArray();
                     var socketArgs = SocketArgsPool.GetSendArg();
                     socketArgs.SetBuffer(bytes, 0, bytes.Length);
                     bytes.CopyTo(socketArgs.Buffer, 0);
@@ -103,50 +110,75 @@ namespace Adit.Models
 
         public void ProcessSocketArgs(SocketAsyncEventArgs socketArgs, EventHandler<SocketAsyncEventArgs> completedHandler, Socket socket)
         {
-            try
-            {
-                if (socketArgs.BytesTransferred == 0)
+            Task.Run(() => {
+                try
                 {
-                    if (Config.Current.StartupMode == Config.StartupModes.Notifier)
+                    if (socketArgs.BytesTransferred == 0)
                     {
-                        App.Current.Dispatcher.Invoke(() => {
-                            App.Current.Shutdown();
-                        });
+                        if (Config.Current.StartupMode == Config.StartupModes.Notifier)
+                        {
+                            App.Current.Dispatcher.Invoke(() => {
+                                App.Current.Shutdown();
+                            });
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                if (AggregateMessages.Count == 0 && socketArgs.Buffer.Skip(socketArgs.BytesTransferred - 3).Take(3).All(x => x == 88))
-                {
-                    ProcessMessage(socketArgs.Buffer.Take(socketArgs.BytesTransferred - 3).ToArray());
-                    return;
-                }
-                else
-                {
-                    AggregateMessages.AddRange(socketArgs.Buffer.Take(socketArgs.BytesTransferred));
-                    if (AggregateMessages.Skip(AggregateMessages.Count - 3).Take(3).All(x => x == 88))
+                    var messageHeader = socketArgs.Buffer[0] * 100000000
+                        + socketArgs.Buffer[1] * 1000000
+                        + socketArgs.Buffer[2] * 10000
+                        + socketArgs.Buffer[3] * 100
+                        + socketArgs.Buffer[4];
+
+                    if (AggregateMessages.Count == 0 && socketArgs.BytesTransferred - 5 == messageHeader)
                     {
-                        ProcessMessage(AggregateMessages.Take(AggregateMessages.Count - 3).ToArray());
-                        AggregateMessages.Clear();
+                        ProcessMessage(socketArgs.Buffer.Skip(5).Take(socketArgs.BytesTransferred - 5).ToArray());
+                        return;
+                    }
+                    else
+                    {
+                        if (ExpectedBinarySize == 0)
+                        {
+                            ExpectedBinarySize = messageHeader;
+                        }
+                        AggregateMessages.AddRange(socketArgs.Buffer.Take(socketArgs.BytesTransferred));
+                        if (AggregateMessages.Count - 5 >= ExpectedBinarySize)
+                        {
+                            ProcessMessage(AggregateMessages.Skip(5).Take(ExpectedBinarySize).ToArray());
+                            AggregateMessages.RemoveRange(0, ExpectedBinarySize + 5);
+                            if (AggregateMessages.Count > 0)
+                            {
+                                ExpectedBinarySize = AggregateMessages[0] * 100000000
+                                    + AggregateMessages[1] * 1000000
+                                    + AggregateMessages[2] * 10000
+                                    + AggregateMessages[3] * 100
+                                    + AggregateMessages[4];
+                            }
+                            else
+                            {
+                                ExpectedBinarySize = 0;
+                            }
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Utilities.WriteToLog(ex);
-                AggregateMessages.Clear();
-                
-            }
-            finally
-            {
-                if (socket.Connected)
+                catch (Exception ex)
                 {
-                    if (!socket.ReceiveAsync(socketArgs))
+                    Utilities.WriteToLog(ex);
+                    AggregateMessages.Clear();
+
+                }
+                finally
+                {
+                    if (socket.Connected)
                     {
-                        completedHandler(socket, socketArgs);
+                        if (!socket.ReceiveAsync(socketArgs))
+                        {
+                            completedHandler(socket, socketArgs);
+                        }
                     }
                 }
-            }
+            });
+
         }
         private void ProcessMessage(byte[] messageBytes)
         {

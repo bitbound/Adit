@@ -72,6 +72,8 @@ namespace Adit.Pages
             }
             MainWindow.Current.hubToggle.IsChecked = false;
             MainWindow.Current.viewerToggle.IsChecked = true;
+            Config.Current.ViewerHost = Config.Current.HubHost;
+            Config.Current.ViewerPort = Config.Current.HubPort;
             MainWindow.Current.mainFrame.Navigate(new Pages.Viewer((datagridComputers.SelectedItem as HubComputer).SessionID));
         }
 

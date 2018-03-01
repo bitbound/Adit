@@ -20,9 +20,7 @@ namespace Adit_Service
         protected override void OnStart(string[] args)
         {
             base.OnStart(args);
-#pragma warning disable
             AditService.Connect();
-#pragma warning restore
         }
         protected override void OnStop()
         {
@@ -43,9 +41,7 @@ namespace Adit_Service
         }
         protected override void OnSessionChange(SessionChangeDescription changeDescription)
         {
-#pragma warning disable
             AditService.SocketMessageHandler.SendHeartbeat();
-#pragma warning restore
         }
     }
 }

@@ -58,6 +58,7 @@ namespace Adit.Code.Shared
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            Config.Save();
             Utilities.WriteToLog(e.ExceptionObject as Exception);
             Utilities.DisplayErrorMessage();
         }
@@ -65,6 +66,7 @@ namespace Adit.Code.Shared
         private static void DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
+            Config.Save();
             Utilities.WriteToLog(e.Exception);
             Utilities.DisplayErrorMessage();
         }

@@ -102,6 +102,10 @@ namespace Adit.Code.Client
 
         private void ReceiveClipboardTransfer(dynamic jsonData)
         {
+            if (jsonData["SourceComputer"] == Environment.MachineName)
+            {
+                return;
+            }
             if (jsonData["Format"] == "FileDrop")
             {
                 ClipboardManager.Current.SetFiles(jsonData["FileNames"], jsonData["FileContents"]);
@@ -280,7 +284,7 @@ namespace Adit.Code.Client
 
         private void ReceiveMouseWheel(dynamic jsonData)
         {
-            User32.SendMouseWheel(jsonData["Delta"]);
+            User32.SendMouseWheel(int.Parse(jsonData["Delta"]));
         }
 
         private void ReceiveParticipantList(dynamic jsonData)

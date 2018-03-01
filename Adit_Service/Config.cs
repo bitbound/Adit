@@ -62,7 +62,7 @@ namespace Adit_Service
         }
         public static void Load()
         {
-            var fileInfo = new FileInfo(Path.Combine(Utilities.ProgramFolder, "Config.json"));
+            var fileInfo = new FileInfo(Path.Combine(Utilities.DataFolder, "Config.json"));
             if (fileInfo.Exists)
             {
                 var settings = Utilities.JSON.Deserialize<Config>(File.ReadAllText(fileInfo.FullName));

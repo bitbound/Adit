@@ -22,6 +22,7 @@ namespace Adit.Code.Viewer
             inputSurface.PreviewMouseRightButtonDown += InputSurface_PreviewMouseRightButtonDown;
             inputSurface.PreviewMouseRightButtonUp += InputSurface_PreviewMouseRightButtonUp;
             inputSurface.PreviewMouseWheel += InputSurface_PreviewMouseWheel;
+            inputSurface.SizeChanged += InputSurface_SizeChanged;
             MainWindow.Current.PreviewKeyDown -= Window_PreviewKeyDown;
             MainWindow.Current.PreviewKeyDown += Window_PreviewKeyDown;
             MainWindow.Current.PreviewKeyUp -= Window_PreviewKeyUp;
@@ -29,6 +30,11 @@ namespace Adit.Code.Viewer
             MainWindow.Current.LostFocus -= Window_LostFocus;
             MainWindow.Current.LostFocus += Window_LostFocus;
             inputSurface.Unloaded += InputSurface_Unloaded;
+        }
+
+        private void InputSurface_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            AditViewer.RequestFullscreen = true;
         }
 
         private void InputSurface_Unloaded(object sender, RoutedEventArgs e)

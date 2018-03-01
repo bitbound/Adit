@@ -128,7 +128,7 @@ namespace Adit.Code.Viewer
             SendJSON(new
             {
                 Type = "MouseWheel",
-                Delta = delta
+                Delta = delta.ToString()
             });
         }
 

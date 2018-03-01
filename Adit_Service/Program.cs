@@ -19,9 +19,7 @@ namespace Adit_Service
             // If "-interactive" switch present, run service as an interactive console app.
             if (args.Exists(str => str.ToLower() == "-interactive"))
             {
-#pragma warning disable
                 AditService.Connect();
-#pragma warning restore
             }
             else if (args.Exists(str => str.ToLower() == "-install"))
             {

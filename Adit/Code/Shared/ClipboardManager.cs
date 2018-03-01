@@ -71,8 +71,8 @@ namespace Adit.Code.Shared
             {
                 format = "Text";
                 dataString = ClipboardData.GetData("Text") as string;
-                dataString = Convert.ToBase64String(Encoding.UTF8.GetBytes(dataString));
                 ClipboardData = new DataObject("Text", dataString, true);
+                dataString = Convert.ToBase64String(Encoding.UTF8.GetBytes(dataString));
             }
             else if (formats.Contains("Bitmap"))
             {
@@ -104,7 +104,8 @@ namespace Adit.Code.Shared
                     Type = "ClipboardTransfer",
                     Format = "FileDrop",
                     FileNames = fileNames,
-                    FileContents = fileContents
+                    FileContents = fileContents,
+                    SourceComputer = Environment.MachineName
                 };
             }
             Clipboard.SetDataObject(ClipboardData);
@@ -112,7 +113,8 @@ namespace Adit.Code.Shared
             {
                 Type = "ClipboardTransfer",
                 Format = format,
-                Data = dataString
+                Data = dataString,
+                SourceComputer = Environment.MachineName
             };
         }
         public void SetData(string format, string data)

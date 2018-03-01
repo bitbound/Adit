@@ -25,6 +25,7 @@ namespace Adit_Service
         }
         public Encryption Encryption { get; set; }
         private List<byte> AggregateMessages { get; set; } = new List<byte>();
+        private int ExpectedBinarySize { get; set; }
         public void SendJSON(dynamic jsonData)
         {
             if (socketOut.Connected)
@@ -43,10 +44,18 @@ namespace Adit_Service
                 {
                     bytes = Encryption.EncryptBytes(bytes);
                 }
-                bytes = bytes.Concat(new byte[] { 88, 88, 88 }).ToArray();
+                var messageHeader = new byte[]
+                {
+                        (byte)(bytes.Length % 10000000000 / 100000000),
+                        (byte)(bytes.Length % 100000000 / 1000000),
+                        (byte)(bytes.Length % 1000000 / 10000),
+                        (byte)(bytes.Length % 10000 / 100),
+                        (byte)(bytes.Length % 100),
+                };
+
+                bytes = messageHeader.Concat(bytes).ToArray();
                 var socketArgs = SocketArgsPool.GetSendArg();
                 socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                bytes.CopyTo(socketArgs.Buffer, 0);
                 socketOut.SendAsync(socketArgs);
             }
         }
@@ -68,27 +77,39 @@ namespace Adit_Service
                     return;
                 }
 
+                var messageHeader = socketArgs.Buffer[0] * 100000000
+                    + socketArgs.Buffer[1] * 1000000
+                    + socketArgs.Buffer[2] * 10000
+                    + socketArgs.Buffer[3] * 100
+                    + socketArgs.Buffer[4];
 
-                if (AggregateMessages.Count == 0 && socketArgs.Buffer.Skip(socketArgs.BytesTransferred - 3).Take(3).All(x => x == 88))
+                if (AggregateMessages.Count == 0 && socketArgs.BytesTransferred - 5 == messageHeader)
                 {
-                    ProcessMessage(socketArgs.Buffer.Take(socketArgs.BytesTransferred - 3).ToArray());
+                    ProcessMessage(socketArgs.Buffer.Skip(5).Take(socketArgs.BytesTransferred - 5).ToArray());
                     return;
                 }
                 else
                 {
-
-                    AggregateMessages.AddRange(socketArgs.Buffer);
-
-                    for (var i = 0; i < AggregateMessages.Count(); i++)
+                    if (ExpectedBinarySize == 0)
                     {
-                        if (AggregateMessages[i] == 88 && AggregateMessages.Count > i + 3)
+                        ExpectedBinarySize = messageHeader;
+                    }
+                    AggregateMessages.AddRange(socketArgs.Buffer.Take(socketArgs.BytesTransferred));
+                    while (AggregateMessages.Count - 5 >= ExpectedBinarySize)
+                    {
+                        ProcessMessage(AggregateMessages.Skip(5).Take(ExpectedBinarySize).ToArray());
+                        AggregateMessages.RemoveRange(0, ExpectedBinarySize + 5);
+                        if (AggregateMessages.Count > 0)
                         {
-                            if (AggregateMessages[i + 1] == 88 && AggregateMessages[i + 2] == 88)
-                            {
-                                ProcessMessage(AggregateMessages.Take(i).ToArray());
-                                AggregateMessages.RemoveRange(0, i + 3);
-                                i = -1;
-                            }
+                            ExpectedBinarySize = AggregateMessages[0] * 100000000
+                                + AggregateMessages[1] * 1000000
+                                + AggregateMessages[2] * 10000
+                                + AggregateMessages[3] * 100
+                                + AggregateMessages[4];
+                        }
+                        else
+                        {
+                            ExpectedBinarySize = 0;
                         }
                     }
                 }
@@ -118,7 +139,7 @@ namespace Adit_Service
                 }
             }
 
-            if (Utilities.IsJSONData(messageBytes.Skip(1).ToArray()))
+            if (messageBytes[0] == 0)
             {
                 var decodedString = Encoding.UTF8.GetString(messageBytes.Skip(1).ToArray());
                 var messages = Utilities.SplitJSON(decodedString);

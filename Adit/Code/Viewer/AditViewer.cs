@@ -41,6 +41,8 @@ namespace Adit.Code.Viewer
                 return;
             }
             TcpClient = new TcpClient();
+            TcpClient.ReceiveBufferSize = Config.Current.BufferSize;
+            TcpClient.SendBufferSize = Config.Current.BufferSize;
             try
             {
                 SessionID = sessionID;

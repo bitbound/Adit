@@ -39,17 +39,15 @@ namespace Adit_Service
         {
             if (socketOut.Connected)
             {
-                Task.Run(() => {
-                    if (Encryption != null)
-                    {
-                        bytes = Encryption.EncryptBytes(bytes);
-                    }
-                    bytes = bytes.Concat(new byte[] { 88, 88, 88 }).ToArray();
-                    var socketArgs = SocketArgsPool.GetSendArg();
-                    socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                    bytes.CopyTo(socketArgs.Buffer, 0);
-                    socketOut.SendAsync(socketArgs);
-                });
+                if (Encryption != null)
+                {
+                    bytes = Encryption.EncryptBytes(bytes);
+                }
+                bytes = bytes.Concat(new byte[] { 88, 88, 88 }).ToArray();
+                var socketArgs = SocketArgsPool.GetSendArg();
+                socketArgs.SetBuffer(bytes, 0, bytes.Length);
+                bytes.CopyTo(socketArgs.Buffer, 0);
+                socketOut.SendAsync(socketArgs);
             }
         }
 

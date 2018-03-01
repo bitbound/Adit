@@ -19,7 +19,6 @@ namespace Adit.Code.Viewer
     public class ViewerSocketMessages : SocketMessageHandler
     {
         Socket socketOut;
-        System.Timers.Timer ImageRequestTimer { get; set; }
         DateTime LastDrawRequest { get; set; } = DateTime.Now;
         public ViewerSocketMessages(Socket socketOut)
             : base(socketOut)
@@ -60,20 +59,6 @@ namespace Adit.Code.Viewer
                 AditViewer.RequestFullscreen = true;
                 Pages.Viewer.Current.RefreshUICall();
                 SendImageRequest();
-                ImageRequestTimer = new System.Timers.Timer(250);
-                ImageRequestTimer.Elapsed += (sender, args) =>
-                {
-                    if (!AditViewer.IsConnected)
-                    {
-                        ImageRequestTimer.Stop();
-                        return;
-                    }
-                    if (DateTime.Now - LastDrawRequest > TimeSpan.FromMilliseconds(500))
-                    {
-                        SendImageRequest();
-                    }
-                };
-                ImageRequestTimer.Start();
             }
         }
         private void ReceiveEncryptionStatus(dynamic jsonData)
@@ -250,7 +235,10 @@ namespace Adit.Code.Viewer
                 Pages.Viewer.Current.DrawImageCall(bytesReceived.Skip(7).ToArray());
             }
         }
-
+        private void ReceiveNoScreenActivity(dynamic jsonData)
+        {
+            SendImageRequest();
+        }
         private void ReceiveParticipantList(dynamic jsonData)
         {
             var participantList = ((object[])jsonData["ParticipantList"]).Select(x => x.ToString()).ToList();

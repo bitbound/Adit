@@ -51,29 +51,31 @@ namespace Adit.Code.Client
             desktopName = User32.GetCurrentDesktop();
             lastFrame = (Bitmap)currentFrame.Clone();
             graphic = Graphics.FromImage(currentFrame);
-            //hDC = User32.GetWindowDC(hWnd);
-            //graphDC = graphic.GetHdc();
+            hDC = User32.GetWindowDC(hWnd);
+            graphDC = graphic.GetHdc();
             try
             {
-                //var copyResult = GDI32.BitBlt(graphDC, 0, 0, totalWidth, totalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
-                //if (!copyResult)
-                //{
-                //    graphic.ReleaseHdc(graphDC);
-                //    graphic.Clear(System.Drawing.Color.White);
-                //    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
-                //    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
+                var copyResult = GDI32.BitBlt(graphDC, 0, 0, totalWidth, totalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
+                if (!copyResult)
+                {
+                    graphic.ReleaseHdc(graphDC);
+                    graphic.Clear(System.Drawing.Color.White);
+                    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
+                    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
 
-                //    if (!AditClient.DesktopSwitchPending)
-                //    {
-                //       SwitchDesktops();
-                //    }
-                //}
-                //else
-                //{
-                //    graphic.ReleaseHdc(graphDC);
-                //    User32.ReleaseDC(hWnd, hDC);
-                //}
-                graphic.CopyFromScreen(0 + offsetX, 0 + offsetY, 0, 0, new System.Drawing.Size(totalWidth, totalHeight));
+                    if (!AditClient.DesktopSwitchPending)
+                    {
+                        SwitchDesktops();
+                    }
+                }
+                else
+                {
+                    graphic.ReleaseHdc(graphDC);
+                    User32.ReleaseDC(hWnd, hDC);
+                }
+
+                //graphic.CopyFromScreen(0 + offsetX, 0 + offsetY, 0, 0, new System.Drawing.Size(totalWidth, totalHeight));
+
                 // Get cursor information to draw on the screenshot.
                 ci.cbSize = Marshal.SizeOf(ci);
                 User32.GetCursorInfo(out ci);
@@ -89,14 +91,14 @@ namespace Adit.Code.Client
             catch (Exception ex)
             {
                 Utilities.WriteToLog(ex);
-                //if (graphDC != IntPtr.Zero)
-                //{
-                //    graphic.ReleaseHdc(graphDC);
-                //}
-                //if (hDC != IntPtr.Zero)
-                //{
-                //    User32.ReleaseDC(hWnd, hDC);
-                //}
+                if (graphDC != IntPtr.Zero)
+                {
+                    graphic.ReleaseHdc(graphDC);
+                }
+                if (hDC != IntPtr.Zero)
+                {
+                    User32.ReleaseDC(hWnd, hDC);
+                }
                 if (!AditClient.DesktopSwitchPending)
                 {
                     SwitchDesktops();

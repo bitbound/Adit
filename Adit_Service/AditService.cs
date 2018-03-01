@@ -29,6 +29,8 @@ namespace Adit_Service
                 return;
             }
             TcpClient = new TcpClient();
+            TcpClient.ReceiveBufferSize = Config.Current.BufferSize;
+            TcpClient.SendBufferSize = Config.Current.BufferSize;
             try
             {
                 TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);

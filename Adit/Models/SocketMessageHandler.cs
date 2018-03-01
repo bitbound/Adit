@@ -53,8 +53,7 @@ namespace Adit.Models
         {
             if (socketOut.Connected)
             {
-                Task.Run(() => {
-                    var messageHeader = new byte[]
+                var messageHeader = new byte[]
                     {
                         (byte)(bytes.Length % 10000000000 / 100000000),
                         (byte)(bytes.Length % 100000000 / 1000000),
@@ -63,12 +62,10 @@ namespace Adit.Models
                         (byte)(bytes.Length % 100),
                     };
 
-                    bytes = messageHeader.Concat(bytes).ToArray();
-                    var socketArgs = SocketArgsPool.GetSendArg();
-                    socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                    bytes.CopyTo(socketArgs.Buffer, 0);
-                    socketOut.SendAsync(socketArgs);
-                });
+                bytes = messageHeader.Concat(bytes).ToArray();
+                var socketArgs = SocketArgsPool.GetSendArg();
+                socketArgs.SetBuffer(bytes, 0, bytes.Length);
+                socketOut.SendAsync(socketArgs);
             }
         }
 
@@ -76,26 +73,23 @@ namespace Adit.Models
         {
             if (socketOut.Connected)
             {
-                Task.Run(() => {
-                    if (Encryption != null)
-                    {
-                        bytes = Encryption.EncryptBytes(bytes);
-                    }
-                    var messageHeader = new byte[]
-                    {
+                if (Encryption != null)
+                {
+                    bytes = Encryption.EncryptBytes(bytes);
+                }
+                var messageHeader = new byte[]
+                {
                         (byte)(bytes.Length % 10000000000 / 100000000),
                         (byte)(bytes.Length % 100000000 / 1000000),
                         (byte)(bytes.Length % 1000000 / 10000),
                         (byte)(bytes.Length % 10000 / 100),
                         (byte)(bytes.Length % 100),
-                    };
+                };
 
-                    bytes = messageHeader.Concat(bytes).ToArray();
-                    var socketArgs = SocketArgsPool.GetSendArg();
-                    socketArgs.SetBuffer(bytes, 0, bytes.Length);
-                    bytes.CopyTo(socketArgs.Buffer, 0);
-                    socketOut.SendAsync(socketArgs);
-                });
+                bytes = messageHeader.Concat(bytes).ToArray();
+                var socketArgs = SocketArgsPool.GetSendArg();
+                socketArgs.SetBuffer(bytes, 0, bytes.Length);
+                socketOut.SendAsync(socketArgs);
             }
         }
         public void SendConnectionType(ConnectionTypes connectionType)
@@ -110,75 +104,71 @@ namespace Adit.Models
 
         public void ProcessSocketArgs(SocketAsyncEventArgs socketArgs, EventHandler<SocketAsyncEventArgs> completedHandler, Socket socket)
         {
-            Task.Run(() => {
-                try
+            try
+            {
+                if (socketArgs.BytesTransferred == 0)
                 {
-                    if (socketArgs.BytesTransferred == 0)
+                    if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                     {
-                        if (Config.Current.StartupMode == Config.StartupModes.Notifier)
-                        {
-                            App.Current.Dispatcher.Invoke(() => {
-                                App.Current.Shutdown();
-                            });
-                        }
-                        return;
+                        App.Current.Dispatcher.Invoke(() => {
+                            App.Current.Shutdown();
+                        });
                     }
+                    return;
+                }
+                var messageHeader = socketArgs.Buffer[0] * 100000000
+                    + socketArgs.Buffer[1] * 1000000
+                    + socketArgs.Buffer[2] * 10000
+                    + socketArgs.Buffer[3] * 100
+                    + socketArgs.Buffer[4];
 
-                    var messageHeader = socketArgs.Buffer[0] * 100000000
-                        + socketArgs.Buffer[1] * 1000000
-                        + socketArgs.Buffer[2] * 10000
-                        + socketArgs.Buffer[3] * 100
-                        + socketArgs.Buffer[4];
-
-                    if (AggregateMessages.Count == 0 && socketArgs.BytesTransferred - 5 == messageHeader)
+                if (AggregateMessages.Count == 0 && socketArgs.BytesTransferred - 5 == messageHeader)
+                {
+                    ProcessMessage(socketArgs.Buffer.Skip(5).Take(socketArgs.BytesTransferred - 5).ToArray());
+                    return;
+                }
+                else
+                {
+                    if (ExpectedBinarySize == 0)
                     {
-                        ProcessMessage(socketArgs.Buffer.Skip(5).Take(socketArgs.BytesTransferred - 5).ToArray());
-                        return;
+                        ExpectedBinarySize = messageHeader;
                     }
-                    else
+                    AggregateMessages.AddRange(socketArgs.Buffer.Take(socketArgs.BytesTransferred));
+                    while (AggregateMessages.Count - 5 >= ExpectedBinarySize)
                     {
-                        if (ExpectedBinarySize == 0)
+                        ProcessMessage(AggregateMessages.Skip(5).Take(ExpectedBinarySize).ToArray());
+                        AggregateMessages.RemoveRange(0, ExpectedBinarySize + 5);
+                        if (AggregateMessages.Count > 0)
                         {
-                            ExpectedBinarySize = messageHeader;
+                            ExpectedBinarySize = AggregateMessages[0] * 100000000
+                                + AggregateMessages[1] * 1000000
+                                + AggregateMessages[2] * 10000
+                                + AggregateMessages[3] * 100
+                                + AggregateMessages[4];
                         }
-                        AggregateMessages.AddRange(socketArgs.Buffer.Take(socketArgs.BytesTransferred));
-                        if (AggregateMessages.Count - 5 >= ExpectedBinarySize)
+                        else
                         {
-                            ProcessMessage(AggregateMessages.Skip(5).Take(ExpectedBinarySize).ToArray());
-                            AggregateMessages.RemoveRange(0, ExpectedBinarySize + 5);
-                            if (AggregateMessages.Count > 0)
-                            {
-                                ExpectedBinarySize = AggregateMessages[0] * 100000000
-                                    + AggregateMessages[1] * 1000000
-                                    + AggregateMessages[2] * 10000
-                                    + AggregateMessages[3] * 100
-                                    + AggregateMessages[4];
-                            }
-                            else
-                            {
-                                ExpectedBinarySize = 0;
-                            }
+                            ExpectedBinarySize = 0;
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Utilities.WriteToLog(ex);
-                    AggregateMessages.Clear();
+            }
+            catch (Exception ex)
+            {
+                Utilities.WriteToLog(ex);
+                AggregateMessages.Clear();
 
-                }
-                finally
+            }
+            finally
+            {
+                if (socket.Connected)
                 {
-                    if (socket.Connected)
+                    if (!socket.ReceiveAsync(socketArgs))
                     {
-                        if (!socket.ReceiveAsync(socketArgs))
-                        {
-                            completedHandler(socket, socketArgs);
-                        }
+                        completedHandler(socket, socketArgs);
                     }
                 }
-            });
-
+            }
         }
         private void ProcessMessage(byte[] messageBytes)
         {
@@ -232,7 +222,7 @@ namespace Adit.Models
 
         private void PassDataToPartner(dynamic jsonData)
         {
-            if (this.GetType() == typeof(ServerSocketMessages))
+            if (this is ServerSocketMessages)
             {
                 var partners = (this as ServerSocketMessages)?.Session?.ConnectedClients?.Where(
                      x => x.ID != (this as ServerSocketMessages).ConnectionToClient.ID);

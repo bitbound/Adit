@@ -38,10 +38,7 @@ namespace Adit.Code.Client
         public static void Connect(string sessionIDToUse)
         {
             ConnectionType = ConnectionTypes.ElevatedClient;
-            if (InitConnection())
-            {
-                SessionID = sessionIDToUse;
-            }
+            InitConnection();
         }
         private static bool InitConnection()
         {
@@ -63,10 +60,6 @@ namespace Adit.Code.Client
                 TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
                 SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
-                if (Config.Current.IsClipboardShared)
-                {
-                    ClipboardManager.Current.BeginWatching(SocketMessageHandler);
-                }
                 return true;
             }
             catch
@@ -80,6 +73,16 @@ namespace Adit.Code.Client
                 Pages.Client.Current.RefreshUICall();
                 return false;
             }
+            finally
+            {
+                MainWindow.Current.Dispatcher.Invoke(() => {
+                    if (Config.Current.IsClipboardShared)
+                    {
+                        ClipboardManager.Current.BeginWatching(SocketMessageHandler);
+                    }
+                });
+            }
+            
         }
         private static void ReceiveFromServerCompleted(object sender, SocketAsyncEventArgs e)
         {

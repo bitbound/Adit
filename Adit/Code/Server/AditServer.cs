@@ -117,27 +117,31 @@ namespace Adit.Code.Server
 
         private static void HandleClientDisconnect(SocketAsyncEventArgs socketArgs)
         {
-            var connection = socketArgs.UserToken as ClientConnection;
-            var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
-            if (session != null)
+            try
             {
-                session.ConnectedClients.Remove(connection);
-                if (session.ConnectedClients.Count == 0)
+                var connection = socketArgs.UserToken as ClientConnection;
+                var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
+                if (session != null)
                 {
-                    SessionList.Remove(session);
+                    session.ConnectedClients.Remove(connection);
+                    if (session.ConnectedClients.Count == 0)
+                    {
+                        SessionList.Remove(session);
+                    }
+                    else if (session.ConnectedClients.Count == 1 && session.ConnectedClients[0].ConnectionType == ConnectionTypes.ElevatedClient)
+                    {
+                        session.ConnectedClients[0].Socket.Disconnect(false);
+                    }
+                    else
+                    {
+                        session.ConnectedClients[0].SocketMessageHandler.SendParticipantList(session);
+                    }
                 }
-                else if (session.ConnectedClients.Count == 1 && session.ConnectedClients[0].ConnectionType == ConnectionTypes.ElevatedClient)
-                {
-                    session.ConnectedClients[0].Socket.Disconnect(false);
-                }
-                else
-                {
-                    session.ConnectedClients[0].SocketMessageHandler.SendParticipantList(session);
-                }
+                ClientList.Remove(connection);
+                connection.Close();
+                Pages.Server.Current?.RefreshUICall();
             }
-            ClientList.Remove(connection);
-            connection.Close();
-            Pages.Server.Current?.RefreshUICall();
+            catch { }
         }
 
         public static void Stop()

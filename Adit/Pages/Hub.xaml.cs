@@ -30,6 +30,10 @@ namespace Adit.Pages
         {
             InitializeComponent();
             Current = this;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
             RefreshUI();
             if (Code.Hub.AditHub.Current.IsConnected)
             {
@@ -39,6 +43,10 @@ namespace Adit.Pages
             {
                 Code.Hub.AditHub.Current.Load();
             }
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            datagridComputers.CommitEdit();
         }
         public void RefreshUICall()
         {
@@ -72,8 +80,16 @@ namespace Adit.Pages
             }
             MainWindow.Current.hubToggle.IsChecked = false;
             MainWindow.Current.viewerToggle.IsChecked = true;
-            Config.Current.ViewerHost = Config.Current.HubHost;
-            Config.Current.ViewerPort = Config.Current.HubPort;
+            if (AditHub.Current.IsConnected)
+            {
+                Config.Current.ViewerHost = Config.Current.HubHost;
+                Config.Current.ViewerPort = Config.Current.HubPort;
+            }
+            else
+            {
+                Config.Current.ViewerHost = Config.Current.ServerHost;
+                Config.Current.ViewerPort = Config.Current.ServerPort;
+            }
             MainWindow.Current.mainFrame.Navigate(new Pages.Viewer((datagridComputers.SelectedItem as HubComputer).SessionID));
         }
 
@@ -149,5 +165,6 @@ namespace Adit.Pages
             AditHub.Current.Load();
             RefreshUI();
         }
+
     }
 }

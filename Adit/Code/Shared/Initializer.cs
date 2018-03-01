@@ -1,4 +1,5 @@
-﻿using Adit.Models;
+﻿using Adit.Code.Client;
+using Adit.Models;
 using Adit.Pages;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,8 @@ namespace Adit.Code.Shared
             if (args.Contains("-upgrade"))
             {
                 var index = args.ToList().IndexOf("-upgrade") + 1;
-                Adit.Code.Client.AditClient.Connect(args[index]);
+                AditClient.SessionID = args[index];
+                AditClient.Connect(args[index]);
                 Config.Current.StartupMode = Config.StartupModes.Notifier;
             }
             else if (args.Contains("-background"))

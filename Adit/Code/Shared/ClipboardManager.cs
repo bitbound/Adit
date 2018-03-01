@@ -21,13 +21,20 @@ namespace Adit.Code.Shared
 
         public void BeginWatching(Models.SocketMessageHandler connectionToSendChanges)
         {
-            if (ClipboardWatcher?.Enabled == true)
+            try
             {
-                ClipboardWatcher.Stop();
+                if (ClipboardWatcher?.Enabled == true)
+                {
+                    ClipboardWatcher.Stop();
+                }
+                ClipboardData = Clipboard.GetDataObject();
+                Clipboard.SetDataObject(ClipboardData);
+                ClipboardWatcher = new System.Timers.Timer(500);
             }
-            ClipboardData = Clipboard.GetDataObject();
-            Clipboard.SetDataObject(ClipboardData);
-            ClipboardWatcher = new System.Timers.Timer(500);
+            catch
+            {
+                return;
+            }
             ClipboardWatcher.Elapsed += (sender, args) => 
             {
                 MainWindow.Current.Dispatcher.Invoke(() =>

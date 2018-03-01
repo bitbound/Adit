@@ -34,6 +34,9 @@ namespace Adit.Code.Shared
         public int ServerPort { get; set; } = 54765;
         public bool IsServerAutoStartEnabled { get; set; }
 
+        public string ServiceHost { get; set; } = "localhost";
+        public int ServicePort { get; set; } = 54765;
+
 
         public string ClientHost { get; set; } = "localhost";
         public int ClientPort { get; set; } = 54765;

@@ -196,8 +196,8 @@ namespace Adit.Code.Server
             {
                 client.SendJSON(jsonData);
             }
-            ConnectionToClient.Socket.Shutdown(SocketShutdown.Both);
-            ConnectionToClient.Socket.Disconnect(false);
+            ConnectionToClient.Socket.Close();
+            AditServer.ClientList.RemoveAll(x => x.ID == ConnectionToClient.ID);
         }
         public void SendParticipantList(ClientSession session)
         {

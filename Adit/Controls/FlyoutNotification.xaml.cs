@@ -24,10 +24,14 @@ namespace Adit.Controls
     {
         public static void Show(string message)
         {
-            MainWindow.Current.Dispatcher.Invoke(() =>
+            try
             {
-                TrayIcon.Icon.ShowCustomBalloon(new FlyoutNotification(message), PopupAnimation.Fade, 5000);
-            });
+                MainWindow.Current.Dispatcher.Invoke(() =>
+                {
+                    TrayIcon.Icon.ShowCustomBalloon(new FlyoutNotification(message), PopupAnimation.Fade, 5000);
+                });
+            }
+            catch { }
         }
         private FlyoutNotification(string message)
         {

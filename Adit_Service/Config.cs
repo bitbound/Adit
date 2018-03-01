@@ -12,8 +12,11 @@ namespace Adit_Service
     public class Config
     {
         public static Config Current { get; set; } = new Config();
+
+
         public StartupModes StartupMode { get; set; } = StartupModes.Normal;
         public StartupTabs StartupTab { get; set; } = StartupTabs.Welcome;
+        public string ProductName { get; set; } = "Adit";
         public int BufferSize { get; set; } = 1000000;
 
 
@@ -22,12 +25,17 @@ namespace Adit_Service
         public bool IsOptionsTabVisible { get; set; } = true;
         public bool IsWelcomeTabVisible { get; set; } = true;
         public bool IsClientTabVisible { get; set; } = true;
+        public bool IsHubTabVisible { get; set; } = true;
         public bool IsTargetServerConfigurable { get; set; } = true;
+        public bool IsEncryptionEnabled { get; set; } = true;
 
 
         public string ServerHost { get; set; } = "localhost";
         public int ServerPort { get; set; } = 54765;
         public bool IsServerAutoStartEnabled { get; set; }
+
+        public string ServiceHost { get; set; } = "localhost";
+        public int ServicePort { get; set; } = 54765;
 
 
         public string ClientHost { get; set; } = "localhost";
@@ -38,8 +46,14 @@ namespace Adit_Service
 
         public string ViewerHost { get; set; } = "localhost";
         public int ViewerPort { get; set; } = 54765;
-        public bool ViewerScaleToFit { get; set; } = true;
-        public bool MaximizeViewerOnConnect { get; set; } = true;
+        public bool IsViewerScaleToFit { get; set; } = true;
+        public bool IsViewerMaximizedOnConnect { get; set; } = true;
+        public bool IsClipboardShared { get; set; } = true;
+        public bool IsFollowCursorEnabled { get; set; } = true;
+
+        public string HubHost { get; set; } = "localhost";
+        public int HubPort { get; set; } = 54765;
+        public string HubKey { get; set; }
 
 
         public enum StartupModes
@@ -53,7 +67,8 @@ namespace Adit_Service
             Welcome,
             Client,
             Server,
-            Viewer
+            Viewer,
+            Hub
         }
         public static void Save()
         {

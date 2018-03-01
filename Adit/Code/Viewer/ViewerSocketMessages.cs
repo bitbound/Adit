@@ -275,6 +275,7 @@ namespace Adit.Code.Viewer
             if (jsonData["Status"] == "ok")
             {
                 AditViewer.RequestFullscreen = true;
+                AditViewer.SocketMessageHandler.SendImageRequest();
             }
             else if (jsonData["Status"] == "failed")
             {

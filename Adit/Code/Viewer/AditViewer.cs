@@ -49,16 +49,21 @@ namespace Adit.Code.Viewer
                 await TcpClient.ConnectAsync(Config.Current.ViewerHost, Config.Current.ViewerPort);
                 SocketMessageHandler = new ViewerSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
-                if (Config.Current.IsClipboardShared)
-                {
-                    ClipboardManager.Current.BeginWatching(SocketMessageHandler);
-                }
             }
             catch
             {
                 MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 Pages.Viewer.Current.RefreshUICall();
                 return;
+            }
+            finally
+            {
+                MainWindow.Current.Dispatcher.Invoke(() => {
+                    if (Config.Current.IsClipboardShared)
+                    {
+                        ClipboardManager.Current.BeginWatching(SocketMessageHandler);
+                    }
+                });
             }
         }
         private static void WaitForServerMessage()

@@ -7,7 +7,7 @@
       xmlns:Server="clr-namespace:Adit.Code.Server" xmlns:Shared="clr-namespace:Adit.Code.Shared" xmlns:ComputerHub="clr-namespace:Adit.Code.Hub" x:Class="Adit.Pages.Hub"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="500"
-      Title="Computer Hub" Background="White">
+      Title="Computer Hub" Background="White" Unloaded="Page_Unloaded" Loaded="Page_Loaded">
 
     <Page.DataContext>
         <Shared:Config/>

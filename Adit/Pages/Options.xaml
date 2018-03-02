@@ -129,7 +129,7 @@
                     </Grid>
                     <Grid>
                         <TextBlock><Run Text="Service Host:"/></TextBlock>
-                        <TextBox HorizontalAlignment="Right" Width="100" Text="{Binding Current.ServiceHost, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextAlignment="Right">
+                        <TextBox x:Name="textServiceHost" HorizontalAlignment="Right" Width="100" Text="{Binding Current.ServiceHost, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextAlignment="Right">
                             <TextBox.ToolTip>
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="The host to which the service will connect, if installed."></TextBlock>
                             </TextBox.ToolTip>
@@ -137,7 +137,7 @@
                     </Grid>
                     <Grid>
                         <TextBlock><Run Text="Service Host:"/></TextBlock>
-                        <TextBox HorizontalAlignment="Right" Width="100" Text="{Binding Current.ServicePort, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextAlignment="Right">
+                        <TextBox x:Name="textServicePort" HorizontalAlignment="Right" Width="100" Text="{Binding Current.ServicePort, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextAlignment="Right">
                             <TextBox.ToolTip>
                                 <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="The port to which the service will connect, if installed."></TextBlock>
                             </TextBox.ToolTip>

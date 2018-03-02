@@ -49,6 +49,11 @@ namespace Adit.Pages
             }
             if (!ServiceConfig.IsServiceInstalled)
             {
+                Config.Current.ServiceHost = textServiceHost.Text;
+                if (int.TryParse(textServicePort.Text, out var port))
+                {
+                    Config.Current.ServicePort = port;
+                }
                 ServiceConfig.InstallService();
             }
             else

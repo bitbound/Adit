@@ -262,6 +262,7 @@ namespace Adit.Code.Viewer
             if (jsonData["Status"] == "failed")
             {
                 MessageBox.Show("Failed to connect to client.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                AditViewer.Disconnect();
             }
             else if (jsonData["Status"] == "ok")
             {

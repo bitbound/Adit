@@ -138,7 +138,9 @@ namespace Adit.Code.Client
             {
                 using (var ms = new MemoryStream())
                 {
-                    currentFrame.Save(ms, ImageFormat.Png);
+                    var encoderParams = new EncoderParameters(1);
+                    encoderParams.Param = new EncoderParameter[] { new EncoderParameter(Encoder.Quality, 1) };
+                    currentFrame.Save(ms, ImageCodecInfo.GetImageEncoders().FirstOrDefault(x=>x.FormatID == ImageFormat.Png.Guid), encoderParams);
                     var messageHeader = new byte[7];
                     messageHeader[0] = 1;
                     return messageHeader.Concat(ms.ToArray()).ToArray();
@@ -150,7 +152,9 @@ namespace Adit.Code.Client
                 {
                     using (var croppedFrame = currentFrame.Clone(boundingBox, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
                     {
-                        croppedFrame.Save(ms, ImageFormat.Png);
+                        var encoderParams = new EncoderParameters(1);
+                        encoderParams.Param = new EncoderParameter[] { new EncoderParameter(Encoder.Quality, 1) };
+                        croppedFrame.Save(ms, ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Png.Guid), encoderParams);
                         // Byte array that indicates top left coordinates of the image.
                         var messageHeader = new byte[7];
                         messageHeader[0] = 1;

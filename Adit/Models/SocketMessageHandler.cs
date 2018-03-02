@@ -161,7 +161,7 @@ namespace Adit.Models
             }
             finally
             {
-                if (socket.Connected)
+                if (socket != null && socket.Connected)
                 {
                     if (!socket.ReceiveAsync(socketArgs))
                     {

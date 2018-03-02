@@ -46,7 +46,7 @@ namespace Adit.Pages
         }
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            datagridComputers.CommitEdit();
+            datagridComputers.DataContext = null;
         }
         public void RefreshUICall()
         {
@@ -165,6 +165,5 @@ namespace Adit.Pages
             AditHub.Current.Load();
             RefreshUI();
         }
-
     }
 }

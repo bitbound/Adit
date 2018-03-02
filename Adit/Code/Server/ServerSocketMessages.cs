@@ -191,13 +191,13 @@ namespace Adit.Code.Server
                     break;
                 }
             }
+            AditServer.ClientList.RemoveAll(x => x.ID == ConnectionToClient.ID);
+            ConnectionToClient.Socket.Close();
             SendParticipantList(session);
             foreach (var client in session.ConnectedClients.ToList())
             {
                 client.SendJSON(jsonData);
             }
-            ConnectionToClient.Socket.Close();
-            AditServer.ClientList.RemoveAll(x => x.ID == ConnectionToClient.ID);
         }
         public void SendParticipantList(ClientSession session)
         {

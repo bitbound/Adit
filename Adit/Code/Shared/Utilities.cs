@@ -171,52 +171,60 @@ namespace Adit.Code.Shared
         }
         public static void WriteToLog(Exception ex)
         {
-            var exception = ex;
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
-            if (File.Exists(path))
+            try
             {
-                var fi = new FileInfo(path);
-                while (fi.Length > 1000000)
+                var exception = ex;
+                var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
+                if (File.Exists(path))
                 {
-                    var content = File.ReadAllLines(path);
-                    File.WriteAllLines(path, content.Skip(10));
-                    fi = new FileInfo(path);
+                    var fi = new FileInfo(path);
+                    while (fi.Length > 1000000)
+                    {
+                        var content = File.ReadAllLines(path);
+                        File.WriteAllLines(path, content.Skip(10));
+                        fi = new FileInfo(path);
+                    }
+                }
+                while (exception != null)
+                {
+                    var jsonError = new
+                    {
+                        Type = "Error",
+                        Timestamp = DateTime.Now.ToString(),
+                        exception?.Message,
+                        exception?.Source,
+                        exception?.StackTrace,
+                    };
+                    File.AppendAllText(path, JSON.Serialize(jsonError) + Environment.NewLine);
+                    exception = exception.InnerException;
                 }
             }
-            while (exception != null)
-            {
-                var jsonError = new
-                {
-                    Type = "Error",
-                    Timestamp = DateTime.Now.ToString(),
-                    exception?.Message,
-                    exception?.Source,
-                    exception?.StackTrace,
-                };
-                File.AppendAllText(path, JSON.Serialize(jsonError) + Environment.NewLine);
-                exception = exception.InnerException;
-            }
+            catch { }
         }
         public static void WriteToLog(string Message)
         {
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
-            if (File.Exists(path))
+            try
             {
-                var fi = new FileInfo(path);
-                while (fi.Length > 1000000)
+                var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Adit_Logs.txt");
+                if (File.Exists(path))
                 {
-                    var content = File.ReadAllLines(path);
-                    File.WriteAllLines(path, content.Skip(10));
-                    fi = new FileInfo(path);
+                    var fi = new FileInfo(path);
+                    while (fi.Length > 1000000)
+                    {
+                        var content = File.ReadAllLines(path);
+                        File.WriteAllLines(path, content.Skip(10));
+                        fi = new FileInfo(path);
+                    }
                 }
+                var jsoninfo = new
+                {
+                    Type = "Info",
+                    Timestamp = DateTime.Now.ToString(),
+                    Message = Message
+                };
+                File.AppendAllText(path, JSON.Serialize(jsoninfo) + Environment.NewLine);
             }
-            var jsoninfo = new
-            {
-                Type = "Info",
-                Timestamp = DateTime.Now.ToString(),
-                Message = Message
-            };
-            File.AppendAllText(path, JSON.Serialize(jsoninfo) + Environment.NewLine);
+            catch { }
         }
     }
 }

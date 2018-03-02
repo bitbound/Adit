@@ -220,6 +220,15 @@ namespace Adit.Code.Server
                 client.SendJSON(jsonData);
             }
         }
+        public void SendImageRequest()
+        {
+            SendJSON(new
+            {
+                Type = "ImageRequest",
+                Fullscreen = false,
+                RequesterID = LastRequesterID
+            });
+        }
         private void ReceiveSAS(dynamic jsonData)
         {
             var service = AditServer.ClientList.Find(x => x.ConnectionType == ConnectionTypes.Service && x.MACAddress == jsonData["MAC"]);
@@ -330,5 +339,6 @@ namespace Adit.Code.Server
                 client.SendBytes(bytesReceived);
             }
         }
+        private byte[] NextImage { get; set; }
     }
 }

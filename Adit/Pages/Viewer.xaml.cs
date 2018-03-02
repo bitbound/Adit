@@ -66,12 +66,15 @@ namespace Adit.Pages
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    DrawingSurface.DrawImage(imageBytes);
+                    lock (DrawingSurface)
+                    {
+                        DrawingSurface.DrawImage(imageBytes);
+                    }
                 });
             }
-            finally
+            catch (Exception ex)
             {
-                AditViewer.SocketMessageHandler.SendImageRequest();
+                Utilities.WriteToLog(ex);
             }
         }
 

@@ -18,6 +18,7 @@ namespace Adit.Models
         public Encryption Encryption { get; set; }
         private List<byte> AggregateMessages { get; set; } = new List<byte>();
         private int ExpectedBinarySize { get; set; }
+        private MethodInfo ByteArrayHandler { get; set; }
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
@@ -192,8 +193,12 @@ namespace Adit.Models
             }
             else
             {
-                this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
-                       FirstOrDefault(mi => mi.Name == "ReceiveByteArray").Invoke(this, new object[] { messageBytes.ToArray() });
+                if (ByteArrayHandler == null)
+                {
+                    ByteArrayHandler = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).
+                                            FirstOrDefault(mi => mi.Name == "ReceiveByteArray");
+                }
+                ByteArrayHandler.Invoke(this, new object[] { messageBytes.ToArray() });
             }
             return;
         }

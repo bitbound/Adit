@@ -232,6 +232,7 @@ namespace Adit.Code.Viewer
                 AditViewer.NextDrawPoint = new System.Drawing.Point(xPosition, yPosition);
 
                 LastDrawRequest = DateTime.Now;
+                SendImageRequest();
                 Pages.Viewer.Current.DrawImageCall(bytesReceived.Skip(7).ToArray());
             }
         }

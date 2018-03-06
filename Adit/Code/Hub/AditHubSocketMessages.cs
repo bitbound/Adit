@@ -50,9 +50,7 @@ namespace Adit.Code.Hub
             {
                 Utilities.WriteToLog(ex);
                 System.Windows.MessageBox.Show("There was a problem starting an encrypted connection.  If the issue persists, please contact support.", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                MainWindow.Current.Dispatcher.Invoke(() => {
-                    App.Current.Shutdown();
-                });
+                Environment.Exit(0);
             }
         }
         private void ReceiveRequestForHubCredentials(dynamic jsonData)

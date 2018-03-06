@@ -19,6 +19,14 @@ namespace Win32_Classes
         public const int MOUSEEVENTF_MOVE = 0x0001;
         public const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
         public const uint KEYEVENTF_KEYUP = 0x0002;
+
+        public const int SPIF_SENDWININICHANGE = 0x02;
+        public const int SPI_SETDESKWALLPAPER = 20;
+        public const int SPIF_UPDATEINIFILE = 1;
+        public const int SPIF_SENDCHANGE = 2;
+
+        private static readonly int SPI_GETDESKWALLPAPER = 0x73;
+        private static readonly int MAX_PATH = 260;
         #endregion
 
         #region Enums
@@ -1259,20 +1267,32 @@ namespace Win32_Classes
 
         public static void SendKeyDown(VirtualKeyShort key)
         {
-            var union = new InputUnion() { ki = new KEYBDINPUT() {
-                wVk = key,
-                wScan = 0,
-                time = 0,
-                dwExtraInfo = GetMessageExtraInfo()
-            } };
+            var union = new InputUnion()
+            {
+                ki = new KEYBDINPUT()
+                {
+                    wVk = key,
+                    wScan = 0,
+                    time = 0,
+                    dwExtraInfo = GetMessageExtraInfo()
+                }
+            };
             var input = new INPUT() { type = InputType.KEYBOARD, U = union };
             SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
         public static void SendKeyUp(VirtualKeyShort key)
         {
-            var union = new InputUnion() { ki = new KEYBDINPUT() {
-                wVk = key, wScan = 0, time = 0, dwFlags = KEYEVENTF.KEYUP, dwExtraInfo = GetMessageExtraInfo()
-            } };
+            var union = new InputUnion()
+            {
+                ki = new KEYBDINPUT()
+                {
+                    wVk = key,
+                    wScan = 0,
+                    time = 0,
+                    dwFlags = KEYEVENTF.KEYUP,
+                    dwExtraInfo = GetMessageExtraInfo()
+                }
+            };
             var input = new INPUT() { type = InputType.KEYBOARD, U = union };
             SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
@@ -1310,6 +1330,35 @@ namespace Win32_Classes
             }
             // Return non-empty bytes.
             return bytes.Take(firstZero).ToArray();
+        }
+        
+
+        /* 
+         *  SystemParametersInfo(
+         *      SPI_SETDESKWALLPAPER, 0, "filename.bmp", 
+         *      SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+         */
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int SystemParametersInfo(
+          int uAction, int uParam, string lpvParam, int fuWinIni);
+
+        public static void SetWallpaper(String path)
+        {
+            SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, path,
+                SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern Int32 SystemParametersInfo(UInt32 action, UInt32 uParam, IntPtr vParam, UInt32 winIni);
+
+        public static String GetWallpaper()
+        {
+            String wallpaper = new String('\0', MAX_PATH);
+            SystemParametersInfo(SPI_GETDESKWALLPAPER,
+                (int)wallpaper.Length, wallpaper, 0);
+            wallpaper = wallpaper.Substring(0, wallpaper.IndexOf('\0'));
+            return wallpaper;
         }
     }
 }

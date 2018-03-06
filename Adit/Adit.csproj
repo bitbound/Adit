@@ -235,7 +235,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\icons8-firewall-40.png" />
+    <Resource Include="Assets\icons8-internet-64.png" />
+    <Resource Include="Assets\icons8-networking-manager-64.png" />
+    <Resource Include="Assets\icons8-workstation-64.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\HamburgerMenu_16x.png" />
   </ItemGroup>

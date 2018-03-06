@@ -24,6 +24,7 @@ namespace Encryption_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            //services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,7 +34,7 @@ namespace Encryption_API
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+            //app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             app.UseMvc();
         }
     }

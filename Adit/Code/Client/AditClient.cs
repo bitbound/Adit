@@ -46,7 +46,7 @@ namespace Adit.Code.Client
             {
                 if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                 {
-                    App.Current.Shutdown();
+                    Environment.Exit(0);
                     return false;
                 }
                 MessageBox.Show("The client is already connected.", "Already Connected", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -66,7 +66,7 @@ namespace Adit.Code.Client
             {
                 if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                 {
-                    App.Current.Shutdown();
+                    Environment.Exit(0);
                     return false;
                 }
                 MessageBox.Show("Unable to connect.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -93,10 +93,7 @@ namespace Adit.Code.Client
                 Utilities.WriteToLog($"Socket closed in AditClient: {e.SocketError.ToString()}");
                 if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                 {
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        App.Current.Shutdown();
-                    });
+                    Environment.Exit(0);
                     return;
                 }
                 SessionID = String.Empty;

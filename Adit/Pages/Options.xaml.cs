@@ -163,7 +163,7 @@ namespace Adit.Pages
         private void IsHubVisible_Click(object sender, MouseButtonEventArgs e)
         {
             Config.Current.IsHubTabVisible = !(sender as Controls.ToggleSwitch).IsOn;
-            MainWindow.Current.hubToggle.Visibility = Config.Current.IsOptionsTabVisible ? Visibility.Visible : Visibility.Collapsed;
+            MainWindow.Current.hubToggle.Visibility = Config.Current.IsHubTabVisible ? Visibility.Visible : Visibility.Collapsed;
             Config.Save();
         }
         private void CanChangeServer_Click(object sender, MouseButtonEventArgs e)

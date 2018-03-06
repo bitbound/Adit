@@ -123,14 +123,15 @@ namespace Adit.Code.Server
                 var session = SessionList.Find(x => x.ConnectedClients.Contains(connection));
                 if (session != null)
                 {
-                    session.ConnectedClients.Remove(connection);
+                    session.ConnectedClients.RemoveAll(x=>x.ID == connection.ID);
                     if (session.ConnectedClients.Count == 0)
                     {
                         SessionList.Remove(session);
                     }
                     else if (session.ConnectedClients.Count == 1 && session.ConnectedClients[0].ConnectionType == ConnectionTypes.ElevatedClient)
                     {
-                        session.ConnectedClients[0].Socket.Disconnect(false);
+                        ClientList.RemoveAll(x => x.ID == session.ConnectedClients[0].ID);
+                        session.ConnectedClients[0].Socket.Close();
                     }
                     else
                     {

@@ -111,9 +111,7 @@ namespace Adit.Models
                 {
                     if (Config.Current.StartupMode == Config.StartupModes.Notifier)
                     {
-                        App.Current.Dispatcher.Invoke(() => {
-                            App.Current.Shutdown();
-                        });
+                        Environment.Exit(0);
                     }
                     return;
                 }

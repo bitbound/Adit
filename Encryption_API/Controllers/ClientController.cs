@@ -9,10 +9,10 @@ using System.IO;
 namespace Encryption_API.Controllers
 {
     [Route("api/[controller]")]
-    public class KeysController : Controller
+    public class ClientController : Controller
     {
         private IHostingEnvironment HostEnv { get; set; }
-        public KeysController(IHostingEnvironment env)
+        public ClientController(IHostingEnvironment env)
         {
             this.HostEnv = env;
         }
@@ -54,11 +54,12 @@ namespace Encryption_API.Controllers
             }
         }
 
+       
         [HttpPost]
-        public void Post([FromBody]string value)
+        public void Post([FromBody]string hostname, string port, string sessionID)
         {
-        }
 
+        }
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {

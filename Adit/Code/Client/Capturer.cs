@@ -77,15 +77,15 @@ namespace Adit.Code.Client
                 //graphic.CopyFromScreen(0 + offsetX, 0 + offsetY, 0, 0, new System.Drawing.Size(totalWidth, totalHeight));
 
                 // Get cursor information to draw on the screenshot.
-                ci.cbSize = Marshal.SizeOf(ci);
-                User32.GetCursorInfo(out ci);
-                if (ci.flags == User32.CURSOR_SHOWING)
-                {
-                    using (var icon = System.Drawing.Icon.FromHandle(ci.hCursor))
-                    {
-                        graphic.DrawIcon(icon, ci.ptScreenPos.x, ci.ptScreenPos.y);
-                    }
-                }
+                //ci.cbSize = Marshal.SizeOf(ci);
+                //User32.GetCursorInfo(out ci);
+                //if (ci.flags == User32.CURSOR_SHOWING)
+                //{
+                //    using (var icon = System.Drawing.Icon.FromHandle(ci.hCursor))
+                //    {
+                //        graphic.DrawIcon(icon, ci.ptScreenPos.x, ci.ptScreenPos.y);
+                //    }
+                //}
 
             }
             catch (Exception ex)

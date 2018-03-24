@@ -60,6 +60,8 @@ namespace Adit.Code.Client
                 TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
                 SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
+                // Communication starts when server sends encryption status and client receives it.
+                // Location: ClientSocketMessages.ReceiveEncryptionStatus().
                 return true;
             }
             catch

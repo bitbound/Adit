@@ -1,4 +1,5 @@
-﻿using Adit.Code.Server;
+﻿using Adit.Code.Client;
+using Adit.Code.Server;
 using Adit.Code.Shared;
 using Adit.Code.Viewer;
 using System;

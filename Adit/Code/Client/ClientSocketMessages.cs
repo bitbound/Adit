@@ -5,6 +5,7 @@ using Adit.Pages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -54,7 +55,13 @@ namespace Adit.Code.Client
             };
             SendJSON(request);
         }
-
+        private void SendDisableDesktopBackground()
+        {
+            SendJSON(new
+            {
+                Type = "DisableDesktopBackground"
+            });
+        }
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             try
@@ -132,6 +139,8 @@ namespace Adit.Code.Client
                 User32.SendSAS(true);
             }
         }
+
+
         private void ReceiveEncryptionStatus(dynamic jsonData)
         {
             try

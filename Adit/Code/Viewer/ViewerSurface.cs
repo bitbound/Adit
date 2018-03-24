@@ -17,9 +17,8 @@ namespace Adit.Code.Viewer
         private DrawingVisual drawingSurface;
         private VisualCollection children;
         private BitmapImage bitmapImage;
-        private TranslateTransform translateTransform;
-        private Rect imageRegion;
-        private RenderTargetBitmap renderTargetBitmap;
+        private Int32Rect imageRegion;
+        private WriteableBitmap writeableBitmap;
 
         private double maxWidth = 0;
         private double maxHeight = 0;
@@ -53,28 +52,32 @@ namespace Adit.Code.Viewer
 
                 CalculateScaleTransform(bitmapImage.Width, bitmapImage.Height);
 
-                renderTargetBitmap = new RenderTargetBitmap(
-                    (int)(this.ActualWidth == 0 ? maxWidth : this.ActualWidth),
-                    (int)(this.ActualHeight == 0 ? maxHeight : this.ActualHeight),
-                    VisualTreeHelper.GetDpi(drawingSurface).PixelsPerInchX,
-                    VisualTreeHelper.GetDpi(drawingSurface).PixelsPerInchY, PixelFormats.Default
-                );
-                renderTargetBitmap.Render(drawingSurface);
+                if (writeableBitmap == null)
+                {
+                    writeableBitmap = new WriteableBitmap(bitmapImage);
+                }
+                else
+                {
+                    imageRegion = new Int32Rect(
+                        0,
+                        0,
+                        (int)(bitmapImage.PixelWidth),
+                        (int)(bitmapImage.PixelHeight));
+                    var pixels = new byte[(bitmapImage.PixelWidth * 4 * bitmapImage.PixelHeight * 4)];
+                    bitmapImage.CopyPixels(pixels, bitmapImage.PixelWidth * 4, 0);
+                    writeableBitmap.WritePixels(imageRegion, pixels, bitmapImage.PixelWidth * 4, AditViewer.NextDrawPoint.X, AditViewer.NextDrawPoint.Y); 
+                }
 
-                translateTransform = new TranslateTransform(AditViewer.NextDrawPoint.X, AditViewer.NextDrawPoint.Y);
-                imageRegion = new Rect(new Point(0, 0), new Point(bitmapImage.Width, bitmapImage.Height));
                 using (var context = drawingSurface.RenderOpen())
                 {
                     if (Config.Current.IsViewerScaleToFit)
                     {
-                        context.DrawImage(renderTargetBitmap, new Rect(0, 0, maxWidth, maxHeight));
+                        context.DrawImage(writeableBitmap, new Rect(0, 0, maxWidth, maxHeight));
                     }
                     else
                     {
-                        context.DrawImage(renderTargetBitmap, new Rect(0, 0, renderTargetBitmap.Width, renderTargetBitmap.Height));
+                        context.DrawImage(writeableBitmap, new Rect(0, 0, writeableBitmap.Width, writeableBitmap.Height));
                     }
-                    context.PushTransform(translateTransform);
-                    context.DrawImage(bitmapImage, imageRegion);
                 }
             }
         }

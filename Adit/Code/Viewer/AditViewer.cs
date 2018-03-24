@@ -49,6 +49,8 @@ namespace Adit.Code.Viewer
                 await TcpClient.ConnectAsync(Config.Current.ViewerHost, Config.Current.ViewerPort);
                 SocketMessageHandler = new ViewerSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
+                // Communication starts when server sends encryption status and viewer receives it.
+                // Location: ViewerSocketMessages.ReceiveEncryptionStatus().
             }
             catch
             {

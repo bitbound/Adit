@@ -53,7 +53,7 @@ namespace Adit.Code.Shared
                     }
                     catch
                     {
-                        if (!connectionToSendChanges.IsConnected)
+                        if (connectionToSendChanges?.IsConnected != true)
                         {
                             ClipboardWatcher.Stop();
                         }

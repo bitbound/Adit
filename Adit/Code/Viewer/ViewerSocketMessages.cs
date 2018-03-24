@@ -61,6 +61,7 @@ namespace Adit.Code.Viewer
                 SendImageRequest();
             }
         }
+
         private void ReceiveEncryptionStatus(dynamic jsonData)
         {
             try
@@ -169,7 +170,14 @@ namespace Adit.Code.Viewer
                 Type = "CtrlAltDel"
             });
         }
-
+        private void SendDisableDesktopBackground()
+        {
+            SendJSON(new
+            {
+                Type = "DisableDesktopBackground"
+            });
+            AditViewer.RequestFullscreen = false;
+        }
         public void SendImageRequest()
         {
             
@@ -281,6 +289,10 @@ namespace Adit.Code.Viewer
             {
                 MessageBox.Show("The remote screen capture failed due to a desktop switch (i.e. switched to lock screen, UAC screen, etc.).  You may need to disconnect and reconnect.", "Remote Capture Stopped", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+        }
+        private void ReceiveDisableDesktopBackground(dynamic jsonData)
+        {
+            SendImageRequest();
         }
     }
 }

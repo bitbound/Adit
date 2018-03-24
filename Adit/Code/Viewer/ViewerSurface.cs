@@ -81,6 +81,13 @@ namespace Adit.Code.Viewer
                 }
             }
         }
+        public void ResetMaxImageSize()
+        {
+            maxWidth = 0;
+            maxHeight = 0;
+            this.Width = double.NaN;
+            this.Height = double.NaN;
+        }
 
         private void CalculateScaleTransform(double width, double height)
         {

@@ -91,6 +91,7 @@ namespace Adit.Pages
                 Config.Current.ViewerPort = port;
             }
             controlsFrame.Visibility = Visibility.Collapsed;
+            DrawingSurface.ResetMaxImageSize();
             await AditViewer.Connect(textSessionID.Text.Trim());
             RefreshUI();
         }

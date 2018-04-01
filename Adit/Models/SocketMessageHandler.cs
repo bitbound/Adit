@@ -38,7 +38,7 @@ namespace Adit.Models
                 string jsonRequest = Utilities.JSON.Serialize(jsonData);
                 byte[] bytes = Encoding.UTF8.GetBytes(jsonRequest);
                 var messageHeader = new byte[1];
-                SendBytes(messageHeader.Concat(bytes).ToArray());
+                SendBytes(messageHeader.Concat(bytes).ToArray(), String.Empty, String.Empty);
             }
         }
         public void SendJSONUnencrypted(dynamic jsonData)
@@ -71,10 +71,31 @@ namespace Adit.Models
             }
         }
 
-        public void SendBytes(byte[] bytes)
+        public void SendBytes(byte[] bytes, string recipientID, string senderID)
         {
             if (socketOut.Connected)
             {
+                if (SocketArgsPool.SocketSendArgs
+                    .Where(x=>x.RecipientID == recipientID)
+                    .Sum(x=>x.Buffer.Length) > 100000)
+                {
+                    if (this is ClientSocketMessages)
+                    {
+                        var captureInstance = AditClient.ParticipantList.Find(x => x.ID == recipientID)?.CaptureInstance;
+                        if (captureInstance != null)
+                        {
+                            captureInstance.ShouldSlowDown = true;
+                        }
+                    }
+                    else if (this is ServerSocketMessages)
+                    {
+                        var sender = AditServer.ClientList.Find(x => x.ID == senderID);
+                        if (sender.ConnectionType == ConnectionTypes.Client || sender.ConnectionType == ConnectionTypes.ElevatedClient)
+                        {
+                            sender.SocketMessageHandler.SendSlowDown(recipientID);
+                        }
+                    }
+                }
                 if (Encryption != null)
                 {
                     bytes = Encryption.EncryptBytes(bytes);
@@ -90,6 +111,7 @@ namespace Adit.Models
 
                 bytes = messageHeader.Concat(bytes).ToArray();
                 var socketArgs = SocketArgsPool.GetSendArg();
+                socketArgs.RecipientID = recipientID;
                 socketArgs.SetBuffer(bytes, 0, bytes.Length);
                 socketOut.SendAsync(socketArgs);
             }
@@ -116,6 +138,7 @@ namespace Adit.Models
                     }
                     return;
                 }
+
                 var messageHeader = socketArgs.Buffer[0] * 100000000
                     + socketArgs.Buffer[1] * 1000000
                     + socketArgs.Buffer[2] * 10000
@@ -149,6 +172,7 @@ namespace Adit.Models
                         else
                         {
                             ExpectedBinarySize = 0;
+                            AggregateMessages.Clear();
                         }
                     }
                 }
@@ -157,6 +181,7 @@ namespace Adit.Models
             {
                 Utilities.WriteToLog(ex);
                 AggregateMessages.Clear();
+                ExpectedBinarySize = 0;
 
             }
             finally

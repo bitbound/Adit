@@ -27,7 +27,17 @@ namespace Adit.Code.Shared
         public bool IsClientTabVisible { get; set; } = true;
         public bool IsHubTabVisible { get; set; } = true;
         public bool IsTargetServerConfigurable { get; set; } = true;
-        public bool IsEncryptionEnabled { get; set; } = true;
+        public bool IsEncryptionEnabled
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                var TODO = value;
+            }
+        }
 
 
         public string ServerHost { get; set; } = "localhost";

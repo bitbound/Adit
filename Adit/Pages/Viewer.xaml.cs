@@ -57,7 +57,7 @@ namespace Adit.Pages
             RefreshUI();
             if (AditViewer.IsConnected)
             {
-                AditViewer.RequestFullscreen = true;
+                AditViewer.SocketMessageHandler.SendCaptureRequest();
             }
         }
         public void DrawImageCall(byte[] imageBytes)
@@ -66,6 +66,11 @@ namespace Adit.Pages
             {
                 this.Dispatcher.Invoke(() =>
                 {
+                    if (DrawingSurface == null)
+                    {
+                        AditViewer.SocketMessageHandler.SendStopCapture();
+                        return;
+                    }
                     lock (DrawingSurface)
                     {
                         DrawingSurface.DrawImage(imageBytes);
@@ -145,7 +150,7 @@ namespace Adit.Pages
 
         private void RefreshScreen_Click(object sender, RoutedEventArgs e)
         {
-            AditViewer.RequestFullscreen = true;
+            AditViewer.SocketMessageHandler.SendFullscreenRequest();
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Adit.Code.Viewer
 
         private void InputSurface_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            AditViewer.RequestFullscreen = true;
+            AditViewer.SocketMessageHandler.SendFullscreenRequest();
         }
 
         private void InputSurface_Unloaded(object sender, RoutedEventArgs e)

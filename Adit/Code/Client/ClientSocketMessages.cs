@@ -55,13 +55,7 @@ namespace Adit.Code.Client
             };
             SendJSON(request);
         }
-        private void SendDisableDesktopBackground()
-        {
-            SendJSON(new
-            {
-                Type = "DisableDesktopBackground"
-            });
-        }
+
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             try
@@ -83,7 +77,6 @@ namespace Adit.Code.Client
             {
                 fileTransferName = null;
                 fileTransferSize = 0;
-                SendNoScreenActivity();
             }
         }
 
@@ -107,6 +100,20 @@ namespace Adit.Code.Client
 
         }
 
+        internal void SendIconUpdate(Icon e)
+        {
+            using (var ms = new MemoryStream())
+            {
+                e.Save(ms);
+                var request = new
+                {
+                    Type = "IconUpdate",
+                    Icon = Convert.ToBase64String(ms.ToArray())
+                };
+                SendJSON(request);
+            }
+        }
+        
         private void ReceiveClipboardTransfer(dynamic jsonData)
         {
             if (jsonData["SourceComputer"] == Environment.MachineName)
@@ -198,7 +205,7 @@ namespace Adit.Code.Client
             SendJSON(jsonData);
         }
 
-        private void ReceiveImageRequest(dynamic jsonData)
+        private void ReceiveCaptureRequest(dynamic jsonData)
         {
             try
             {
@@ -211,21 +218,11 @@ namespace Adit.Code.Client
                 {
                     requester.CaptureInstance = new Capturer();
                 }
-                requester.CaptureInstance.CaptureScreen();
-                if (jsonData["Fullscreen"])
+                if (!requester.CaptureInstance.IsCapturing)
                 {
-                    SendBytes(requester.CaptureInstance.GetCapture(true));
-                }
-                else
-                {
-                    if (requester.CaptureInstance.IsNewFrameDifferent())
-                    {
-                        SendBytes(requester.CaptureInstance.GetCapture(false));
-                    }
-                    else
-                    {
-                        SendNoScreenActivity();
-                    }
+                    requester.CaptureInstance.IsCapturing = true;
+                    requester.CaptureInstance.CaptureFullscreen = true;
+                    requester.CaptureInstance.BeginCapturing(jsonData["RequesterID"]);
                 }
             }
             catch (Exception ex)
@@ -234,11 +231,28 @@ namespace Adit.Code.Client
                 Task.Run(() =>
                 {
                     System.Threading.Thread.Sleep(100);
-                    ReceiveImageRequest(jsonData);
+                    ReceiveCaptureRequest(jsonData);
                 });
             }
         }
-
+        private void ReceiveStopCapture(dynamic jsonData)
+        {
+            var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
+            if (requester == null)
+            {
+                return;
+            }
+            requester.CaptureInstance.IsCapturing = false;
+        }
+        private void ReceiveFullscreenRequest(dynamic jsonData)
+        {
+            var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
+            if (requester == null)
+            {
+                return;
+            }
+            requester.CaptureInstance.CaptureFullscreen = true;
+        }
         private void ReceiveKeyDown(dynamic jsonData)
         {
             var key = jsonData["Key"];
@@ -324,12 +338,13 @@ namespace Adit.Code.Client
             AditClient.SessionID = jsonData["SessionID"];
             Pages.Client.Current.RefreshUICall();
         }
-        private void SendNoScreenActivity()
+        private void ReceiveSlowDown(dynamic jsonData)
         {
-            SendJSON(new
+            var receiver = AditClient.ParticipantList.Find(x => x.ID == jsonData.RecipientID);
+            if (receiver?.CaptureInstance != null)
             {
-                Type = "NoScreenActivity"
-            });
+                receiver.CaptureInstance.ShouldSlowDown = true;
+            }
         }
     }
 }

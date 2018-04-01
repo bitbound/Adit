@@ -34,11 +34,6 @@ namespace Adit.Pages
         {
             RefreshUI();
         }
-        private void HandleUAC_Click(object sender, MouseButtonEventArgs e)
-        {
-            Config.Current.IsUACHandled = !(sender as Controls.ToggleSwitch).IsOn;
-            Config.Save();
-        }
 
         private void ServiceInstalled_Click(object sender, MouseButtonEventArgs e)
         {

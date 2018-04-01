@@ -10,6 +10,7 @@ namespace Adit.Models
     public class SocketArgs : SocketAsyncEventArgs
     {
         public bool IsInUse { get; set; }
+        public string RecipientID { get; set; }
         protected override void OnCompleted(SocketAsyncEventArgs e)
         {
             base.OnCompleted(e);

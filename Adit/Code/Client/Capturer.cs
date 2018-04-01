@@ -11,11 +11,20 @@ using System.Windows.Media;
 using Win32_Classes;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 
 namespace Adit.Code.Client
 {
     public class Capturer
     {
+        public bool IsCapturing { get; set; }
+        public bool CaptureFullscreen { get; set; } = true;
+        public bool ShouldSlowDown { get; set; }
+
+        private List<DateTime> FPSStack { get; set; } = new List<DateTime>();
+
+        object lockObject = new object();
         Bitmap currentFrame;
         Bitmap lastFrame;
         Rectangle boundingBox;
@@ -46,6 +55,34 @@ namespace Adit.Code.Client
             hWnd = User32.GetDesktopWindow();
         }
 
+        public async void BeginCapturing(string participantID)
+        {
+            CursorIconWatcher.Current.OnChange += CursorIcon_OnChange;
+            while (IsCapturing && AditClient.IsConnected && AditClient.ParticipantList.Exists(x=>x.ID == participantID))
+            {
+                if (ShouldSlowDown)
+                {
+                    ShouldSlowDown = false;
+                    await Task.Delay(500);
+                    continue;
+                }
+                CaptureScreen();
+                
+                if (CaptureFullscreen || IsNewFrameDifferent())
+                {
+                    AditClient.SocketMessageHandler.SendBytes(GetCapture(), String.Empty, String.Empty);
+                }
+                await Task.Delay(1);
+            }
+            CursorIconWatcher.Current.OnChange -= CursorIcon_OnChange;
+            CursorIconWatcher.Current.StopWatching();
+        }
+
+        private void CursorIcon_OnChange(object sender, Icon e)
+        {
+            AditClient.SocketMessageHandler.SendIconUpdate(e);
+        }
+
         public void CaptureScreen()
         {
             desktopName = User32.GetCurrentDesktop();
@@ -74,7 +111,14 @@ namespace Adit.Code.Client
                     User32.ReleaseDC(hWnd, hDC);
                 }
 
-                //graphic.CopyFromScreen(0 + offsetX, 0 + offsetY, 0, 0, new System.Drawing.Size(totalWidth, totalHeight));
+#if DEBUG
+                FPSStack.RemoveAll(x => DateTime.Now - x > TimeSpan.FromSeconds(1));
+                FPSStack.Add(DateTime.Now);
+                var path = new GraphicsPath();
+                path.AddString("FPS: " + FPSStack.Count.ToString(), System.Drawing.FontFamily.GenericSansSerif, (int)System.Drawing.FontStyle.Bold, 48, new PointF(25, 25), StringFormat.GenericDefault);
+                graphic.DrawPath(new System.Drawing.Pen(System.Drawing.Brushes.Black, 48 / 4), path);
+                graphic.FillPath(System.Drawing.Brushes.White, path);
+#endif
 
                 // Get cursor information to draw on the screenshot.
                 //ci.cbSize = Marshal.SizeOf(ci);
@@ -132,15 +176,14 @@ namespace Adit.Code.Client
                 return;
             }
         }
-        public byte[] GetCapture(bool fullscreen)
+        public byte[] GetCapture()
         {
-            if (fullscreen)
+            if (CaptureFullscreen)
             {
+                CaptureFullscreen = false;
                 using (var ms = new MemoryStream())
                 {
-                    var encoderParams = new EncoderParameters(1);
-                    encoderParams.Param = new EncoderParameter[] { new EncoderParameter(Encoder.Quality, 1) };
-                    currentFrame.Save(ms, ImageCodecInfo.GetImageEncoders().FirstOrDefault(x=>x.FormatID == ImageFormat.Png.Guid), encoderParams);
+                    currentFrame.Save(ms, ImageFormat.Png);
                     var messageHeader = new byte[7];
                     messageHeader[0] = 1;
                     return messageHeader.Concat(ms.ToArray()).ToArray();

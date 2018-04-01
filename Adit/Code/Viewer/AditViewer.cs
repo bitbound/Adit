@@ -21,7 +21,6 @@ namespace Adit.Code.Viewer
 
 
         public static int PartnersConnected { get; set; } = 0;
-        public static bool RequestFullscreen { get; set; }
         public static List<string> ParticipantList { get; set; } = new List<string>();
         public static bool IsConnected
         {

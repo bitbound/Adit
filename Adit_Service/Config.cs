@@ -41,7 +41,6 @@ namespace Adit_Service
         public string ClientHost { get; set; } = "localhost";
         public int ClientPort { get; set; } = 54765;
         public bool IsClientAutoConnectEnabled { get; set; }
-        public bool IsUACHandled { get; set; }
 
 
         public string ViewerHost { get; set; } = "localhost";

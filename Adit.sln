@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adit_Service", "Adit_Servic
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Adit_Installer", "Adit_Installer\Adit_Installer.vdproj", "{FFBB73AF-0963-472A-9346-A435E89D2F4D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Encryption_API", "Encryption_API\Encryption_API.csproj", "{C677EAEC-5E0A-4478-BD89-8A6C7524A756}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,10 +36,6 @@ Global
 		{FFBB73AF-0963-472A-9346-A435E89D2F4D}.Debug|Any CPU.Build.0 = Debug
 		{FFBB73AF-0963-472A-9346-A435E89D2F4D}.Release|Any CPU.ActiveCfg = Release
 		{FFBB73AF-0963-472A-9346-A435E89D2F4D}.Release|Any CPU.Build.0 = Release
-		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C677EAEC-5E0A-4478-BD89-8A6C7524A756}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

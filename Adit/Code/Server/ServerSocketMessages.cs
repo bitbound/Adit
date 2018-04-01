@@ -106,6 +106,15 @@ namespace Adit.Code.Server
             SendJSON(jsonData);
         }
 
+        public void SendSlowDown(string recipientID)
+        {
+            SendJSON(new
+            {
+                Type = "SlowDown",
+                RecipientID = recipientID
+            });
+        }
+
         public void SendEncryptionStatus()
         {
             try
@@ -210,7 +219,7 @@ namespace Adit.Code.Server
                 });
             }
         }
-        private void ReceiveImageRequest(dynamic jsonData)
+        private void ReceiveCaptureRequest(dynamic jsonData)
         {
             jsonData["RequesterID"] = ConnectionToClient.ID;
             var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
@@ -220,11 +229,35 @@ namespace Adit.Code.Server
                 client.SendJSON(jsonData);
             }
         }
-        public void SendImageRequest()
+        private void ReceiveFullscreenRequest(dynamic jsonData)
+        {
+            if (Session == null)
+            {
+                return;
+            }
+            jsonData["RequesterID"] = ConnectionToClient.ID;
+            var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
+            foreach (var client in clients)
+            {
+                client.SocketMessageHandler.LastRequesterID = ConnectionToClient.ID;
+                client.SendJSON(jsonData);
+            }
+        }
+        private void ReceiveStopCapture(dynamic jsonData)
+        {
+            jsonData["RequesterID"] = ConnectionToClient.ID;
+            var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
+            foreach (var client in clients)
+            {
+                client.SocketMessageHandler.LastRequesterID = ConnectionToClient.ID;
+                client.SendJSON(jsonData);
+            }
+        }
+        public void SendCaptureRequest()
         {
             SendJSON(new
             {
-                Type = "ImageRequest",
+                Type = "CaptureRequest",
                 Fullscreen = false,
                 RequesterID = LastRequesterID
             });
@@ -330,15 +363,14 @@ namespace Adit.Code.Server
                     Utilities.WriteToLog($"Requester not found based on ID {LastRequesterID}.");
                     return;
                 }
-                requester.SendBytes(bytesReceived);
+                requester.SendBytes(bytesReceived, requester.ID);
             }
             else if (ConnectionToClient.ConnectionType == ConnectionTypes.Viewer)
             {
                 var session = AditServer.SessionList.Find(x => x.SessionID == ConnectionToClient.SessionID);
                 var client = Session.ConnectedClients.Find(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
-                client.SendBytes(bytesReceived);
+                client.SendBytes(bytesReceived, client.ID);
             }
         }
-        private byte[] NextImage { get; set; }
     }
 }

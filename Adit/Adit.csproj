@@ -16,6 +16,22 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -52,11 +68,22 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>BE4299519F093FE4F4741CA88DDBC2CBB089ED7C</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>Adit_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Costura, Version=1.6.2.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Costura.Fody.1.6.2\lib\dotnet\Costura.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
@@ -87,6 +114,7 @@
     </ApplicationDefinition>
     <Compile Include="Code\Client\AditClient.cs" />
     <Compile Include="Code\Client\ClientSocketMessages.cs" />
+    <Compile Include="Code\Client\CursorIconWatcher.cs" />
     <Compile Include="Code\Hub\AditHubSocketMessages.cs" />
     <Compile Include="Code\Server\Authentication.cs" />
     <Compile Include="Code\Shared\ClipboardManager.cs" />
@@ -270,16 +298,16 @@
     <Resource Include="Assets\icons8-info-50.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FodyWeavers.xml" />
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets'))" />
-  </Target>
-  <Import Project="..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets')" />
 </Project>

@@ -50,9 +50,9 @@ namespace Adit.Models
             SocketMessageHandler.SendJSON(jsonData);
         }
 
-        public void SendBytes(byte[] bytes)
+        public void SendBytes(byte[] bytes, string senderID)
         {
-            SocketMessageHandler.SendBytes(bytes);
+            SocketMessageHandler.SendBytes(bytes, this.ID, senderID);
         }
     }
 }

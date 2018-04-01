@@ -19,7 +19,6 @@ namespace Adit.Code.Viewer
     public class ViewerSocketMessages : SocketMessageHandler
     {
         Socket socketOut;
-        DateTime LastDrawRequest { get; set; } = DateTime.Now;
         public ViewerSocketMessages(Socket socketOut)
             : base(socketOut)
         {
@@ -56,9 +55,8 @@ namespace Adit.Code.Viewer
             }
             else if (jsonData["Status"] == "ok")
             {
-                AditViewer.RequestFullscreen = true;
                 Pages.Viewer.Current.RefreshUICall();
-                SendImageRequest();
+                SendCaptureRequest();
             }
         }
 
@@ -94,6 +92,14 @@ namespace Adit.Code.Viewer
                 System.Windows.MessageBox.Show("There was a problem starting an encrypted connection.  If the issue persists, please contact support.", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Environment.Exit(0);
             }
+        }
+
+        internal void SendStopCapture()
+        {
+            SendJSON(new
+            {
+                Type = "StopCapture"
+            });
         }
 
         public void SendKeyDown(Key key)
@@ -170,23 +176,22 @@ namespace Adit.Code.Viewer
                 Type = "CtrlAltDel"
             });
         }
-        private void SendDisableDesktopBackground()
+
+        public void SendFullscreenRequest()
         {
             SendJSON(new
             {
-                Type = "DisableDesktopBackground"
+                Type = "FullscreenRequest"
             });
-            AditViewer.RequestFullscreen = false;
         }
-        public void SendImageRequest()
+
+        public void SendCaptureRequest()
         {
             
             SendJSON(new
             {
-                Type = "ImageRequest",
-                Fullscreen = AditViewer.RequestFullscreen
+                Type = "CaptureRequest"
             });
-            AditViewer.RequestFullscreen = false;
         }
 
         public void SendFileTransfer(string fileName)
@@ -206,7 +211,7 @@ namespace Adit.Code.Viewer
             byte[] fileBytes = File.ReadAllBytes(jsonData["FullPath"]);
             var messageHeader = new byte[1];
             messageHeader[0] = 2;
-            SendBytes(messageHeader.Concat(fileBytes).ToArray());
+            SendBytes(messageHeader.Concat(fileBytes).ToArray(), string.Empty, string.Empty);
         }
 
         public void SendMouseRightDown(double x, double y)
@@ -228,7 +233,10 @@ namespace Adit.Code.Viewer
                 Y = y
             });
         }
+        private void ReceiveIconUpdate(dynamic jsonData)
+        {
 
+        }
         private void ReceiveByteArray(byte[] bytesReceived)
         {
             if (bytesReceived[0] == 1)
@@ -237,14 +245,8 @@ namespace Adit.Code.Viewer
                 var yPosition = bytesReceived[4] * 10000 + bytesReceived[5] * 100 + bytesReceived[6];
                 AditViewer.NextDrawPoint = new System.Drawing.Point(xPosition, yPosition);
 
-                LastDrawRequest = DateTime.Now;
-                SendImageRequest();
                 Pages.Viewer.Current.DrawImageCall(bytesReceived.Skip(7).ToArray());
             }
-        }
-        private void ReceiveNoScreenActivity(dynamic jsonData)
-        {
-            SendImageRequest();
         }
         private void ReceiveParticipantList(dynamic jsonData)
         {
@@ -282,17 +284,12 @@ namespace Adit.Code.Viewer
         {
             if (jsonData["Status"] == "ok")
             {
-                AditViewer.RequestFullscreen = true;
-                AditViewer.SocketMessageHandler.SendImageRequest();
+                AditViewer.SocketMessageHandler.SendCaptureRequest();
             }
             else if (jsonData["Status"] == "failed")
             {
                 MessageBox.Show("The remote screen capture failed due to a desktop switch (i.e. switched to lock screen, UAC screen, etc.).  You may need to disconnect and reconnect.", "Remote Capture Stopped", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-        }
-        private void ReceiveDisableDesktopBackground(dynamic jsonData)
-        {
-            SendImageRequest();
         }
     }
 }

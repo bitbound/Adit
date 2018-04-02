@@ -7,7 +7,7 @@
       xmlns:Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.Pages.Notifier"
       mc:Ignorable="d"
       d:DesignHeight="300" d:DesignWidth="300"
-  Title="Notifier" Height="80" Width="275" Loaded="Page_Loaded">
+  Title="Adit Notifier" Height="80" Width="275" Loaded="Page_Loaded">
     <Page.DataContext>
         <Shared:Config/>
     </Page.DataContext>

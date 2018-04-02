@@ -30,17 +30,17 @@ namespace Adit.Code.Client
         public static string SessionID { get; set; }
         public static ClientSocketMessages SocketMessageHandler { get; set; }
         public static TcpClient TcpClient { get; set; }
-        public static void Connect()
+        public static async Task Connect()
         {
             ConnectionType = ConnectionTypes.Client;
-            InitConnection();
+            await InitConnection();
         }
-        public static void Connect(string sessionIDToUse)
+        public static async Task Connect(string sessionIDToUse)
         {
             ConnectionType = ConnectionTypes.ElevatedClient;
-            InitConnection();
+            await InitConnection();
         }
-        private static bool InitConnection()
+        private static async Task<bool> InitConnection()
         {
             if (IsConnected)
             {
@@ -57,7 +57,7 @@ namespace Adit.Code.Client
             TcpClient.SendBufferSize = Config.Current.BufferSize;
             try
             {
-                TcpClient.Connect(Config.Current.ClientHost, Config.Current.ClientPort);
+                await TcpClient.ConnectAsync(Config.Current.ClientHost, Config.Current.ClientPort);
                 SocketMessageHandler = new ClientSocketMessages(TcpClient.Client);
                 WaitForServerMessage();
                 // Communication starts when server sends encryption status and client receives it.

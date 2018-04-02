@@ -226,7 +226,6 @@ namespace Adit.Code.Server
             var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
             foreach (var client in clients)
             {
-                client.SocketMessageHandler.LastRequesterID = ConnectionToClient.ID;
                 client.SendJSON(jsonData);
             }
         }
@@ -240,7 +239,6 @@ namespace Adit.Code.Server
             var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
             foreach (var client in clients)
             {
-                client.SocketMessageHandler.LastRequesterID = ConnectionToClient.ID;
                 client.SendJSON(jsonData);
             }
         }
@@ -250,7 +248,6 @@ namespace Adit.Code.Server
             var clients = Session.ConnectedClients.FindAll(x => x.ConnectionType == ConnectionTypes.Client || x.ConnectionType == ConnectionTypes.ElevatedClient);
             foreach (var client in clients)
             {
-                client.SocketMessageHandler.LastRequesterID = ConnectionToClient.ID;
                 client.SendJSON(jsonData);
             }
         }
@@ -259,8 +256,7 @@ namespace Adit.Code.Server
             SendJSON(new
             {
                 Type = "CaptureRequest",
-                Fullscreen = false,
-                RequesterID = LastRequesterID
+                Fullscreen = false
             });
         }
         private void ReceiveSAS(dynamic jsonData)
@@ -353,18 +349,11 @@ namespace Adit.Code.Server
         {
             if (ConnectionToClient.ConnectionType == ConnectionTypes.Client || ConnectionToClient.ConnectionType == ConnectionTypes.ElevatedClient)
             {
-                if (string.IsNullOrWhiteSpace(LastRequesterID))
+                foreach (var viewer in Session.ConnectedClients.Where(x=>x.ConnectionType == ConnectionTypes.Viewer))
                 {
-                    Utilities.WriteToLog("Requester ID is blank.");
-                    return;
+                    viewer.SendBytes(bytesReceived, viewer.ID);
                 }
-                var requester = AditServer.ClientList.Find(x => x.ID == LastRequesterID);
-                if (requester == null)
-                {
-                    Utilities.WriteToLog($"Requester not found based on ID {LastRequesterID}.");
-                    return;
-                }
-                requester.SendBytes(bytesReceived, requester.ID);
+           
             }
             else if (ConnectionToClient.ConnectionType == ConnectionTypes.Viewer)
             {

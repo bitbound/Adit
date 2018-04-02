@@ -34,13 +34,13 @@ namespace Adit.Pages
             Initializer.CleanupTempFiles();
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (Config.Current.IsClientAutoConnectEnabled && !AditClient.IsConnected)
             {
                 stackConnect.Visibility = Visibility.Collapsed;
                 stackMain.Visibility = Visibility.Visible;
-                AditClient.Connect();
+                await AditClient.Connect();
             }
             RefreshUI();
         }
@@ -65,16 +65,22 @@ namespace Adit.Pages
             }
         }
       
-        private void ConnectButtonClicked(object sender, RoutedEventArgs e)
+        private async void ConnectButtonClicked(object sender, RoutedEventArgs e)
         {
             Config.Current.ClientHost = textHost.Text;
             if (int.TryParse(textPort.Text, out var port))
             {
                 Config.Current.ClientPort = port;
             }
+            else
+            {
+                Utilities.ShowToolTip(textPort, System.Windows.Controls.Primitives.PlacementMode.Left, "Invalid port.");
+                return;
+            }
             stackConnect.Visibility = Visibility.Collapsed;
             stackMain.Visibility = Visibility.Visible;
-            AditClient.Connect();
+            Utilities.ShowToolTip(stackMain, System.Windows.Controls.Primitives.PlacementMode.Center, "Attempting to connect...");
+            await AditClient.Connect();
         }
 
         private void ButtonDisconnect_Click(object sender, RoutedEventArgs e)

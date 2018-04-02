@@ -39,14 +39,14 @@ namespace Adit
             TrayIcon.Icon?.ShowCustomBalloon(new ClosedToTrayBalloon(), PopupAnimation.Fade, 5000);
             Config.Save();
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (Initializer.IsFirstLoad)
             {
                 Initializer.SetGlobalErrorHandler();
                 Initializer.SetShutdownMode();
                 Config.Load();
-                Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
+                await Initializer.ProcessCommandLineArgs(Environment.GetCommandLineArgs());
                 if (Config.Current.StartupMode != Config.StartupModes.Notifier)
                 {
                     TrayIcon.Create();

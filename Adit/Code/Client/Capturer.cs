@@ -85,13 +85,14 @@ namespace Adit.Code.Client
             graphDC = graphic.GetHdc();
             try
             {
-                var copyResult = GDI32.BitBlt(graphDC, 0, 0, totalWidth, totalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY | GDI32.TernaryRasterOperations.CAPTUREBLT);
+                var copyResult = GDI32.BitBlt(graphDC, 0, 0, totalWidth, totalHeight, hDC, 0 + offsetX, 0 + offsetY, GDI32.TernaryRasterOperations.SRCCOPY);
                 if (!copyResult)
                 {
                     graphic.ReleaseHdc(graphDC);
                     graphic.Clear(System.Drawing.Color.White);
-                    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 30, System.Drawing.FontStyle.Bold);
-                    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), totalHeight / 2), new StringFormat() { Alignment = StringAlignment.Center });
+                    var font = new Font(System.Drawing.FontFamily.GenericSansSerif, 36, System.Drawing.FontStyle.Bold);
+                    graphic.DrawString("Waiting for screen capture...", font, System.Drawing.Brushes.Black, new PointF((totalWidth / 2), (float)(totalHeight * .35)), new StringFormat() { Alignment = StringAlignment.Center });
+                    graphic.DrawString("(If this screen does not refresh, you may need to reconnect.)", new Font("GenericSansSerif", 24), System.Drawing.Brushes.Black, new PointF((totalWidth / 2), (float)(totalHeight * .55)), new StringFormat() { Alignment = StringAlignment.Center });
 
                     if (!AditClient.DesktopSwitchPending)
                     {

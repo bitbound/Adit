@@ -15,7 +15,6 @@ namespace Adit.Models
     public class SocketMessageHandler
     {
         Socket socketOut;
-        public string LastRequesterID { get; set; }
         public Encryption Encryption { get; set; }
         private List<byte> AggregateMessages { get; set; } = new List<byte>();
         private int ExpectedBinarySize { get; set; }

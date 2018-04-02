@@ -97,6 +97,7 @@ namespace Adit.Pages
             }
             controlsFrame.Visibility = Visibility.Collapsed;
             DrawingSurface.ResetMaxImageSize();
+            Utilities.ShowToolTip(this, System.Windows.Controls.Primitives.PlacementMode.Center, "Attempting to connect...");
             await AditViewer.Connect(textSessionID.Text.Trim());
             RefreshUI();
         }
@@ -150,6 +151,8 @@ namespace Adit.Pages
 
         private void RefreshScreen_Click(object sender, RoutedEventArgs e)
         {
+            DrawingSurface.Width = double.NaN;
+            DrawingSurface.Height = double.NaN;
             AditViewer.SocketMessageHandler.SendFullscreenRequest();
         }
     }

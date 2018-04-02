@@ -82,11 +82,5 @@ namespace Adit.Code.Client
                 }
             }
         }
-
-        internal void StopWatching()
-        {
-            ChangeTimer.Stop();
-            Current = null;
-        }
     }
 }

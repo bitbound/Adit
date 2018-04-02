@@ -20,7 +20,7 @@ namespace Adit.Code.Client
     {
         public bool IsCapturing { get; set; }
         public bool CaptureFullscreen { get; set; } = true;
-        public bool ShouldSlowDown { get; set; }
+        public int PauseForMilliseconds { get; set; }
 
         private List<DateTime> FPSStack { get; set; } = new List<DateTime>();
 
@@ -43,7 +43,6 @@ namespace Adit.Code.Client
         IntPtr hWnd;
         IntPtr hDC;
         IntPtr graphDC;
-        User32.CursorInfo ci = new User32.CursorInfo();
         string desktopName;
         System.Drawing.Point captureStartPoint;
 
@@ -60,22 +59,16 @@ namespace Adit.Code.Client
             CursorIconWatcher.Current.OnChange += CursorIcon_OnChange;
             while (IsCapturing && AditClient.IsConnected && AditClient.ParticipantList.Exists(x=>x.ID == participantID))
             {
-                if (ShouldSlowDown)
-                {
-                    ShouldSlowDown = false;
-                    await Task.Delay(500);
-                    continue;
-                }
                 CaptureScreen();
                 
                 if (CaptureFullscreen || IsNewFrameDifferent())
                 {
-                    AditClient.SocketMessageHandler.SendBytes(GetCapture(), String.Empty, String.Empty);
+                    AditClient.SocketMessageHandler.SendBytes(GetCapture(), participantID, String.Empty);
                 }
-                await Task.Delay(1);
+                await Task.Delay(PauseForMilliseconds);
+                PauseForMilliseconds = 1;
             }
             CursorIconWatcher.Current.OnChange -= CursorIcon_OnChange;
-            CursorIconWatcher.Current.StopWatching();
         }
 
         private void CursorIcon_OnChange(object sender, Icon e)
@@ -119,17 +112,6 @@ namespace Adit.Code.Client
                 graphic.DrawPath(new System.Drawing.Pen(System.Drawing.Brushes.Black, 48 / 4), path);
                 graphic.FillPath(System.Drawing.Brushes.White, path);
 #endif
-
-                // Get cursor information to draw on the screenshot.
-                //ci.cbSize = Marshal.SizeOf(ci);
-                //User32.GetCursorInfo(out ci);
-                //if (ci.flags == User32.CURSOR_SHOWING)
-                //{
-                //    using (var icon = System.Drawing.Icon.FromHandle(ci.hCursor))
-                //    {
-                //        graphic.DrawIcon(icon, ci.ptScreenPos.x, ci.ptScreenPos.y);
-                //    }
-                //}
 
             }
             catch (Exception ex)

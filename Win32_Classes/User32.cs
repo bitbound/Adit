@@ -1100,10 +1100,20 @@ namespace Win32_Classes
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetCursorPos(out System.Drawing.Point lpPoint);
-
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetCursorPos(int x, int y);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetCursor(IntPtr hcursor);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern IntPtr LoadImage(IntPtr hinst, string lpszName, uint uType,
+                                        int cxDesired, int cyDesired, uint fuLoad);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr CreateCursor(IntPtr hInst, int xHotSpot, int yHotSpot,
+                                            int nWidth, int nHeight, byte[] pvANDPlane, byte[] pvXORPlane);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

@@ -106,12 +106,13 @@ namespace Adit.Code.Server
             SendJSON(jsonData);
         }
 
-        public void SendSlowDown(string recipientID)
+        public void SendSlowDown(string recipientID, int pauseForMilliseconds)
         {
             SendJSON(new
             {
                 Type = "SlowDown",
-                RecipientID = recipientID
+                RecipientID = recipientID,
+                PauseForMilliseconds = pauseForMilliseconds
             });
         }
 

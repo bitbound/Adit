@@ -247,7 +247,7 @@ namespace Adit.Code.Client
         private void ReceiveFullscreenRequest(dynamic jsonData)
         {
             var requester = AditClient.ParticipantList.Find(x => x.ID == jsonData["RequesterID"]);
-            if (requester == null)
+            if (requester?.CaptureInstance == null)
             {
                 return;
             }
@@ -343,7 +343,7 @@ namespace Adit.Code.Client
             var receiver = AditClient.ParticipantList.Find(x => x.ID == jsonData.RecipientID);
             if (receiver?.CaptureInstance != null)
             {
-                receiver.CaptureInstance.ShouldSlowDown = true;
+                receiver.CaptureInstance.PauseForMilliseconds = jsonData["PauseForMilliseconds"];
             }
         }
     }

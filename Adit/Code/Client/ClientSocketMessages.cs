@@ -154,23 +154,18 @@ namespace Adit.Code.Client
             {
                 if (jsonData["Status"] == "On")
                 {
-                    using (var httpClient = new System.Net.Http.HttpClient())
+                    Encryptor = new Encryption();
+                    Encryptor.Key = Encryption.GetStoredKey();
+                    if (Encryptor.Key == null)
                     {
-                        Task<HttpResponseMessage> response = httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
-                        response.Wait();
-                        var content = response.Result.Content.ReadAsStringAsync();
-                        content.Wait();
-                        if (string.IsNullOrWhiteSpace(content.Result))
-                        {
-                            throw new Exception("Response from API was empty.");
-                        }
-                        Encryption = new Encryption();
-                        Encryption.Key = Convert.FromBase64String(content.Result);
+                        AditClient.TcpClient.Close();
+                        Pages.Client.Current.RefreshUICall();
+                        return;
                     }
                 }
                 else if (jsonData["Status"] == "Failed")
                 {
-                    throw new Exception("Server failed to start encrypted connection.");
+                    throw new Exception("Server failed to start an encrypted connection.");
                 }
                 if (AditClient.ConnectionType == ConnectionTypes.Client)
                 {
@@ -283,8 +278,7 @@ namespace Adit.Code.Client
 
         private void ReceiveMouseMove(dynamic jsonData)
         {
-            User32.SetCursorPos((int)Math.Round((double)jsonData["X"] * totalWidth) + offsetX,
-                                (int)Math.Round((double)jsonData["Y"] * totalHeight) + offsetY);
+            User32.SendMouseMove((double)jsonData["X"], (double)jsonData["X"]);
         }
 
         private void ReceiveMouseRightDown(dynamic jsonData)

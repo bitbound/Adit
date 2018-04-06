@@ -67,5 +67,40 @@ namespace Adit.Code.Shared
                 return null;
             }
         }
+
+        public static byte[] GetStoredKey()
+        {
+            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
+            if (File.Exists(keyPath))
+            {
+                try
+                {
+                    return File.ReadAllBytes(keyPath);
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("Unable to read encryption key file.  You may not have access to it.  The file can only be read by the account that created it.", "Read Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    return null;
+                }
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("No encryption key was found.", "Key Not Found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return null;
+            }
+        }
+        public static byte[] CreateNewKey()
+        {
+            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                var key = new byte[32];
+                rng.GetBytes(key);
+                var id = Guid.NewGuid().ToString();
+                File.WriteAllBytes(Path.Combine(keyPath), key);
+                File.Encrypt(keyPath);
+                return key;
+            }
+        }
     }
 }

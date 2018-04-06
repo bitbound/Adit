@@ -5,15 +5,48 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Adit.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="400" d:DesignWidth="500"
+      d:DesignHeight="700" d:DesignWidth="500"
       Title="Install" Background="White">
 
     <Grid>
-        <StackPanel Margin="10">
-            <TextBlock TextAlignment="Center" Margin="0,0,0,20" FontSize="25" FontWeight="Bold">Welcome to Adit</TextBlock>
+        <ScrollViewer Margin="10">
+            <StackPanel>
+                <TextBlock TextAlignment="Center" Margin="0,0,0,20" FontSize="25" FontWeight="Bold"><Run Text="Welcome to Adit"/></TextBlock>
 
-            <TextBlock Margin="0,0,0,5" FontSize="14">New to Adit?  Start here!</TextBlock>
-            
-        </StackPanel>
+                <TextBlock FontSize="14" TextWrapping="Wrap">
+                    <Run Text="Thank you for trying Adit!"/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="The core functionality of Adit may be unique to people who are used to remote access tools like VNC and RDP. If you're new to Adit, I encourage you to read this introduction."/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="Note: You can hide this tab later in the Options page."/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run FontSize="16" FontWeight="Bold" Text="How It Works"/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="As most people in IT are aware, firewalls and NATs prevent direct connection from one device to another over the internet (and sometimes local network). To allow connections through, ports must be opened/forwarded in the router."/>
+                    <LineBreak/>
+                    <InlineUIContainer>
+                        <Image Source="/Adit;component/Assets/BlockedConnection.png" Height="75"/>
+                    </InlineUIContainer>
+                    <LineBreak/>
+                    <Run Text="Solutions like TeamViewer and LogMeIn get around this by having both computers make an outbound connection to their server. The server brokers communication between the two computers, making it seem like one is connecting directly to the other."/>
+                    <LineBreak/>
+                    <InlineUIContainer>
+                        <Image Source="/Adit;component/Assets/Example.png" Height="175"/>
+                    </InlineUIContainer>
+                    <LineBreak/>
+                    <Run Text="Adit uses this same technique, only host the server yourself. This single application can act as server, client, viewer, or all three."/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run FontSize="16" FontWeight="Bold" Text="Getting Started"/>
+                    <LineBreak/>
+                    <LineBreak/>
+                </TextBlock>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

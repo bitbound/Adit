@@ -34,7 +34,10 @@ namespace Adit.Code.Viewer
 
         private void InputSurface_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            AditViewer.SocketMessageHandler.SendFullscreenRequest();
+            if (AditViewer.IsConnected)
+            {
+                AditViewer.SocketMessageHandler.SendFullscreenRequest();
+            }
         }
 
         private void InputSurface_Unloaded(object sender, RoutedEventArgs e)
@@ -46,7 +49,10 @@ namespace Adit.Code.Viewer
 
         private void Window_LostFocus(object sender, RoutedEventArgs e)
         {
-            AditViewer.SocketMessageHandler?.SendClearAllKeys();
+            if (AditViewer.IsConnected)
+            {
+                AditViewer.SocketMessageHandler?.SendClearAllKeys();
+            }
         }
 
 

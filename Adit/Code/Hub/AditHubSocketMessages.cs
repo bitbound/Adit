@@ -26,23 +26,18 @@ namespace Adit.Code.Hub
             {
                 if (jsonData["Status"] == "On")
                 {
-                    using (var httpClient = new System.Net.Http.HttpClient())
+                    Encryptor = new Encryption();
+                    Encryptor.Key = Encryption.GetStoredKey();
+                    if (Encryptor.Key == null)
                     {
-                        Task<HttpResponseMessage> response = httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
-                        response.Wait();
-                        var content = response.Result.Content.ReadAsStringAsync();
-                        content.Wait();
-                        if (string.IsNullOrWhiteSpace(content.Result))
-                        {
-                            throw new Exception("Response from API was empty.");
-                        }
-                        Encryption = new Encryption();
-                        Encryption.Key = Convert.FromBase64String(content.Result);
+                        AditHub.Current.Disconnect();
+                        Pages.Hub.Current.RefreshUICall();
+                        return;
                     }
                 }
                 else if (jsonData["Status"] == "Failed")
                 {
-                    throw new Exception("Server failed to start encrypted connection.");
+                    throw new Exception("Server failed to start an encrypted connection.");
                 }
                 SendConnectionType(ConnectionTypes.ComputerHub);
             }

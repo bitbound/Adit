@@ -67,18 +67,13 @@ namespace Adit.Code.Viewer
             {
                 if (jsonData["Status"] == "On")
                 {
-                    using (var httpClient = new System.Net.Http.HttpClient())
+                    Encryptor = new Encryption();
+                    Encryptor.Key = Encryption.GetStoredKey();
+                    if (Encryptor.Key == null)
                     {
-                        Task<HttpResponseMessage> response = httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
-                        response.Wait();
-                        var content = response.Result.Content.ReadAsStringAsync();
-                        content.Wait();
-                        if (string.IsNullOrWhiteSpace(content.Result))
-                        {
-                            throw new Exception("Response from API was empty.");
-                        }
-                        Encryption = new Encryption();
-                        Encryption.Key = Convert.FromBase64String(content.Result);
+                        AditViewer.Disconnect();
+                        Pages.Viewer.Current.RefreshUICall();
+                        return;
                     }
                 }
                 else if (jsonData["Status"] == "Failed")

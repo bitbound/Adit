@@ -23,7 +23,7 @@ namespace Adit_Service
         {
             this.socketOut = socketOut;
         }
-        public Encryption Encryption { get; set; }
+        public Encryption Encryptor { get; set; }
         private List<byte> AggregateMessages { get; set; } = new List<byte>();
         private int ExpectedBinarySize { get; set; }
         public void SendJSON(dynamic jsonData)
@@ -40,9 +40,9 @@ namespace Adit_Service
         {
             if (socketOut.Connected)
             {
-                if (Encryption != null)
+                if (Encryptor != null)
                 {
-                    bytes = Encryption.EncryptBytes(bytes);
+                    bytes = Encryptor.EncryptBytes(bytes);
                 }
                 var messageHeader = new byte[]
                 {
@@ -130,9 +130,9 @@ namespace Adit_Service
 
         private void ProcessMessage(byte[] messageBytes)
         {
-            if (Encryption != null)
+            if (Encryptor != null)
             {
-                messageBytes = Encryption.DecryptBytes(messageBytes);
+                messageBytes = Encryptor.DecryptBytes(messageBytes);
                 if (messageBytes == null)
                 {
                     return;
@@ -199,19 +199,8 @@ namespace Adit_Service
             {
                 if (jsonData["Status"] == "On")
                 {
-                    using (var httpClient = new System.Net.Http.HttpClient())
-                    {
-                        Task<HttpResponseMessage> response = httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/" + jsonData["ID"]);
-                        response.Wait();
-                        var content = response.Result.Content.ReadAsStringAsync();
-                        content.Wait();
-                        if (string.IsNullOrWhiteSpace(content.Result))
-                        {
-                            throw new Exception("Response from API was empty.");
-                        }
-                        Encryption = new Encryption();
-                        Encryption.Key = Convert.FromBase64String(content.Result);
-                    }
+                    Encryptor = new Encryption();
+                    Encryptor.Key = Encryption.GetStoredKey();
                 }
                 else if (jsonData["Status"] == "Failed")
                 {

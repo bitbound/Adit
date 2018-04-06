@@ -24,7 +24,7 @@ namespace Adit.Code.Client
         private User32.CursorInfo CursorInfo;
         private CursorIconWatcher()
         {
-            ChangeTimer = new System.Timers.Timer(10);
+            ChangeTimer = new System.Timers.Timer(1);
             ChangeTimer.Elapsed += ChangeTimer_Elapsed;
             ChangeTimer.Start();
         }

@@ -258,6 +258,8 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <None Include="Assets\BlockedConnection.pdn" />
+    <None Include="Assets\Example.pdn" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -308,6 +310,13 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\icons8-downloading-updates-40.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\BlockedConnection.png" />
+    <Resource Include="Assets\Example.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

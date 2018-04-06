@@ -15,7 +15,7 @@ namespace Adit.Models
     public class SocketMessageHandler
     {
         Socket socketOut;
-        public Encryption Encryption { get; set; }
+        public Encryption Encryptor { get; set; }
         private List<byte> AggregateMessages { get; set; } = new List<byte>();
         private int ExpectedBinarySize { get; set; }
         private MethodInfo ByteArrayHandler { get; set; }
@@ -97,9 +97,9 @@ namespace Adit.Models
                         }
                     }
                 }
-                if (Encryption != null)
+                if (Encryptor != null)
                 {
-                    bytes = Encryption.EncryptBytes(bytes);
+                    bytes = Encryptor.EncryptBytes(bytes);
                 }
                 var messageHeader = new byte[]
                 {
@@ -198,9 +198,9 @@ namespace Adit.Models
         }
         private void ProcessMessage(byte[] messageBytes)
         {
-            if (Encryption != null)
+            if (Encryptor != null)
             {
-                messageBytes = Encryption.DecryptBytes(messageBytes);
+                messageBytes = Encryptor.DecryptBytes(messageBytes);
                 if (messageBytes == null)
                 {
                     return;

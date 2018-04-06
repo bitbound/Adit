@@ -50,6 +50,7 @@ namespace Adit.Code.Server
                     return;
                 }
             }
+
             WaitForClientConnection();
         }
 

@@ -67,5 +67,39 @@ namespace Adit_Service
                 return null;
             }
         }
+
+        public static byte[] GetStoredKey()
+        {
+            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
+            if (File.Exists(keyPath))
+            {
+                try
+                {
+                    File.Encrypt(keyPath);
+                    return File.ReadAllBytes(keyPath);
+                }
+                catch
+                {
+                    throw new Exception("Unable to read encryption key file.");
+                }
+            }
+            else
+            {
+                throw new Exception("No encryption key was found.");
+            }
+        }
+        public static byte[] CreateNewKey()
+        {
+            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                var key = new byte[32];
+                rng.GetBytes(key);
+                var id = Guid.NewGuid().ToString();
+                File.WriteAllBytes(Path.Combine(keyPath), key);
+                File.Encrypt(keyPath);
+                return key;
+            }
+        }
     }
 }

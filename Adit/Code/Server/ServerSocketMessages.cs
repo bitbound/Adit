@@ -122,22 +122,17 @@ namespace Adit.Code.Server
             {
                 if (Config.Current.IsEncryptionEnabled)
                 {
-                    using (var httpClient = new System.Net.Http.HttpClient())
+                    Encryptor = new Encryption();
+                    Encryptor.Key = Encryption.GetStoredKey();
+                    if (Encryptor.Key == null)
                     {
-                        Task<HttpResponseMessage> response = httpClient.GetAsync("https://aditapi.azurewebsites.net/api/keys/");
-                        response.Wait();
-                        var content = response.Result.Content.ReadAsStringAsync();
-                        content.Wait();
-                        var key = Utilities.JSON.Deserialize<string[]>(content.Result);
-                        SendJSONUnencrypted(new
-                        {
-                            Type = "EncryptionStatus",
-                            Status = "On",
-                            ID = key[0]
-                        });
-                        Encryption = new Encryption();
-                        Encryption.Key = Convert.FromBase64String(key[1]);
+                        return;
                     }
+                    SendJSONUnencrypted(new
+                    {
+                        Type = "EncryptionStatus",
+                        Status = "On"
+                    });
                 }
                 else
                 {

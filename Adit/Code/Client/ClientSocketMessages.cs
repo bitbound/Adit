@@ -278,7 +278,7 @@ namespace Adit.Code.Client
 
         private void ReceiveMouseMove(dynamic jsonData)
         {
-            User32.SendMouseMove((double)jsonData["X"], (double)jsonData["X"]);
+            User32.SendMouseMove((double)jsonData["X"], (double)jsonData["Y"]);
         }
 
         private void ReceiveMouseRightDown(dynamic jsonData)

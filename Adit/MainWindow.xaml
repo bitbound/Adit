@@ -1,11 +1,15 @@
-﻿<Window x:Class="Adit.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Adit"
+        xmlns:Shared="clr-namespace:Adit.Code.Shared" x:Class="Adit.MainWindow"
         mc:Ignorable="d"
-        Title="Adit" Height="400" Width="550" Icon="Assets/icons8-connect-64.png" Loaded="Window_Loaded" Closing="Window_Closing" Background="White">
+        Title="{Binding Current.ProductName}" Height="400" Width="550" Icon="Assets/icons8-connect-64.png" Loaded="Window_Loaded" Closing="Window_Closing" Background="White">
+    <Window.DataContext>
+        <Shared:Config/>
+    </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -13,16 +17,15 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel x:Name="sideMenuStack" Grid.Column="0" Width="100" Margin="0,0,30,0">
-            <ToggleButton x:Name="welcomeToggle" Height="50" Click="Welcome_Click" Style="{DynamicResource SideMenuToggle}">Welcome</ToggleButton>
-            <ToggleButton x:Name="serverToggle" Height="50" Click="Server_Click" Style="{DynamicResource SideMenuToggle}">Server</ToggleButton>
-            <ToggleButton x:Name="clientToggle" Height="50" Click="Client_Click" Style="{DynamicResource SideMenuToggle}">Client</ToggleButton>
-            <ToggleButton x:Name="viewerToggle" Height="50"  Click="Viewer_Click" Style="{DynamicResource SideMenuToggle}">Viewer</ToggleButton>
-            <ToggleButton x:Name="hubToggle" Height="50" Click="Hub_Click" Style="{DynamicResource SideMenuToggle}">Hub</ToggleButton>
-            <ToggleButton x:Name="optionsToggle" Height="50" Click="Options_Click" Style="{DynamicResource SideMenuToggle}">Options</ToggleButton>
-            <ToggleButton x:Name="aboutToggle" Height="50"  Click="About_Click" Style="{DynamicResource SideMenuToggle}">About</ToggleButton>
+            <ToggleButton x:Name="welcomeToggle" Height="50" Click="Welcome_Click" Style="{DynamicResource SideMenuToggle}" Content="Welcome"/>
+            <ToggleButton x:Name="serverToggle" Height="50" Click="Server_Click" Style="{DynamicResource SideMenuToggle}" Content="Server"/>
+            <ToggleButton x:Name="clientToggle" Height="50" Click="Client_Click" Style="{DynamicResource SideMenuToggle}" Content="Client"/>
+            <ToggleButton x:Name="viewerToggle" Height="50"  Click="Viewer_Click" Style="{DynamicResource SideMenuToggle}" Content="Viewer"/>
+            <ToggleButton x:Name="hubToggle" Height="50" Click="Hub_Click" Style="{DynamicResource SideMenuToggle}" Content="Hub"/>
+            <ToggleButton x:Name="optionsToggle" Height="50" Click="Options_Click" Style="{DynamicResource SideMenuToggle}" Content="Options"/>
+            <ToggleButton x:Name="aboutToggle" Height="50"  Click="About_Click" Style="{DynamicResource SideMenuToggle}" Content="About"/>
         </StackPanel>
-       
-        <Frame Grid.Column="1" x:Name="mainFrame" NavigationUIVisibility="Hidden">
-        </Frame>
+
+        <Frame Grid.Column="1" x:Name="mainFrame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

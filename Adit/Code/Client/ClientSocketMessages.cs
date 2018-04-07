@@ -155,7 +155,7 @@ namespace Adit.Code.Client
                 if (jsonData["Status"] == "On")
                 {
                     Encryptor = new Encryption();
-                    Encryptor.Key = Encryption.GetStoredKey();
+                    Encryptor.Key = Encryption.GetClientKey();
                     if (Encryptor.Key == null)
                     {
                         AditClient.TcpClient.Close();

@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Adit.Models
 {
@@ -19,9 +20,20 @@ namespace Adit.Models
         private List<byte> AggregateMessages { get; set; } = new List<byte>();
         private int ExpectedBinarySize { get; set; }
         private MethodInfo ByteArrayHandler { get; set; }
+        private Timer TimeoutTimer { get; set; }
+        private DateTime LastMessage { get; set; } = DateTime.Now;
         public SocketMessageHandler(Socket socketOut)
         {
             this.socketOut = socketOut;
+            TimeoutTimer = new Timer(60000);
+            TimeoutTimer.Elapsed += (sender, args) => {
+                if (DateTime.Now - LastMessage > TimeSpan.FromMinutes(5))
+                {
+                    TimeoutTimer.Stop();
+                    socketOut.Close();
+                }
+            };
+            TimeoutTimer.Start();
         }
         public bool IsConnected
         {
@@ -74,6 +86,7 @@ namespace Adit.Models
         {
             if (socketOut.Connected)
             {
+                LastMessage = DateTime.Now;
                 var totalPendingBufferOut = SocketArgsPool.SocketSendArgs
                     .Where(x => x.RecipientID == recipientID)
                     .Sum(x => x.Buffer.Length);
@@ -139,7 +152,7 @@ namespace Adit.Models
                     }
                     return;
                 }
-
+                LastMessage = DateTime.Now;
                 var messageHeader = socketArgs.Buffer[0] * 100000000
                     + socketArgs.Buffer[1] * 1000000
                     + socketArgs.Buffer[2] * 10000

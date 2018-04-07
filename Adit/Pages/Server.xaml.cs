@@ -53,7 +53,7 @@ namespace Adit.Pages
 
                 if (serverVersion > currentVersion)
                 {
-                    imageUpdate.Visibility = Visibility.Visible;
+                    gridUpdate.Visibility = Visibility.Visible;
                 }
             }
             catch { }
@@ -118,7 +118,7 @@ namespace Adit.Pages
 
         private void ToggleEncryption_Click(object sender, MouseButtonEventArgs e)
         {
-            var keyPath = System.IO.Path.Combine(Utilities.DataFolder, "Key");
+            var keyPath = System.IO.Path.Combine(Utilities.DataFolder, "ServerKey");
             if (!System.IO.File.Exists(keyPath))
             {
                 var result = MessageBox.Show("No encryption key was found.  Do you want to create one?", "Create New Key", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -137,7 +137,7 @@ namespace Adit.Pages
             }
             else
             {
-                if (Encryption.GetStoredKey() != null)
+                if (Encryption.GetServerKey() != null)
                 {
                     Config.Current.IsEncryptionEnabled = !toggleEncryption.IsOn;
                     Config.Save();
@@ -152,7 +152,7 @@ namespace Adit.Pages
 
         private void ExportKey_Click(object sender, RoutedEventArgs e)
         {
-            var keyPath = System.IO.Path.Combine(Utilities.DataFolder, "Key");
+            var keyPath = System.IO.Path.Combine(Utilities.DataFolder, "ServerKey");
             if (!System.IO.File.Exists(keyPath))
             {
                 var result = MessageBox.Show("No encryption key was found.  Do you want to create one?", "Create New Key", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -170,9 +170,10 @@ namespace Adit.Pages
             folderDialog.ShowDialog();
             if (!string.IsNullOrWhiteSpace(folderDialog.SelectedPath))
             {
-                var keyBytes = Encryption.GetStoredKey();
-                System.IO.File.WriteAllBytes(System.IO.Path.Combine(folderDialog.SelectedPath, "Key"), keyBytes);
-                MessageBox.Show("The encryption key has been exported to a file named \"Key\".  Do not rename the file, or it will not work on clients.  Only transfer the key through a secure connection.  The file must be placed in the installation folder on the client (%ProgramData%\\Adit\\ by default).  It will be encrypted on the client device upon first use.", "Export Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                var keyBytes = Encryption.GetServerKey();
+                System.IO.File.WriteAllBytes(System.IO.Path.Combine(folderDialog.SelectedPath, "ClientKey"), keyBytes);
+                System.IO.File.WriteAllBytes(System.IO.Path.Combine(folderDialog.SelectedPath, "ServiceKey"), keyBytes);
+                MessageBox.Show("The encryption key has been exported to a files named \"ClientKey\" and \"ServiceKey\".  Do not rename the files, or they will not work on clients.  Only transfer the keys through a secure connection.\r\n\r\nThe files must be placed in the installation folder on the client (%ProgramData%\\Adit\\ by default).  They will be encrypted on the client device upon first use.", "Export Successful", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -190,7 +191,14 @@ namespace Adit.Pages
             config.IsOptionsTabVisible = false;
             config.IsViewerTabVisible = false;
             config.IsServerAutoStartEnabled = false;
-            config.HubKey = String.Empty;
+            config.IsTargetServerConfigurable = false;
+            config.IsClientAutoConnectEnabled = true;
+            config.ClientHost = config.ServerHost;
+            config.ClientPort = config.ServerPort;
+            config.ServiceHost = config.ServerHost;
+            config.ServicePort = config.ServerPort;
+            config.ViewerHost = config.ServerHost;
+            config.ViewerPort = config.ServerPort;
             config.StartupMode = Config.StartupModes.Normal;
             config.StartupTab = Config.StartupTabs.Client;
             var folderDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -205,7 +213,7 @@ namespace Adit.Pages
 
         private void Update_Click(object sender, MouseButtonEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://invis.me/?Downloads");
+            System.Diagnostics.Process.Start("http://invis.me/?Downloads&app=Adit");
         }
     }
 }

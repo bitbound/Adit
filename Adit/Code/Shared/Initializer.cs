@@ -82,6 +82,7 @@ namespace Adit.Code.Shared
                 {
                     TrayIcon.Icon.Dispose();
                 }
+                ClipboardManager.Current.StopWatching();
             };
         }
     }

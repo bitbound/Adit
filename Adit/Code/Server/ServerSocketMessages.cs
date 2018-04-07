@@ -123,7 +123,7 @@ namespace Adit.Code.Server
                 if (Config.Current.IsEncryptionEnabled)
                 {
                     Encryptor = new Encryption();
-                    Encryptor.Key = Encryption.GetStoredKey();
+                    Encryptor.Key = Encryption.GetServerKey();
                     if (Encryptor.Key == null)
                     {
                         return;

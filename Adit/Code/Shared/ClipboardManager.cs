@@ -37,6 +37,11 @@ namespace Adit.Code.Shared
             }
             ClipboardWatcher.Elapsed += (sender, args) => 
             {
+                if (!Config.Current.IsClipboardShared)
+                {
+                    ClipboardWatcher.Stop();
+                    return;
+                }
                 MainWindow.Current.Dispatcher.Invoke(() =>
                 {
                     try
@@ -66,7 +71,7 @@ namespace Adit.Code.Shared
 
         public void StopWatching()
         {
-            ClipboardWatcher.Stop();
+            ClipboardWatcher?.Stop();
         }
 
         private dynamic GetTransferData()

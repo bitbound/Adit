@@ -27,7 +27,7 @@ namespace Adit.Code.Hub
                 if (jsonData["Status"] == "On")
                 {
                     Encryptor = new Encryption();
-                    Encryptor.Key = Encryption.GetStoredKey();
+                    Encryptor.Key = Encryption.GetClientKey();
                     if (Encryptor.Key == null)
                     {
                         AditHub.Current.Disconnect();
@@ -57,7 +57,7 @@ namespace Adit.Code.Hub
             SendJSON(new
             {
                 Type = "HubDataRequest",
-                HubKey = Config.Current.HubKey
+                HubKey = AditHub.Current.HubKey
             });
         }
         private void ReceiveHubDataRequest(dynamic jsonData)
@@ -101,7 +101,7 @@ namespace Adit.Code.Hub
             SendJSON(new
             {
                 Type = "HubDisconnectClientRequest",
-                HubKey = Config.Current.HubKey,
+                HubKey = AditHub.Current.HubKey,
                 Clients = clients.Cast<HubComputer>().Select(x => x.ID)
             });
         }
@@ -111,7 +111,7 @@ namespace Adit.Code.Hub
             SendJSON(new
             {
                 Type = "HubDeleteClientRequest",
-                HubKey = Config.Current.HubKey,
+                HubKey = AditHub.Current.HubKey,
                 Clients = clients.Cast<HubComputer>().Select(x=>x.ID)
             });
         }

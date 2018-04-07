@@ -33,9 +33,9 @@ namespace Adit.Windows
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            foreach (AuthenticationKey item in datagridKeys.SelectedItems)
+            for (int i = datagridKeys.SelectedItems.Count - 1; i >= 0; i--)
             {
-                Authentication.Current.Keys.Remove(item);
+                Authentication.Current.Keys.Remove((AuthenticationKey)datagridKeys.SelectedItems[i]);
             }
         }
 

@@ -33,18 +33,58 @@
                         <Image Source="/Adit;component/Assets/BlockedConnection.png" Height="75"/>
                     </InlineUIContainer>
                     <LineBreak/>
-                    <Run Text="Solutions like TeamViewer and LogMeIn get around this by having both computers make an outbound connection to their server. The server brokers communication between the two computers, making it seem like one is connecting directly to the other."/>
+                    <Run Text="Solutions like TeamViewer and LogMeIn get around this by having both computers make an outbound connection to their server. The server brokers communication between the two computers, making it seem like one is connecting directly to the other.  Even peer-to-peer networking relies on a central server to establish the initial connection."/>
                     <LineBreak/>
                     <InlineUIContainer>
                         <Image Source="/Adit;component/Assets/Example.png" Height="175"/>
                     </InlineUIContainer>
                     <LineBreak/>
-                    <Run Text="Adit uses this same technique, only host the server yourself. This single application can act as server, client, viewer, or all three."/>
+                    <Run Text="Adit uses this same technique, except you host the server yourself. This single application can act as server, client, viewer, or all three."/>
                     <LineBreak/>
                     <LineBreak/>
                     <Run FontSize="16" FontWeight="Bold" Text="Getting Started"/>
                     <LineBreak/>
                     <LineBreak/>
+                    <Run Text="First, you need to set up your server.  Install and run Adit on your server computer.  On the server tab, input the host and port you will use.  The host can be an IP or hostname.  If you will be connecting from outside your local network, it needs to be a public IP or host."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="Create an inbound rule in the firewall for the port you chose.  In your router, create a port forwarding rule to forward the port to your server.  You may want to set your local IP as static if your router doesn't dynamically resolve the hostname."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="If you will be connecting to computers unattended, you need to create an authentication key for yourself.  Click the Configure button next to Remote Admins.  Click the New button to create a new key.  This authentication key will let you connect to the Hub from another computer and will let you connect unattended to any client.  Save it in a secure location."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="Turn on the server with the toggle switch at the top of the Server page.  You should now be able to connect to it with the client and viewer from other computers.  You may also want to enable the Start with Windows option in the Options tab."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run FontSize="16" FontWeight="Bold" Text="Deploying Clients"/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="On client machines, you may want to hide the other tabs and have it connect to your server automatically.  You can create a configuration file that can be put on the client machine to make it do this.  From your server computer, click the Create button next to Create Client Config to export a file with all the settings already entered.  Make sure your server information is entered correctly since it will use this for the client's outbound settings.  On the client, it needs to go in the installation directory (default is %ProgramData%\Adit\)."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="In addition to your standard MSI install options, you can also add INSTALLSERVICE=TRUE to the end of the command line (e.g. msiexec /i path_to_msi /quiet INSTALLSERVICE=TRUE) to install the unattended service as well.  It needs to be in all caps.  You can also install the service manually in the options menu."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run FontSize="16" FontWeight="Bold" Text="Enabling Encryption"/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="Adit can use AES for end-to-end encryption.  The first time it's enabled, an encryption key file will be created in the installation directory.  The file itself is encrypted and can only be used by the account that created it, so you'll need to always run Adit under the same account.  You'll need to export and deploy the encryption key with the client, the same as the client config file."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="When you export the key, two files will be created.  One is for the service and one is for the client.  You can copy both or only one, depending on how you intend to use the remote computer."/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="Be aware that the files are unencrypted after exporting the key, so make sure they're only transferred to the client through a secure connection.  The files will be re-encrypted on the client machine the first time they're used.  Also note that encryption can cause slowdowns on low-end machines."></Run>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run FontSize="16" FontWeight="Bold" Text="Connecting to Clients"/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="You can connect to clients via invite by entering the session ID on the Viewer page, or you can connect unattended via the Hub page to computers with the service installed.  To access the Hub from a computer other than the server, you'll need to enter the authentication key you created in the above step."/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="It's recommended that you not view remote computers from the server itself to ensure best performance and stability."></Run>
                 </TextBlock>
             </StackPanel>
         </ScrollViewer>

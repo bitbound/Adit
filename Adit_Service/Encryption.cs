@@ -68,9 +68,9 @@ namespace Adit_Service
             }
         }
 
-        public static byte[] GetStoredKey()
+        public static byte[] GetServiceKey()
         {
-            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
+            var keyPath = Path.Combine(Utilities.DataFolder, "ServiceKey");
             if (File.Exists(keyPath))
             {
                 try
@@ -86,19 +86,6 @@ namespace Adit_Service
             else
             {
                 throw new Exception("No encryption key was found.");
-            }
-        }
-        public static byte[] CreateNewKey()
-        {
-            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                var key = new byte[32];
-                rng.GetBytes(key);
-                var id = Guid.NewGuid().ToString();
-                File.WriteAllBytes(Path.Combine(keyPath), key);
-                File.Encrypt(keyPath);
-                return key;
             }
         }
     }

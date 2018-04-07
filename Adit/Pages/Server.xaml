@@ -15,7 +15,11 @@
     </Page.DataContext>
 
     <Grid Margin="10,10,10,10">
-        <Image x:Name="imageUpdate" Cursor="Hand" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" Visibility="Collapsed" ToolTip="An updated version is available!" Source="/Adit;component/Assets/icons8-downloading-updates-40.png" MouseLeftButtonDown="Update_Click"></Image>
+        <Grid x:Name="gridUpdate" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed">
+            <TextBlock Text="New Version" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="8"></TextBlock>
+            <Image x:Name="imageUpdate" Cursor="Hand" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25"  ToolTip="An updated version is available!" Source="/Adit;component/Assets/icons8-downloading-updates-40.png" MouseLeftButtonDown="Update_Click" Margin="0,15,0,0"></Image>
+        </Grid>
+      
         <StackPanel x:Name="stackMain"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
             <TextBlock FontWeight="Bold" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left">
                 <Run Text="{Binding Current.ProductName}"></Run>

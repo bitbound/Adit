@@ -112,7 +112,7 @@ namespace Adit.Pages
             {
                 Config.Current.HubPort = port;
             }
-            Config.Current.HubKey = textKey.Text;
+            AditHub.Current.HubKey = textKey.Text;
             Utilities.ShowToolTip(this, System.Windows.Controls.Primitives.PlacementMode.Center, "Attempting to connect...");
             await Code.Hub.AditHub.Current.Connect();
         }

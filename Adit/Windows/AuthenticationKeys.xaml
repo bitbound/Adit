@@ -15,7 +15,7 @@
         <DataGrid x:Name="datagridKeys" ItemsSource="{Binding Current.Keys, Mode=TwoWay}" AutoGenerateColumns="False" CellEditEnding="DatagridKeys_CellEditEnding" Margin="0,29,0,45">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Issued To" Binding="{Binding IssuedTo, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Key" Binding="{Binding Key, Mode=OneWay}" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Key" Binding="{Binding Key, Mode=TwoWay}" ></DataGridTextColumn>
                 <DataGridTextColumn Header="Issued On" Binding="{Binding IssueDate, Mode=OneWay}" ></DataGridTextColumn>
                 <DataGridTextColumn Header="Last Used" Binding="{Binding LastUsed, Mode=OneWay}" ></DataGridTextColumn>
             </DataGrid.Columns>

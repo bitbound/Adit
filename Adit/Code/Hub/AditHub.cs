@@ -32,6 +32,32 @@ namespace Adit.Code.Hub
             }
         }
 
+        public string HubKey
+        {
+            get
+            {
+                var fi = new FileInfo(Path.Combine(Utilities.DataFolder, "HubKey.json"));
+                if (fi.Exists)
+                {
+                    try
+                    {
+                        return File.ReadAllText(fi.FullName);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Unable to read hub authentication key file.  You may not have access to it.  The file can only be read by the account that created it.", "Read Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                        Utilities.WriteToLog(ex);
+                    }
+                }
+                return null;
+            }
+            set
+            {
+                File.WriteAllText(Path.Combine(Utilities.DataFolder, "HubKey.json"), value);
+                File.Encrypt(Path.Combine(Utilities.DataFolder, "HubKey.json"));
+            }
+        }
+
         public AditHubSocketMessages SocketMessageHandler { get; set; }
         public TcpClient TcpClient { get; set; }
         public void AddOrUpdateComputer(ClientConnection connection)

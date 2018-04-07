@@ -200,7 +200,7 @@ namespace Adit_Service
                 if (jsonData["Status"] == "On")
                 {
                     Encryptor = new Encryption();
-                    Encryptor.Key = Encryption.GetStoredKey();
+                    Encryptor.Key = Encryption.GetServiceKey();
                 }
                 else if (jsonData["Status"] == "Failed")
                 {

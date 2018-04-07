@@ -15,8 +15,20 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_04366C3EA5A9F8A4B8871F86BC509522"
+        "MsmKey" = "8:_09782DA01146A7BF462C307B3341E8D9"
+        "OwnerKey" = "8:_185418AB06B044949FF293E81F8245CB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_09782DA01146A7BF462C307B3341E8D9"
         "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_09782DA01146A7BF462C307B3341E8D9"
+        "OwnerKey" = "8:_800A4DD4161A4FD4A3228718F11E2564"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -39,32 +51,38 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_62D75F9C929AAC4794C329702DE29995"
+        "MsmKey" = "8:_67B5B39F95870FC83509C7CB61F12668"
+        "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_800A4DD4161A4FD4A3228718F11E2564"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9B2132E3EFED9F4623AB1E648539518A"
+        "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DC1C5B26D0D958899305D51080D1D8D1"
         "OwnerKey" = "8:_185418AB06B044949FF293E81F8245CB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_62D75F9C929AAC4794C329702DE29995"
+        "MsmKey" = "8:_DC1C5B26D0D958899305D51080D1D8D1"
         "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B8D8D789D792A52BF5553F49D99A73B5"
-        "OwnerKey" = "8:_185418AB06B044949FF293E81F8245CB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B8D8D789D792A52BF5553F49D99A73B5"
-        "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E010B2D9C8F527CA2421DA368B0D952E"
-        "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
+        "MsmKey" = "8:_DC1C5B26D0D958899305D51080D1D8D1"
+        "OwnerKey" = "8:_800A4DD4161A4FD4A3228718F11E2564"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -76,7 +94,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B8D8D789D792A52BF5553F49D99A73B5"
+        "OwnerKey" = "8:_185418AB06B044949FF293E81F8245CB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -88,25 +106,31 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_04366C3EA5A9F8A4B8871F86BC509522"
+        "OwnerKey" = "8:_67B5B39F95870FC83509C7CB61F12668"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E010B2D9C8F527CA2421DA368B0D952E"
+        "OwnerKey" = "8:_9B2132E3EFED9F4623AB1E648539518A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_185418AB06B044949FF293E81F8245CB"
+        "OwnerKey" = "8:_09782DA01146A7BF462C307B3341E8D9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_62D75F9C929AAC4794C329702DE29995"
+        "OwnerKey" = "8:_800A4DD4161A4FD4A3228718F11E2564"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_DC1C5B26D0D958899305D51080D1D8D1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -164,7 +188,7 @@
             "Enabled" = "11:TRUE"
             "PromptEnabled" = "11:TRUE"
             "PrerequisitesLocation" = "2:1"
-            "Url" = "8:"
+            "Url" = "8:http://invis.me/Downloads/Adit_Installer.msi"
             "ComponentsUrl" = "8:"
                 "Items"
                 {
@@ -195,6 +219,20 @@
             "InstallerClass" = "11:FALSE"
             "CustomActionData" = "8:/INSTALLSERVICE=\"[INSTALLSERVICE]\""
             }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_53760E44CD054781AB32E4C17672BAF5"
+            {
+            "Name" = "8:Primary output from Adit_Service (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_800A4DD4161A4FD4A3228718F11E2564"
+            "FileType" = "3:2"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:-uninstall"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_76C3D993_450F_4D36_8B41_81DF7A7178B7"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -218,20 +256,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_04366C3EA5A9F8A4B8871F86BC509522"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_09782DA01146A7BF462C307B3341E8D9"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Win32_Classes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_04366C3EA5A9F8A4B8871F86BC509522"
+                    "_09782DA01146A7BF462C307B3341E8D9"
                     {
-                    "Name" = "8:Hardcodet.Wpf.TaskbarNotification.dll"
+                    "Name" = "8:Win32_Classes.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Hardcodet.Wpf.TaskbarNotification.dll"
+            "SourcePath" = "8:Win32_Classes.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
@@ -269,20 +307,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_62D75F9C929AAC4794C329702DE29995"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_67B5B39F95870FC83509C7CB61F12668"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Win32_Classes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_62D75F9C929AAC4794C329702DE29995"
+                    "_67B5B39F95870FC83509C7CB61F12668"
                     {
-                    "Name" = "8:Win32_Classes.dll"
+                    "Name" = "8:Hardcodet.Wpf.TaskbarNotification.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Win32_Classes.dll"
+            "SourcePath" = "8:Hardcodet.Wpf.TaskbarNotification.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
@@ -300,51 +338,51 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B8D8D789D792A52BF5553F49D99A73B5"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
-                "ScatterAssemblies"
-                {
-                    "_B8D8D789D792A52BF5553F49D99A73B5"
-                    {
-                    "Name" = "8:System.Net.Http.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:System.Net.Http.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E010B2D9C8F527CA2421DA368B0D952E"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9B2132E3EFED9F4623AB1E648539518A"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:System.Windows, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_E010B2D9C8F527CA2421DA368B0D952E"
+                    "_9B2132E3EFED9F4623AB1E648539518A"
                     {
                     "Name" = "8:System.Windows.dll"
                     "Attributes" = "3:512"
                     }
                 }
             "SourcePath" = "8:System.Windows.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DC1C5B26D0D958899305D51080D1D8D1"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_DC1C5B26D0D958899305D51080D1D8D1"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
@@ -450,7 +488,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Adit"
         "ProductCode" = "8:{4974AFC2-E10C-416E-848D-B1DB5DFFB570}"
-        "PackageCode" = "8:{A842F447-8341-4F0E-9E30-CF25424CF9B4}"
+        "PackageCode" = "8:{95F68368-EB40-41F6-B898-C3294B340FD1}"
         "UpgradeCode" = "8:{937C089F-7CED-4CAF-B333-D7FAF3E3F386}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -467,7 +505,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:A self-hosted remote access solution."
         "ARPURLINFOABOUT" = "8:http://invis.me"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_25D7A63B40CF4E49ABAC38C59C244802"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -1095,6 +1133,34 @@
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{BB71D2AD-ED77-406D-9110-526F0FCC8C0E}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_800A4DD4161A4FD4A3228718F11E2564"
+            {
+            "SourcePath" = "8:..\\Adit_Service\\obj\\Release\\Adit_Service.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_F71EAB22B30940C79CB4F1674BE1AF41"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{5F8E8F14-DA4E-4C87-96D2-B667D97B58A7}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {

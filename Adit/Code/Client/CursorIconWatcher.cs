@@ -31,6 +31,10 @@ namespace Adit.Code.Client
 
         private void ChangeTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            if (OnChange == null)
+            {
+                return;
+            }
             try
             {
                 CursorInfo = new User32.CursorInfo();

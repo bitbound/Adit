@@ -68,7 +68,7 @@ namespace Adit.Code.Viewer
                 if (jsonData["Status"] == "On")
                 {
                     Encryptor = new Encryption();
-                    Encryptor.Key = Encryption.GetStoredKey();
+                    Encryptor.Key = Encryption.GetClientKey();
                     if (Encryptor.Key == null)
                     {
                         AditViewer.Disconnect();
@@ -285,7 +285,21 @@ namespace Adit.Code.Viewer
                 AditViewer.Connect(jsonData["ClientSessionID"]);
             }
         }
-
+        private void ReceiveClipboardTransfer(dynamic jsonData)
+        {
+            if (jsonData["SourceComputer"] == Environment.MachineName)
+            {
+                return;
+            }
+            if (jsonData["Format"] == "FileDrop")
+            {
+                ClipboardManager.Current.SetFiles(jsonData["FileNames"], jsonData["FileContents"]);
+            }
+            else
+            {
+                ClipboardManager.Current.SetData(jsonData["Format"], jsonData["Data"]);
+            }
+        }
         private void ReceiveDesktopSwitch(dynamic jsonData)
         {
             if (jsonData["Status"] == "ok")

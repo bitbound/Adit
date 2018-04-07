@@ -21,7 +21,7 @@
                 </TextBlock>
                 <Border BorderBrush="Gray" BorderThickness="1" Padding="5">
                     <TextBlock TextWrapping="Wrap">
-                            Adit is a free remote access solution.  Customization and additional features are available from the developer.  Please visit the website for more information.
+                            Adit is a free remote access solution that allows connections to remote computers without any port forwarding or firewall changes.
                             <LineBreak></LineBreak>
                             <LineBreak></LineBreak>
                             Adit uses the following third party package:

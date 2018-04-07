@@ -68,9 +68,18 @@ namespace Adit.Code.Shared
             }
         }
 
-        public static byte[] GetStoredKey()
+        public static byte[] GetServerKey()
         {
-            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
+            var keyPath = Path.Combine(Utilities.DataFolder, "ServerKey");
+            return GetKey(keyPath);
+        }
+        public static byte[] GetClientKey()
+        {
+            var keyPath = Path.Combine(Utilities.DataFolder, "ClientKey");
+            return GetKey(keyPath);
+        }
+        private static byte[] GetKey(string keyPath)
+        {
             if (File.Exists(keyPath))
             {
                 try
@@ -91,7 +100,7 @@ namespace Adit.Code.Shared
         }
         public static byte[] CreateNewKey()
         {
-            var keyPath = Path.Combine(Utilities.DataFolder, "Key");
+            var keyPath = Path.Combine(Utilities.DataFolder, "ServerKey");
             using (var rng = RandomNumberGenerator.Create())
             {
                 var key = new byte[32];

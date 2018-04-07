@@ -30,17 +30,27 @@ namespace Adit.Code.Server
         public void Save()
         {
             var di = Directory.CreateDirectory(Utilities.DataFolder);
-            File.WriteAllText(Path.Combine(di.FullName, "Auth.json"), Utilities.JSON.Serialize(Keys));
+            File.WriteAllText(Path.Combine(di.FullName, "AuthKeys.json"), Utilities.JSON.Serialize(Keys));
+            File.Encrypt(Path.Combine(di.FullName, "AuthKeys.json"));
         }
 
         public void Load()
         {
-            var fi = new FileInfo(Path.Combine(Utilities.DataFolder, "Auth.json"));
+            var fi = new FileInfo(Path.Combine(Utilities.DataFolder, "AuthKeys.json"));
             if (fi.Exists)
             {
-                foreach (var key in Utilities.JSON.Deserialize<ObservableCollection<AuthenticationKey>>(File.ReadAllText(fi.FullName)))
+                try
                 {
-                    Keys.Add(key);
+                    foreach (var key in Utilities.JSON.Deserialize<ObservableCollection<AuthenticationKey>>(File.ReadAllText(fi.FullName)))
+                    {
+                        Keys.Add(key);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show("Unable to read authentication key file.  You may not have access to it.  The file can only be read by the account that created it.", "Read Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    Utilities.WriteToLog(ex);
                 }
             }
         }

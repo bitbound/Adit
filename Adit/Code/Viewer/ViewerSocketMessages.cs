@@ -237,10 +237,6 @@ namespace Adit.Code.Viewer
                 Pages.Viewer.Current.Dispatcher.Invoke(() => {
                     Pages.Viewer.Current.DrawingSurface.Cursor = new Cursor(ms);
                 });
-                //var icon = new System.Drawing.Icon(ms);
-                //User32.GetCursorPos(out var currentPoint);
-                //cursorHandle = User32.CreateCursor(IntPtr.Zero, currentPoint.X, currentPoint.Y, icon.Width, icon.Height, iconBytes, null);
-                //User32.SetCursor(cursorHandle);
             }
         }
         private void ReceiveByteArray(byte[] bytesReceived)

@@ -15,6 +15,7 @@ namespace Adit.Code.Shared
     {
         public static ClipboardManager Current { get; set; } = new ClipboardManager();
 
+
         private System.Timers.Timer ClipboardWatcher { get; set; }
         private IDataObject ClipboardData { get; set; } = new DataObject();
 
@@ -56,11 +57,15 @@ namespace Adit.Code.Shared
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         if (connectionToSendChanges?.IsConnected != true)
                         {
                             ClipboardWatcher.Stop();
+                        }
+                        else
+                        {
+                            Utilities.WriteToLog(ex);
                         }
                     }
                 });

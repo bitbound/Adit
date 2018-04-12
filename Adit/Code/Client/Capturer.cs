@@ -71,7 +71,7 @@ namespace Adit.Code.Client
             CursorIconWatcher.Current.OnChange -= CursorIcon_OnChange;
         }
 
-        private void CursorIcon_OnChange(object sender, Icon e)
+        private void CursorIcon_OnChange(object sender, int e)
         {
             AditClient.SocketMessageHandler.SendIconUpdate(e);
         }

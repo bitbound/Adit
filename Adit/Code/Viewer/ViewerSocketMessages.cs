@@ -231,17 +231,13 @@ namespace Adit.Code.Viewer
         }
         private void ReceiveIconUpdate(dynamic jsonData)
         {
-            var iconBytes = Convert.FromBase64String(jsonData["Icon"]);
-            using (var ms = new MemoryStream(iconBytes))
+            var iconHandle = jsonData["Icon"];
+            var cursorName = CursorMap.AllCursors.Find(x => x.CursorHandle == iconHandle).WindowsCursorName;
+            var cursor = (Cursor)typeof(Cursors).GetProperties().FirstOrDefault(x => x.Name == cursorName).GetValue(null);
+            Pages.Viewer.Current.Dispatcher.Invoke(() =>
             {
-                Pages.Viewer.Current.Dispatcher.Invoke(() => {
-                    Pages.Viewer.Current.DrawingSurface.Cursor = new Cursor(ms);
-                });
-                //var icon = new System.Drawing.Icon(ms);
-                //User32.GetCursorPos(out var currentPoint);
-                //cursorHandle = User32.CreateCursor(IntPtr.Zero, currentPoint.X, currentPoint.Y, icon.Width, icon.Height, iconBytes, null);
-                //User32.SetCursor(cursorHandle);
-            }
+                Pages.Viewer.Current.DrawingSurface.Cursor = cursor;
+            });
         }
         private void ReceiveByteArray(byte[] bytesReceived)
         {

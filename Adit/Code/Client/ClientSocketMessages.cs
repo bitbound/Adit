@@ -100,18 +100,14 @@ namespace Adit.Code.Client
 
         }
 
-        internal void SendIconUpdate(Icon e)
+        internal void SendIconUpdate(int e)
         {
-            using (var ms = new MemoryStream())
+            var request = new
             {
-                e.Save(ms);
-                var request = new
-                {
-                    Type = "IconUpdate",
-                    Icon = Convert.ToBase64String(ms.ToArray())
-                };
-                SendJSON(request);
-            }
+                Type = "IconUpdate",
+                Icon = e
+            };
+            SendJSON(request);
         }
         
         private void ReceiveClipboardTransfer(dynamic jsonData)

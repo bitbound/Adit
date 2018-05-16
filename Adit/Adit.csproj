@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Adit</RootNamespace>
     <AssemblyName>Adit</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -81,7 +81,7 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -119,6 +119,7 @@
     <Compile Include="Code\Server\Authentication.cs" />
     <Compile Include="Code\Shared\ClipboardManager.cs" />
     <Compile Include="Code\Hub\AditHub.cs" />
+    <Compile Include="Code\Shared\CursorMap.cs" />
     <Compile Include="Code\Shared\Encryption.cs" />
     <Compile Include="Code\Shared\ServiceConfig.cs" />
     <Compile Include="Code\Shared\SocketArgsPool.cs" />

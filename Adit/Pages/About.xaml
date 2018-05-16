@@ -17,7 +17,7 @@
                 </TextBlock>
                 <TextBlock Margin="0, 0, 0, 10" >
                     <TextBlock>Website: </TextBlock>
-                    <Hyperlink x:Name="hyperAditWebsite" Click="HyperAditWebsite_Click">http://invis.me</Hyperlink>
+                    <Hyperlink x:Name="hyperAditWebsite" Click="HyperAditWebsite_Click">https://lucent.rocks</Hyperlink>
                 </TextBlock>
                 <Border BorderBrush="Gray" BorderThickness="1" Padding="5">
                     <TextBlock TextWrapping="Wrap">

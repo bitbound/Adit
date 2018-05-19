@@ -33,6 +33,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_13E7DAA03D24527C269BB6364F2ADBCD"
+        "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_185418AB06B044949FF293E81F8245CB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -59,12 +65,6 @@
         {
         "MsmKey" = "8:_800A4DD4161A4FD4A3228718F11E2564"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9B2132E3EFED9F4623AB1E648539518A"
-        "OwnerKey" = "8:_617961A357E74474AE1471129F85BF51"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -118,7 +118,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9B2132E3EFED9F4623AB1E648539518A"
+        "OwnerKey" = "8:_13E7DAA03D24527C269BB6364F2ADBCD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -287,6 +287,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_13E7DAA03D24527C269BB6364F2ADBCD"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:System.Windows, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_13E7DAA03D24527C269BB6364F2ADBCD"
+                    {
+                    "Name" = "8:System.Windows.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Windows.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_25D7A63B40CF4E49ABAC38C59C244802"
             {
             "SourcePath" = "8:..\\Adit\\Assets\\icons8-connect-64.ico"
@@ -321,37 +352,6 @@
                     }
                 }
             "SourcePath" = "8:Hardcodet.Wpf.TaskbarNotification.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9B2132E3EFED9F4623AB1E648539518A"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:System.Windows, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
-                "ScatterAssemblies"
-                {
-                    "_9B2132E3EFED9F4623AB1E648539518A"
-                    {
-                    "Name" = "8:System.Windows.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:System.Windows.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_1E81A2791C5947849B7F621D53F9A0ED"
@@ -488,7 +488,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Adit"
         "ProductCode" = "8:{4974AFC2-E10C-416E-848D-B1DB5DFFB570}"
-        "PackageCode" = "8:{6690EA38-64A9-4598-86F6-8300593EE310}"
+        "PackageCode" = "8:{16E22FA3-3EF4-49A9-8F4E-0D9DD35AD203}"
         "UpgradeCode" = "8:{937C089F-7CED-4CAF-B333-D7FAF3E3F386}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -498,13 +498,13 @@
         "ProductVersion" = "8:1.0.0"
         "Manufacturer" = "8:Translucency"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:http://invis.me"
+        "ARPHELPLINK" = "8:https://lucent.rocks"
         "Title" = "8:Adit Installer"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Translcucency"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:A self-hosted remote access solution."
-        "ARPURLINFOABOUT" = "8:http://invis.me"
+        "ARPURLINFOABOUT" = "8:https://lucent.rocks"
         "ARPPRODUCTICON" = "8:_25D7A63B40CF4E49ABAC38C59C244802"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"

@@ -328,13 +328,5 @@ namespace Adit.Code.Client
             AditClient.SessionID = jsonData["SessionID"];
             Pages.Client.Current.RefreshUICall();
         }
-        private void ReceiveSlowDown(dynamic jsonData)
-        {
-            var receiver = AditClient.ParticipantList.Find(x => x.ID == jsonData.RecipientID);
-            if (receiver?.CaptureInstance != null)
-            {
-                receiver.CaptureInstance.PauseForMilliseconds = jsonData["PauseForMilliseconds"];
-            }
-        }
     }
 }

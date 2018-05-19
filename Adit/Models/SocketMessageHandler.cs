@@ -87,29 +87,6 @@ namespace Adit.Models
             if (socketOut.Connected)
             {
                 LastMessage = DateTime.Now;
-                var totalPendingBufferOut = SocketArgsPool.SocketSendArgs
-                    .Where(x => x.RecipientID == recipientID)
-                    .Sum(x => x.Buffer.Length);
-                if (totalPendingBufferOut > Config.Current.BufferSize)
-                {
-                    var pauseFor = totalPendingBufferOut / Config.Current.BufferSize * 50;
-                    if (this is ClientSocketMessages)
-                    {
-                        var captureInstance = AditClient.ParticipantList.Find(x => x.ID == recipientID)?.CaptureInstance;
-                        if (captureInstance != null)
-                        {
-                            captureInstance.PauseForMilliseconds = pauseFor;
-                        }
-                    }
-                    else if (this is ServerSocketMessages)
-                    {
-                        var sender = AditServer.ClientList.Find(x => x.ID == senderID);
-                        if (sender.ConnectionType == ConnectionTypes.Client || sender.ConnectionType == ConnectionTypes.ElevatedClient)
-                        {
-                            sender.SocketMessageHandler.SendSlowDown(recipientID, pauseFor);
-                        }
-                    }
-                }
                 if (Encryptor != null)
                 {
                     bytes = Encryptor.EncryptBytes(bytes);

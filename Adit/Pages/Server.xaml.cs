@@ -44,7 +44,7 @@ namespace Adit.Pages
             try
             {
                 var client = new HttpClient();
-                var response = await client.GetAsync("https://lucent.rocks/Services/VersionCheck/?Path=/Downloads/Adit.exe");
+                var response = await client.GetAsync("https://lucency.co/Services/VersionCheck/?Path=/Downloads/Adit.exe");
                 var strVersion = await response.Content.ReadAsStringAsync();
                 var serverVersion = Version.Parse(strVersion);
 
@@ -213,7 +213,7 @@ namespace Adit.Pages
 
         private void Update_Click(object sender, MouseButtonEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://lucent.rocks/?Downloads&app=Adit");
+            System.Diagnostics.Process.Start("https://lucency.co/?Downloads&app=Adit");
         }
     }
 }

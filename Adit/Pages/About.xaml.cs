@@ -34,7 +34,7 @@ namespace Adit.Pages
         }
         private void HyperAditWebsite_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://lucent.rocks");
+            Process.Start("https://lucency.co");
         }
 
         private void HyperIcons8_Click(object sender, RoutedEventArgs e)

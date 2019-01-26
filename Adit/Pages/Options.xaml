@@ -136,7 +136,7 @@
                         </TextBox>
                     </Grid>
                     <Grid>
-                        <TextBlock><Run Text="Service Host:"/></TextBlock>
+                        <TextBlock><Run Text="Service Port:"/></TextBlock>
                         <TextBox x:Name="textServicePort" HorizontalAlignment="Right" Width="100" Text="{Binding Current.ServicePort, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextAlignment="Right">
                             <TextBox.ToolTip>
                                 <TextBlock MaxWidth="400" HorizontalAlignment="Left" TextWrapping="Wrap" Text="The port to which the service will connect, if installed."></TextBlock>
